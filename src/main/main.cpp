@@ -36,7 +36,7 @@ int main(int argn, char * argv[])
         sum += index_of;
     }
     sw.stop();
-    kmp.display(index_of, sum, sw.getElapsedMillisec());
+    kmp.display_test(index_of, sum, sw.getElapsedMillisec());
 
     AnsiString::kmp_pattern pattern1(pattern_text_1);
     AnsiString::kmp_pattern pattern2(pattern_text_2);
@@ -51,7 +51,7 @@ int main(int argn, char * argv[])
         sum += index_of;
     }
     sw.stop();
-    kmp.display(index_of, sum, sw.getElapsedMillisec());
+    kmp.display_test(index_of, sum, sw.getElapsedMillisec());
 
     sum = 0;
     sw.start();
@@ -60,7 +60,7 @@ int main(int argn, char * argv[])
         sum += index_of;
     }
     sw.stop();
-    kmp.display(index_of, sum, sw.getElapsedMillisec());
+    kmp.display_test(index_of, sum, sw.getElapsedMillisec());
 
     ::system("pause");
     return 0;

@@ -162,13 +162,19 @@ public:
                       pattern.kmp_next());
     }
 
-    void display(int index_of, int sum, double time_spent) {
-        printf("text     = \"%s\", text_len = %" PRIuPTR "\n", text_, text_len_);
+    void display(int index_of) {
+        if (text_ != nullptr) {
+            printf("text     = \"%s\", text_len = %" PRIuPTR "\n", text_, text_len_);
+        }
         if (pattern_->is_alive()) {
             printf("pattern  = \"%s\", pattern_len = %" PRIuPTR "\n", pattern_->c_str(), pattern_->size());
         }
         printf("index_of = %d\n", index_of);
         printf("\n");
+    }
+
+    void display_test(int index_of, int sum, double time_spent) {
+        display(index_of);
         printf("sum: %11d, time spent: %0.3f ms\n", sum, time_spent);
         printf("\n");
     }
