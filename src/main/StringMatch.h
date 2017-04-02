@@ -40,11 +40,23 @@ private:
 
 public:
     kmp_pattern() : pattern_(nullptr), pattern_len_(0), kmp_next_(nullptr) {
-        create();
+        // Do nothing!
+    }
+    kmp_pattern(const char * pattern)
+        : pattern_(pattern), pattern_len_(strlen(pattern)), kmp_next_(nullptr) {
+        prepare(pattern);
     }
     kmp_pattern(const char * pattern, size_t length)
         : pattern_(pattern), pattern_len_(length), kmp_next_(nullptr) {
         prepare(pattern, length);
+    }
+    template <size_t N>
+    kmp_pattern(const char (&pattern)[N]) {
+        return prepare(pattern, N);
+    }
+    kmp_pattern(const std::string & pattern)
+        : pattern_(pattern.c_str()), pattern_len_(pattern.size()), kmp_next_(nullptr) {
+        prepare(pattern);
     }
     ~kmp_pattern() {
         release();
@@ -56,15 +68,17 @@ public:
     size_t length() const { return size(); }
     int * kmp_next() const { return kmp_next_; }
 
-    void create() {
+    void prepare(const char * pattern) {
+        return preprocessing(pattern, strlen(pattern));
     }
 
     void prepare(const char * pattern, size_t length) {
-        return preprocessing(pattern, strlen(pattern));
+        return preprocessing(pattern, length);
     }
 
-    void prepare(const char * pattern) {
-        return preprocessing(pattern, strlen(pattern));
+    template <size_t N>
+    void prepare(const char (&pattern)[N]) {
+        return preprocessing(pattern, N);
     }
 
     void prepare(const std::string & pattern) {
@@ -126,6 +140,14 @@ public:
     int find(const char * text, const kmp_pattern & pattern) {
         pattern_ = &pattern;
         return search(text, strlen(text),
+                      pattern.c_str(), pattern.size(),
+                      pattern.kmp_next());
+    }
+
+    template <size_t N>
+    void find(const char (&text)[N], const kmp_pattern & pattern) {
+        pattern_ = &pattern;
+        return search(text, N,
                       pattern.c_str(), pattern.size(),
                       pattern.kmp_next());
     }
