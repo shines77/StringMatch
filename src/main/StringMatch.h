@@ -68,6 +68,9 @@ public:
     size_t length() const { return size(); }
     int * kmp_next() const { return kmp_next_; }
 
+    bool is_valid() const { return (pattern_ != nullptr); }
+    bool is_alive() const { return (pattern_ != nullptr && kmp_next_ != nullptr); }
+
     void prepare(const char * pattern) {
         return preprocessing(pattern, strlen(pattern));
     }
@@ -159,10 +162,14 @@ public:
                       pattern.kmp_next());
     }
 
-    void display(int index_of) {
+    void display(int index_of, int sum, double time_spent) {
         printf("text     = \"%s\", text_len = %" PRIuPTR "\n", text_, text_len_);
-        printf("pattern  = \"%s\", pattern_len = %" PRIuPTR "\n", pattern_->c_str(), pattern_->size());
+        if (pattern_->is_alive()) {
+            printf("pattern  = \"%s\", pattern_len = %" PRIuPTR "\n", pattern_->c_str(), pattern_->size());
+        }
         printf("index_of = %d\n", index_of);
+        printf("\n");
+        printf("sum: %11d, time spent: %0.3f ms\n", sum, time_spent);
         printf("\n");
     }
 

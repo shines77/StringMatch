@@ -23,6 +23,7 @@
     <ClCompile Include="..\..\..\src\main\StringMatch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\include\support\stop_watch.h" />
     <ClInclude Include="..\..\..\src\main\StringMatch.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
