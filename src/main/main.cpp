@@ -13,9 +13,9 @@ using namespace StringMatch;
 int main(int argn, char * argv[])
 {
     AnsiString::kmp kmp;
-    kmp.preprocessing("example");
-    kmp.match("Here is a sample example.");
-    kmp.display();
+    kmp.pattern("example");
+    int index_of = kmp.match("Here is a sample example.");
+    kmp.display(index_of);
     ::system("pause");
     return 0;
 }
