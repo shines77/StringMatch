@@ -32,63 +32,50 @@
 namespace StringMatch {
 namespace AnsiString {
 
-class kmp {
+class kmp_pattern {
 private:
     const char * pattern_;
     size_t pattern_len_;
-    const char * text_;
-    size_t text_len_;
-
-    int * kmpNext_;
+    int * kmp_next_;
 
 public:
-    kmp() : pattern_(nullptr), pattern_len_(0),
-            text_(nullptr), text_len_(0), kmpNext_(nullptr) {
-        init();
+    kmp_pattern() : pattern_(nullptr), pattern_len_(0), kmp_next_(nullptr) {
+        create();
     }
-    ~kmp() {
+    kmp_pattern(const char * pattern, size_t length)
+        : pattern_(pattern), pattern_len_(length), kmp_next_(nullptr) {
+        prepare(pattern, length);
+    }
+    ~kmp_pattern() {
         release();
     }
 
-    void pattern(const char * pattern, size_t length) {
+    const char * c_str() const { return pattern_; }
+    char * data() { return const_cast<char *>(pattern_); }
+    size_t size() const { return pattern_len_; }
+    size_t length() const { return size(); }
+    int * kmp_next() const { return kmp_next_; }
+
+    void create() {
+    }
+
+    void prepare(const char * pattern, size_t length) {
         return preprocessing(pattern, strlen(pattern));
     }
 
-    void pattern(const char * pattern) {
+    void prepare(const char * pattern) {
         return preprocessing(pattern, strlen(pattern));
     }
 
-    void pattern(const std::string & pattern) {
+    void prepare(const std::string & pattern) {
         return preprocessing(pattern.c_str(), pattern.size());
     }
 
-    int match(const char * text, size_t length) {
-        return search(text, length);
-    }
-
-    int match(const char * text) {
-        return search(text, strlen(text));
-    }
-
-    int match(const std::string & text) {
-        return search(text.c_str(), text.size());
-    }
-
-    void display(int index_of) {
-        printf("text     = \"%s\", text_len = %" PRIuPTR "\n", text_, text_len_);
-        printf("pattern  = \"%s\", pattern_len = %" PRIuPTR "\n", pattern_, pattern_len_);
-        printf("index_of = %d\n", index_of);
-        printf("\n");
-    }
-
 private:
-    void init() {
-    }
-
     void release() {
-        if (kmpNext_ != nullptr) {
-            delete[] kmpNext_;
-            kmpNext_ = nullptr;
+        if (kmp_next_ != nullptr) {
+            delete[] kmp_next_;
+            kmp_next_ = nullptr;
         }
     }
 
@@ -97,60 +84,107 @@ private:
         pattern_ = pattern;
         pattern_len_ = length;
 
-        int * kmpNext = new int[length + 1];
-        if (kmpNext != nullptr) {
-            kmpNext[0] = -1;
-            kmpNext[1] = 0;
+        int * kmp_next = new int[length + 1];
+        if (kmp_next != nullptr) {
+            kmp_next[0] = -1;
+            kmp_next[1] = 0;
             for (size_t index = 1; index < length; ++index) {
-                if (pattern[index] == pattern[kmpNext[index - 1]]) {
-                    kmpNext[index + 1] = kmpNext[index] + 1;
+                if (pattern[index] == pattern[kmp_next[index - 1]]) {
+                    kmp_next[index + 1] = kmp_next[index] + 1;
                 }
                 else {
-                    kmpNext[index + 1] = 0;
+                    kmp_next[index + 1] = 0;
                 }
             }
         }
-        if (kmpNext_ != nullptr)
-            delete[] kmpNext_;
-        kmpNext_ = kmpNext;
+        if (kmp_next_ != nullptr)
+            delete[] kmp_next_;
+        kmp_next_ = kmp_next;
+    }
+};
+
+class kmp {
+private:
+    const char * text_;
+    size_t text_len_;
+
+    const kmp_pattern * pattern_;
+
+public:
+    kmp() : text_(nullptr), text_len_(0), pattern_(nullptr) {
+    }
+    ~kmp() {
     }
 
-    int search(const char * text, size_t length) {
+    int find(const char * text, size_t length, const kmp_pattern & pattern) {
+        pattern_ = &pattern;
+        return search(text, length,
+                      pattern.c_str(), pattern.size(),
+                      pattern.kmp_next());
+    }
+
+    int find(const char * text, const kmp_pattern & pattern) {
+        pattern_ = &pattern;
+        return search(text, strlen(text),
+                      pattern.c_str(), pattern.size(),
+                      pattern.kmp_next());
+    }
+
+    int find(const std::string & text, const kmp_pattern & pattern) {
+        pattern_ = &pattern;
+        return search(text.c_str(), text.size(),
+                      pattern.c_str(), pattern.size(),
+                      pattern.kmp_next());
+    }
+
+    void display(int index_of) {
+        printf("text     = \"%s\", text_len = %" PRIuPTR "\n", text_, text_len_);
+        printf("pattern  = \"%s\", pattern_len = %" PRIuPTR "\n", pattern_->c_str(), pattern_->size());
+        printf("index_of = %d\n", index_of);
+        printf("\n");
+    }
+
+private:
+    int search(const char * text, size_t text_len,
+               const char * pattern_, size_t pattern_len,
+               int * kmp_next) {
         text_ = text;
-        text_len_ = length;
+        text_len_ = text_len;
 
         assert(text != nullptr);
         assert(pattern_ != nullptr);
+        assert(kmp_next != nullptr);
 
-        size_t pattern_len = pattern_len_;
-        if (length < pattern_len) {
+        if (text_len < pattern_len) {
+            // Not found
             return -1;
         }
 
         register const char * target = text;
         register const char * pattern = pattern_;
 
-        int pos = -1;        
-        if ((size_t)target & (size_t)pattern) {
-            const char * target_end = text + (length - pattern_len);
-            const char * pattern_end = pattern_ + pattern_len;
+        if ((size_t)target & (size_t)pattern & (size_t)kmp_next) {
+            const char * target_end = text + (text_len - pattern_len);
+            const char * pattern_end = pattern + pattern_len;
             do {
                 if (*target != *pattern) {
                     int search_index = (int)(pattern - pattern_);
                     if (search_index == 0) {
                         target++;
                         if (target >= target_end) {
+                            // Not found
                             return -1;
                         }
                     }
                     else {
                         assert(search_index >= 1);
-                        int search_offset = kmpNext_[search_index];
+                        int search_offset = kmp_next[search_index];
                         int target_offset = search_index - search_offset;
                         assert(target_offset >= 1);
                         pattern = pattern_ + search_offset;
                         target = target + target_offset;
                         if (target >= target_end) {
+                            // Not found
                             return -1;
                         }
                     }
@@ -159,16 +193,17 @@ private:
                     target++;
                     pattern++;
                     if (pattern >= pattern_end) {
+                        // Found
                         assert((target - text) >= (ptrdiff_t)pattern_len);
-                        pos = (int)((target - text) - (ptrdiff_t)pattern_len);
+                        int pos = (int)((target - text) - (ptrdiff_t)pattern_len);
                         assert(pos >= 0);
-                        break;
+                        return pos;
                     }
-                    assert(target < (text + length));
+                    assert(target < (text + text_len));
                 }
             } while (1);
         }
-        return pos;
+        return -2;  // Invalid parameters
     }
 };
 
