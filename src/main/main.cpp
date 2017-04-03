@@ -24,43 +24,43 @@ int main(int argn, char * argv[])
     jimi::StopWatch sw;
     int sum, index_of;
 
-    AnsiString::kmp kmp;
+    AnsiString::kmp::Matcher matcher;
 
-    AnsiString::kmp_pattern pattern;
+    AnsiString::kmp::Pattern pattern;
     pattern.prepare("example");    
 
     sum = 0;
     sw.start();    
     for (size_t i = 0; i < Iterations; ++i) {
-        index_of = kmp.find("Here is a sample example.", pattern);
+        index_of = pattern.match("Here is a sample example.");
         sum += index_of;
     }
     sw.stop();
-    kmp.display_test(index_of, sum, sw.getElapsedMillisec());
+    pattern.display_test(index_of, sum, sw.getElapsedMillisec());
 
-    AnsiString::kmp_pattern pattern1(pattern_text_1);
-    AnsiString::kmp_pattern pattern2(pattern_text_2);
-
+    AnsiString::kmp::Pattern pattern1(pattern_text_1);
     //pattern1.prepare(pattern_text_1);
+
+    sum = 0;
+    sw.start();
+    for (size_t i = 0; i < Iterations; ++i) {
+        index_of = pattern1.match("Here is a sample example.");
+        sum += index_of;
+    }
+    sw.stop();
+    pattern1.display_test(index_of, sum, sw.getElapsedMillisec());
+
+    AnsiString::kmp::Pattern pattern2(pattern_text_2);
     //pattern2.prepare(pattern_text_2);
 
     sum = 0;
     sw.start();
     for (size_t i = 0; i < Iterations; ++i) {
-        index_of = kmp.find("Here is a sample example.", pattern1);
+        index_of = pattern2.match("Here is a sample example.");
         sum += index_of;
     }
     sw.stop();
-    kmp.display_test(index_of, sum, sw.getElapsedMillisec());
-
-    sum = 0;
-    sw.start();
-    for (size_t i = 0; i < Iterations; ++i) {
-        index_of = kmp.find("Here is a sample example.", pattern2);
-        sum += index_of;
-    }
-    sw.stop();
-    kmp.display_test(index_of, sum, sw.getElapsedMillisec());
+    pattern2.display_test(index_of, sum, sw.getElapsedMillisec());
 
     ::system("pause");
     return 0;
