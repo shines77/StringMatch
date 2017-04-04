@@ -21,7 +21,7 @@
 
 using namespace std::chrono;
 
-namespace jimi {
+namespace test {
 namespace detail {
 
 template <typename T>
@@ -347,4 +347,4 @@ typedef StopWatchBase<StdStopWatchImpl<double>> getTickCountStopWatch;
 
 #undef __COMPILER_BARRIER
 
-} // namespace jimi
+} // namespace test

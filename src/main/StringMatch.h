@@ -21,12 +21,12 @@
 #ifdef __cplusplus
     extern "C++" {
         template <typename CountOfType, size_t SizeOfArray>
-        char(*StringMatch_CountOf_Helper(StringMatch_Unaligned CountOfType(&_Array)[SizeOfArray]))[SizeOfArray];
+        char(*__CountOf_Helper(StringMatch_Unaligned CountOfType(&_Array)[SizeOfArray]))[SizeOfArray];
 
-        #define StringMatch_CountOf(_Array) (sizeof(*StringMatch_CountOf_Helper(_Array)) + 0)
+        #define __CountOf(_Array) (sizeof(*__CountOf_Helper(_Array)) + 0)
     }
 #else
-    #define StringMatch_CountOf(_Array) (sizeof(_Array) / sizeof(_Array[0]))
+    #define __CountOf(_Array) (sizeof(_Array) / sizeof(_Array[0]))
 #endif
 
 namespace StringMatch {
@@ -110,8 +110,8 @@ struct Algorithm {
     }
 
     static int search(const char * text, size_t text_len,
-        const char * pattern_, size_t pattern_len,
-        int * kmp_next) {
+                      const char * pattern_, size_t pattern_len,
+                      int * kmp_next) {
         assert(text != nullptr);
         assert(pattern_ != nullptr);
         assert(kmp_next != nullptr);

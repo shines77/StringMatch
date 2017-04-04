@@ -29,7 +29,7 @@
     <ClInclude Include="..\..\..\src\main\StringMatch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\support\stop_watch.h">
+    <ClInclude Include="..\..\..\include\support\StopWatch.h">
       <Filter>include\support</Filter>
     </ClInclude>
   </ItemGroup>

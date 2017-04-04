@@ -6,22 +6,74 @@
 #include <string.h>
 
 #include "StringMatch.h"
-#include "support/stop_watch.h"
+#include "support/StopWatch.h"
 
 using namespace StringMatch;
 
 #ifndef _DEBUG
-const size_t Iterations = 10000000;
+const size_t Iterations = 5000000;
 #else
 const size_t Iterations = 10000;
 #endif
 
-int main(int argn, char * argv[])
+
+//
+// See: http://volnitsky.com/project/str_search/index.html
+//
+const char * szSearchText[] = {
+	"Here is a sample example.",
+
+	"8'E . It consists of a number of low-lying, largely mangrove covered islands covering an area of around 665 km^2. "
+	"The population of Bakassi is the subject of some dispute, but is generally put at between 150,000 and 300,000 people."
+};
+
+const char * szPatterns[] = {
+	"sample",
+	"example",
+
+	"islands",
+	"around",
+	"subject",
+	"between",
+	"people",
+
+	"between 150,000"
+};
+
+void kmp_benchmark()
+{
+	test::StopWatch sw;
+	int sum;
+	const size_t iters = Iterations / (__CountOf(szSearchText) * __CountOf(szPatterns));
+
+	printf("kmp_benchmark()\n\n");
+
+	AnsiString::kmp::Pattern pattern[__CountOf(szPatterns)];
+	for (int i = 0; i < __CountOf(szPatterns); ++i) {
+		pattern[i].prepare(szPatterns[i]);
+	}
+
+	sw.start();
+	sum = 0;
+	for (size_t loop = 0; loop < iters; ++loop) {
+		for (int i = 0; i < __CountOf(szSearchText); ++i) {
+			for (int j = 0; j < __CountOf(szPatterns); ++j) {
+				int index_of = pattern[j].match(szSearchText[i]);
+				sum += index_of;
+			}
+		}
+	}
+	sw.stop();
+
+	printf("sum: %11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());	
+}
+
+void kmp_test()
 {
     const char pattern_text_1[] = "sample";
     char pattern_text_2[] = "a sample";
 
-    jimi::StopWatch sw;
+    test::StopWatch sw;
     int sum, index_of;
 
     AnsiString::kmp::Matcher matcher;
@@ -61,6 +113,12 @@ int main(int argn, char * argv[])
     }
     sw.stop();
     pattern2.display_test(index_of, sum, sw.getElapsedMillisec());
+}
+
+int main(int argc, char * argv[])
+{
+	kmp_test();
+	kmp_benchmark();
 
     ::system("pause");
     return 0;
