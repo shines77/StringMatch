@@ -47,6 +47,10 @@ void StringMatch_test()
     const char pattern_text_1[] = "sample";
     char pattern_text_2[] = "a sample";
 
+    printf("-----------------------------------------------------------\n");
+    printf("  %s\n", typeid(pattern_type).name());
+    printf("-----------------------------------------------------------\n\n");
+
     test::StopWatch sw;
     int sum, index_of;
 
@@ -128,9 +132,9 @@ void BoyerMoore_benchmark()
     int sum;
     static const size_t iters = Iterations / (__CountOf(szSearchText) * __CountOf(szPatterns));
 
-    printf("---------------------------\n");
+    printf("----------------------------\n");
     printf("  BoyerMoore_benchmark()\n");
-    printf("---------------------------\n\n");
+    printf("----------------------------\n\n");
 
     AnsiString::BoyerMoore::Pattern pattern[__CountOf(szPatterns)];
     for (int i = 0; i < __CountOf(szPatterns); ++i) {
