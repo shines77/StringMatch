@@ -64,10 +64,8 @@ void kmp_benchmark()
 	sw.start();
 	for (size_t loop = 0; loop < iters; ++loop) {
 		for (int i = 0; i < __CountOf(szSearchText); ++i) {
-			const char * text = search_text[i].c_str();
-			size_t text_len = search_text[i].size();
 			for (int j = 0; j < __CountOf(szPatterns); ++j) {
-				int index_of = pattern[j].match(text, text_len);
+				int index_of = pattern[j].match(search_text[i]);
 				sum += index_of;
 			}
 		}
