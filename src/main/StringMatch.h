@@ -58,6 +58,9 @@ public:
     StringRef(const std::string & src)
         : data_(src.c_str()), length_(src.size()) {
     }
+    StringRef(const StringRef & src)
+        : data_(src.c_str()), length_(src.size()) {
+    }
     ~StringRef() {}
 
     const char * c_str() const { return data_; }

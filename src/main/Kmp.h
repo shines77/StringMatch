@@ -19,7 +19,7 @@ namespace StringMatch {
 namespace AnsiString {
 namespace kmp {
 
-class Macther;
+class Matcher;
 
 struct Algorithm {
     static int * preprocessing(const char * pattern, size_t length) {
@@ -147,8 +147,12 @@ public:
         : pattern_(pattern), kmp_next_(nullptr), matcher_() {
         prepare(pattern);
     }
+    Pattern(const StringRef & pattern)
+        : pattern_(pattern), kmp_next_(nullptr), matcher_() {
+        prepare(pattern);
+    }
     ~Pattern() {
-        release();
+        this->free();
     }
 
     const char * c_str() const { return pattern_.c_str(); }
@@ -177,6 +181,10 @@ public:
         return prepare(pattern.c_str(), pattern.size());
     }
 
+    void prepare(const StringRef & pattern) {
+        return prepare(pattern.c_str(), pattern.size());
+    }
+
     int match(const char * text, size_t length) {
         matcher_.set_ref(text, length);
         return Algorithm::search(text, length,
@@ -196,6 +204,12 @@ public:
     int match(const std::string & text) {
         return this->match(text.c_str(), text.size());
     }
+
+    int match(const StringRef & text) {
+        return this->match(text.c_str(), text.size());
+    }
+
+	int match(const Matcher & matcher);
 
     void display(int index_of) {
         if (this->is_alive()) {
@@ -217,7 +231,7 @@ public:
     }
 
 private:
-    void release() {
+    void free() {
         if (kmp_next_ != nullptr) {
             delete[] kmp_next_;
             kmp_next_ = nullptr;
@@ -256,8 +270,17 @@ public:
     Matcher(const std::string & text)
         : text_(text), pattern_() {
     }
+    Matcher(const StringRef & text)
+        : text_(text), pattern_() {
+    }
     ~Matcher() {
     }
+
+	const char * c_str() const { return text_.c_str(); }
+	char * data() const { return text_.data(); }
+
+	size_t size() const { return text_.size(); }
+	size_t length() const { return this->size(); }
 
     const char * text() const { return text_.c_str(); }
     size_t text_length() const { return text_.size(); }
@@ -289,6 +312,10 @@ public:
         return this->find(text.c_str(), text.size(), pattern);
     }
 
+    int find(const StringRef & text, const Pattern & pattern) {
+        return this->find(text.c_str(), text.size(), pattern);
+    }
+
     int find(const Pattern & pattern) {
 		return Algorithm::search(text_.c_str(), text_.size(),
 								 pattern.c_str(), pattern.size(),
@@ -312,6 +339,10 @@ private:
         return Algorithm::search(text, text_len, pattern, pattern_len, kmp_next);
     }
 };
+
+inline int Pattern::match(const Matcher & matcher) {
+	return this->match(matcher.c_str(), matcher.size());
+}
 
 } // namespace kmp
 } // namespace AnsiString
