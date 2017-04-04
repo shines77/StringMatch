@@ -35,5 +35,8 @@
     <ClInclude Include="..\..\..\src\main\Kmp.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\BoyerMoore.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

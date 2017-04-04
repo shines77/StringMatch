@@ -1,6 +1,6 @@
 
-#ifndef STRING_MATCH_KMP_H
-#define STRING_MATCH_KMP_H
+#ifndef STRING_MATCH_BOYERMOORE_H
+#define STRING_MATCH_BOYERMOORE_H
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -17,86 +17,188 @@
 
 namespace StringMatch {
 namespace AnsiString {
-namespace Kmp {
+namespace BoyerMoore {
 
 class Matcher;
 
-struct Algorithm : public StringMatch::AlgorithmBase {
-    /* Preprocessing */
-    static int * preprocessing(const char * pattern, size_t length) {
+class Algorithm : public StringMatch::AlgorithmBase {
+private:
+    /* Preprocessing bad characters. */
+    static void preBmBc(const char * pattern, size_t length,
+                        int * bmBc, int bcLen) {
         assert(pattern != nullptr);
+        assert(bmBc != nullptr);
+        assert(bcLen == 256L);
 
-        int * kmp_next = new int[length + 1];
-        if (kmp_next != nullptr) {
-            kmp_next[0] = -1;
-            kmp_next[1] = 0;
-            for (size_t index = 1; index < length; ++index) {
-                if (pattern[index] == pattern[kmp_next[index - 1]]) {
-                    kmp_next[index + 1] = kmp_next[index] + 1;
+        for (int i = 0; i < bcLen; ++i) {
+            bmBc[i] = (int)length;
+        }
+        for (int i = 0; i < (int)length - 1; ++i) {
+            bmBc[pattern[i]] = ((int)length - 1) - i;
+        }
+    }
+
+    static void suffixes_old(const char * pattern, size_t length, int * suffix) {
+        int f, g, i;
+        int len = (int)length;
+
+        suffix[len - 1] = len;
+        g = len - 1;
+
+        for (i = len - 2; i >= 0; --i) {
+            if (i > g && suffix[i + len - 1 - f] < i - g) {
+                suffix[i] = suffix[i + len - 1 - f];
+            }
+            else {
+                if (i < g) {
+                    g = i;
                 }
-                else {
-                    kmp_next[index + 1] = 0;
+                f = i;
+                while ((g >= 0) && (pattern[g] == pattern[g + len - 1 - f])) {
+                    --g;
+                }
+                suffix[i] = f - g;
+            }
+        }
+    }
+
+    static void suffixes(const char * pattern, size_t length, int * suffix) {
+        assert(pattern != nullptr);
+        assert(suffix != nullptr);
+
+        int i, g, diff;
+        int offset;
+        const int last = (int)length - 1;
+        for (i = last - 1; i >= 0; --i) {
+            suffix[i] = 0;
+        }
+
+        suffix[last] = (int)length;
+        g = last;
+        offset = 0;
+
+        for (i = last - 1; i >= 0; --i) {
+            diff = i - g;
+            if (diff > 0 && suffix[i + offset] < diff) {
+                suffix[i] = suffix[i + offset];
+            }
+            else {
+                if (diff < 0) {
+                    g = i;
+                }
+                offset = last - i;
+                while ((g >= 0) && (pattern[g] == pattern[g + offset])) {
+                    --g;
+                }
+                suffix[i] = i - g;
+            }
+        }
+    }
+
+    /* Preprocessing good suffixs. */
+    static bool preBmGs(const char * pattern, size_t length,
+                        int * bmGs, int gsLen) {
+        int i, j;
+        int len = (int)length;
+
+        if (length <= 0) {
+            return false;
+        }
+
+        int * suffix = new int[len];
+        if (suffix == nullptr) {
+            return false;
+        }
+        Algorithm::suffixes(pattern, length, suffix);
+
+        assert(pattern != nullptr);
+        assert(bmGs != nullptr);
+        for (i = 0; i < len; ++i) {
+            bmGs[i] = len;
+        }
+
+        j = 0;
+        for (i = len - 1; i >= 0; --i) {
+            if (suffix[i] == i + 1) {
+                for (; j < (len - 1) - i; ++j) {
+                    if (bmGs[j] == len) {
+                        bmGs[j] = (len - 1) - i;
+                    }
                 }
             }
         }
-        return kmp_next;
+
+        for (i = 0; i <= len - 2; ++i) {
+            bmGs[(len - 1) - suffix[i]] = (len - 1) - i;
+        }
+
+        if (suffix != nullptr) {
+            delete[] suffix;
+        }
+        return true;
+    }
+
+public:
+    /* Preprocessing */
+    static bool preprocessing(const char * pattern, size_t length,
+                              int * bmBc, int bcLen,
+                              int * bmGs, int gsLen) {
+        assert(pattern != nullptr);
+
+        /* Preprocessing bad characters. */
+        Algorithm::preBmBc(pattern, length, bmBc, bcLen);
+
+        /* Preprocessing good suffixs. */
+        return Algorithm::preBmGs(pattern, length, bmGs, gsLen);
     }
 
     /* Search */
     static int search(const char * text, size_t text_len,
                       const char * pattern_, size_t pattern_len,
-                      int * kmp_next) {
+                      int * bmBc, int * bmGs) {
         assert(text != nullptr);
         assert(pattern_ != nullptr);
-        assert(kmp_next != nullptr);
+        assert(bmBc != nullptr);
+        assert(bmGs != nullptr);
 
         if (text_len < pattern_len) {
             // Not found
             return -1;
         }
 
-        register const char * target = text;
-        register const char * pattern = pattern_;
-
-        if ((size_t)target | (size_t)pattern | (size_t)kmp_next) {
+        if ((size_t)text | (size_t)pattern_ | (size_t)bmBc | (size_t)bmGs) {
+            const char * pattern_end = pattern_;
             const char * target_end = text + (text_len - pattern_len);
-            const char * pattern_end = pattern + pattern_len;
+            const int pattern_last = (int)pattern_len - 1;
+            int target_idx = 0;
             do {
-                if (*target != *pattern) {
-                    int search_index = (int)(pattern - pattern_);
-                    if (search_index == 0) {
-                        target++;
-                        if (target > target_end) {
-                            // Not found
-                            return -1;
-                        }
+                register const char * target = text + target_idx + pattern_last;
+                register const char * pattern = pattern_ + pattern_last;
+                assert(target < (text + text_len));
+
+                while (pattern >= pattern_end) {
+                    if (*target != *pattern) {
+                        break;
                     }
-                    else {
-                        assert(search_index >= 1);
-                        int search_offset = kmp_next[search_index];
-                        int target_offset = search_index - search_offset;
-                        assert(target_offset >= 1);
-                        pattern = pattern_ + search_offset;
-                        target = target + target_offset;
-                        if (target > target_end) {
-                            // Not found
-                            return -1;
-                        }
-                    }
+                    target--;
+                    pattern--;
+                }
+
+                if (pattern >= pattern_end) {
+                    int pattern_idx = (int)(pattern - pattern_);
+                    target_idx += sm_max(bmGs[pattern_idx],
+                                         bmBc[*target] - (pattern_last - pattern_idx));
                 }
                 else {
-                    target++;
-                    pattern++;
-                    if (pattern >= pattern_end) {
-                        // Found
-                        assert((target - text) >= (ptrdiff_t)pattern_len);
-                        int pos = (int)((target - text) - (ptrdiff_t)pattern_len);
-                        assert(pos >= 0);
-                        return pos;
-                    }
-                    assert(target < (text + text_len));
+                    assert(target_idx >= 0);
+                    assert(target_idx < (int)text_len);
+                    // Found
+                    return target_idx;
                 }
-            } while (1);
+            } while (target_idx <= (int)(text_len - pattern_len));
+
+            // Not found
+            return -1;
         }
         // Invalid parameters
         return -2;
@@ -106,32 +208,33 @@ struct Algorithm : public StringMatch::AlgorithmBase {
 class Pattern {
 private:
     StringRef pattern_;
-    int * kmp_next_;
+    int * bmGs_;
     StringRef matcher_;
+    int bmBc_[256];
 
 public:
-    Pattern() : pattern_(), kmp_next_(nullptr), matcher_() {
+    Pattern() : pattern_(), bmGs_(nullptr), matcher_() {
         // Do nothing!
     }
     Pattern(const char * pattern)
-        : pattern_(pattern), kmp_next_(nullptr), matcher_() {
+        : pattern_(pattern), bmGs_(nullptr), matcher_() {
         prepare(pattern);
     }
     Pattern(const char * pattern, size_t length)
-        : pattern_(pattern, length), kmp_next_(nullptr), matcher_() {
+        : pattern_(pattern, length), bmGs_(nullptr), matcher_() {
         prepare(pattern, length);
     }
     template <size_t N>
     Pattern(const char (&pattern)[N])
-        : pattern_(pattern, N), kmp_next_(nullptr), matcher_() {
+        : pattern_(pattern, N), bmGs_(nullptr), matcher_() {
         return prepare(pattern, N);
     }
     Pattern(const std::string & pattern)
-        : pattern_(pattern), kmp_next_(nullptr), matcher_() {
+        : pattern_(pattern), bmGs_(nullptr), matcher_() {
         prepare(pattern);
     }
     Pattern(const StringRef & pattern)
-        : pattern_(pattern), kmp_next_(nullptr), matcher_() {
+        : pattern_(pattern), bmGs_(nullptr), matcher_() {
         prepare(pattern);
     }
     ~Pattern() {
@@ -142,10 +245,12 @@ public:
     char * data() { return pattern_.data(); }
     size_t size() const { return pattern_.size(); }
     size_t length() const { return pattern_.length(); }
-    int * kmp_next() const { return kmp_next_; }
+
+    int * bmBc() const { return (int *)&bmBc_[0]; }
+    int * bmGs() const { return bmGs_; }
 
     bool is_valid() const { return (pattern_.c_str() != nullptr); }
-    bool is_alive() const { return ((pattern_.c_str() != nullptr) && (kmp_next_ != nullptr)); }
+    bool is_alive() const { return ((pattern_.c_str() != nullptr) && (bmGs_ != nullptr)); }
 
     void prepare(const char * pattern, size_t length) {
         return this->preprocessing(pattern, length);
@@ -172,7 +277,8 @@ public:
         matcher_.set_ref(text, length);
         return Algorithm::search(text, length,
                                  this->c_str(), this->size(),
-                                 this->kmp_next());
+                                 this->bmBc(),
+                                 this->bmGs());
     }
 
     int match(const char * text) {
@@ -215,20 +321,21 @@ public:
 
 private:
     void free() {
-        if (kmp_next_ != nullptr) {
-            delete[] kmp_next_;
-            kmp_next_ = nullptr;
+        if (bmGs_ != nullptr) {
+            delete[] bmGs_;
+            bmGs_ = nullptr;
         }
     }
 
     void preprocessing(const char * pattern, size_t length) {
         pattern_.set_ref(pattern, length);
 
-        int * kmp_next = Algorithm::preprocessing(pattern, length);
-        if (kmp_next_ != nullptr) {
-            delete[] kmp_next_;
+        int * bmGs = new int[(int)length + 1];
+        if (bmGs != nullptr)  {
+            bool success = Algorithm::preprocessing(pattern, length, bmBc_, 256L, bmGs, (int)length);
+            assert(success);
         }
-        kmp_next_ = kmp_next;
+        bmGs_ = bmGs;
     }
 };
 
@@ -296,7 +403,7 @@ public:
         pattern_.set_ref(pattern.c_str(), pattern.size());
         return this->search(text, length,
                             pattern.c_str(), pattern.size(),
-                            pattern.kmp_next());
+                            pattern.bmBc(), pattern.bmGs());
     }
 
     int find(const char * text, const Pattern & pattern) {
@@ -319,7 +426,7 @@ public:
     int find(const Pattern & pattern) {
         return Algorithm::search(text_.c_str(), text_.size(),
                                  pattern.c_str(), pattern.size(),
-                                 pattern.kmp_next());
+                                 pattern.bmBc(), pattern.bmGs());
     }
 
     void display(int index_of) {
@@ -334,9 +441,9 @@ public:
 private:
     int search(const char * text, size_t text_len,
                const char * pattern, size_t pattern_len,
-               int * kmp_next) {
+               int * bmBc, int * bmGs) {
         text_.set_ref(text, text_len);
-        return Algorithm::search(text, text_len, pattern, pattern_len, kmp_next);
+        return Algorithm::search(text, text_len, pattern, pattern_len, bmBc, bmGs);
     }
 };
 
@@ -344,8 +451,8 @@ inline int Pattern::match(const Matcher & matcher) {
     return this->match(matcher.c_str(), matcher.size());
 }
 
-} // namespace kmp
+} // namespace BoyerMoore
 } // namespace AnsiString
 } // namespace StringMatch
 
-#endif // STRING_MATCH_KMP_H
+#endif // STRING_MATCH_BOYERMOORE_H
