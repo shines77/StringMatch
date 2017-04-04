@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <string.h>
 
-#include "StringMatch.h"
+#include "Kmp.h"
 #include "support/StopWatch.h"
 
 using namespace StringMatch;
@@ -20,14 +20,14 @@ const size_t Iterations = 10000;
 //
 // See: http://volnitsky.com/project/str_search/index.html
 //
-const char * szSearchText[] = {
+static const char * szSearchText[] = {
 	"Here is a sample example.",
 
 	"8'E . It consists of a number of low-lying, largely mangrove covered islands covering an area of around 665 km^2. "
 	"The population of Bakassi is the subject of some dispute, but is generally put at between 150,000 and 300,000 people."
 };
 
-const char * szPatterns[] = {
+static const char * szPatterns[] = {
 	"sample",
 	"example",
 
@@ -44,28 +44,37 @@ void kmp_benchmark()
 {
 	test::StopWatch sw;
 	int sum;
-	const size_t iters = Iterations / (__CountOf(szSearchText) * __CountOf(szPatterns));
+	static const size_t iters = Iterations / (__CountOf(szSearchText) * __CountOf(szPatterns));
 
-	printf("kmp_benchmark()\n\n");
+	printf("---------------------\n");
+	printf("  kmp_benchmark()\n");
+	printf("---------------------\n\n");
 
 	AnsiString::kmp::Pattern pattern[__CountOf(szPatterns)];
 	for (int i = 0; i < __CountOf(szPatterns); ++i) {
 		pattern[i].prepare(szPatterns[i]);
 	}
 
-	sw.start();
+	StringRef search_text[__CountOf(szSearchText)];
+	for (int i = 0; i < __CountOf(szSearchText); ++i) {
+		search_text[i].set_ref(szSearchText[i], strlen(szSearchText[i]));
+	}
+
 	sum = 0;
+	sw.start();
 	for (size_t loop = 0; loop < iters; ++loop) {
 		for (int i = 0; i < __CountOf(szSearchText); ++i) {
+			const char * text = search_text[i].c_str();
+			size_t text_len = search_text[i].size();
 			for (int j = 0; j < __CountOf(szPatterns); ++j) {
-				int index_of = pattern[j].match(szSearchText[i]);
+				int index_of = pattern[j].match(text, text_len);
 				sum += index_of;
 			}
 		}
 	}
 	sw.stop();
 
-	printf("sum: %11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());	
+	printf("sum: %12d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());	
 }
 
 void kmp_test()

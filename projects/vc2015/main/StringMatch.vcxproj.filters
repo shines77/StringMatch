@@ -32,5 +32,8 @@
     <ClInclude Include="..\..\..\include\support\StopWatch.h">
       <Filter>include\support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\Kmp.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
