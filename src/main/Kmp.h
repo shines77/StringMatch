@@ -292,6 +292,23 @@ public:
         text_.set_ref(text, length);
     }
 
+    void set_text(const char * text) {
+        text_.set_ref(text);
+    }
+
+    template <size_t N>
+    void set_text(const char (&text)[N]) {
+        text_.set_ref(text, N);
+    }
+
+    void set_text(const std::string & text) {
+        text_.set_ref(text);
+    }
+
+    void set_text(const StringRef & text) {
+        text_.set_ref(text);
+    }
+
     int find(const char * text, size_t length, const Pattern & pattern) {
         pattern_.set_ref(pattern.c_str(), pattern.size());
         return this->search(text, length,

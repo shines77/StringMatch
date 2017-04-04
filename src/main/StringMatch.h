@@ -86,6 +86,10 @@ public:
     void set_ref(const std::string & data) {
         set_ref(data.c_str(), data.size());
     }
+
+    void set_ref(const StringRef & data) {
+        set_ref(data.c_str(), data.size());
+    }
 };
 
 } // namespace StringMatch
