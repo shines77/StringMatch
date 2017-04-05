@@ -17,7 +17,8 @@
 
 namespace StringMatch {
 namespace AnsiString {
-namespace Kmp {
+
+struct Kmp {
 
 class Matcher;
 
@@ -292,6 +293,12 @@ public:
         text_.set_ref(text);
     }
 
+    int find(const Pattern & pattern) {
+        return Algorithm::search(text_.c_str(), text_.size(),
+                                 pattern.c_str(), pattern.size(),
+                                 pattern.kmp_next());
+    }
+
     int find(const char * text, size_t length, const Pattern & pattern) {
         pattern_.set_ref(pattern.c_str(), pattern.size());
         return this->search(text, length,
@@ -316,12 +323,6 @@ public:
         return this->find(text.c_str(), text.size(), pattern);
     }
 
-    int find(const Pattern & pattern) {
-        return Algorithm::search(text_.c_str(), text_.size(),
-                                 pattern.c_str(), pattern.size(),
-                                 pattern.kmp_next());
-    }
-
     void display(int index_of) {
         Algorithm::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(), index_of);
     }
@@ -340,11 +341,12 @@ private:
     }
 };
 
-inline int Pattern::match(const Matcher & matcher) {
+}; // struct Kmp
+
+inline int Kmp::Pattern::match(const Kmp::Matcher & matcher) {
     return this->match(matcher.c_str(), matcher.size());
 }
 
-} // namespace kmp
 } // namespace AnsiString
 } // namespace StringMatch
 

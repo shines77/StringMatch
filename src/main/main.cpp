@@ -17,7 +17,6 @@ const size_t Iterations = 5000000;
 const size_t Iterations = 10000;
 #endif
 
-
 //
 // See: http://volnitsky.com/project/str_search/index.html
 //
@@ -41,14 +40,16 @@ static const char * szPatterns[] = {
     "between 150,000"
 };
 
-template <typename pattern_type>
+template <typename algorithm_type>
 void StringMatch_test()
 {
+    typedef algorithm_type::Pattern pattern_type;
+
     const char pattern_text_1[] = "sample";
     char pattern_text_2[] = "a sample";
 
     printf("-----------------------------------------------------------\n");
-    printf("  %s\n", typeid(pattern_type).name());
+    printf("  UnitTest: %s)\n", typeid(algorithm_type).name());
     printf("-----------------------------------------------------------\n\n");
 
     test::StopWatch sw;
@@ -91,66 +92,34 @@ void StringMatch_test()
     pattern2.display_test(index_of, sum, sw.getElapsedMillisec());
 }
 
-void Kmp_benchmark()
+template <typename algorithm_type>
+void StringMatch_benchmark()
 {
+    typedef algorithm_type::Pattern pattern_type;
+
     test::StopWatch sw;
     int sum;
-    static const size_t iters = Iterations / (__CountOf(szSearchText) * __CountOf(szPatterns));
+    static const size_t iters = Iterations / (sm_countof(szSearchText) * sm_countof(szPatterns));
 
-    printf("---------------------\n");
-    printf("  Kmp_benchmark()\n");
-    printf("---------------------\n\n");
+    printf("-----------------------------------------------------------\n");
+    printf("  Benchmark: %s)\n", typeid(algorithm_type).name());
+    printf("-----------------------------------------------------------\n\n");
 
-    AnsiString::Kmp::Pattern pattern[__CountOf(szPatterns)];
-    for (int i = 0; i < __CountOf(szPatterns); ++i) {
+    pattern_type pattern[sm_countof(szPatterns)];
+    for (int i = 0; i < sm_countof(szPatterns); ++i) {
         pattern[i].prepare(szPatterns[i]);
     }
 
-    StringRef search_text[__CountOf(szSearchText)];
-    for (int i = 0; i < __CountOf(szSearchText); ++i) {
+    StringRef search_text[sm_countof(szSearchText)];
+    for (int i = 0; i < sm_countof(szSearchText); ++i) {
         search_text[i].set_ref(szSearchText[i], strlen(szSearchText[i]));
     }
 
     sum = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < __CountOf(szSearchText); ++i) {
-            for (int j = 0; j < __CountOf(szPatterns); ++j) {
-                int index_of = pattern[j].match(search_text[i]);
-                sum += index_of;
-            }
-        }
-    }
-    sw.stop();
-
-    printf("sum: %12d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
-}
-
-void BoyerMoore_benchmark()
-{
-    test::StopWatch sw;
-    int sum;
-    static const size_t iters = Iterations / (__CountOf(szSearchText) * __CountOf(szPatterns));
-
-    printf("----------------------------\n");
-    printf("  BoyerMoore_benchmark()\n");
-    printf("----------------------------\n\n");
-
-    AnsiString::BoyerMoore::Pattern pattern[__CountOf(szPatterns)];
-    for (int i = 0; i < __CountOf(szPatterns); ++i) {
-        pattern[i].prepare(szPatterns[i]);
-    }
-
-    StringRef search_text[__CountOf(szSearchText)];
-    for (int i = 0; i < __CountOf(szSearchText); ++i) {
-        search_text[i].set_ref(szSearchText[i], strlen(szSearchText[i]));
-    }
-
-    sum = 0;
-    sw.start();
-    for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < __CountOf(szSearchText); ++i) {
-            for (int j = 0; j < __CountOf(szPatterns); ++j) {
+        for (int i = 0; i < sm_countof(szSearchText); ++i) {
+            for (int j = 0; j < sm_countof(szPatterns); ++j) {
                 int index_of = pattern[j].match(search_text[i]);
                 sum += index_of;
             }
@@ -163,11 +132,11 @@ void BoyerMoore_benchmark()
 
 int main(int argc, char * argv[])
 {
-    StringMatch_test<StringMatch::AnsiString::Kmp::Pattern>();
-    StringMatch_test<StringMatch::AnsiString::BoyerMoore::Pattern>();
+    StringMatch_test<AnsiString::Kmp>();
+    StringMatch_test<AnsiString::BoyerMoore>();
 
-    Kmp_benchmark();
-    BoyerMoore_benchmark();
+    StringMatch_benchmark<AnsiString::Kmp>();
+    StringMatch_benchmark<AnsiString::BoyerMoore>();
 
     ::system("pause");
     return 0;

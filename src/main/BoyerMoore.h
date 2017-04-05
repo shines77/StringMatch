@@ -17,7 +17,8 @@
 
 namespace StringMatch {
 namespace AnsiString {
-namespace BoyerMoore {
+
+struct BoyerMoore {
 
 class Matcher;
 
@@ -447,11 +448,12 @@ private:
     }
 };
 
-inline int Pattern::match(const Matcher & matcher) {
+}; // struct BoyerMoore
+
+inline int BoyerMoore::Pattern::match(const BoyerMoore::Matcher & matcher) {
     return this->match(matcher.c_str(), matcher.size());
 }
 
-} // namespace BoyerMoore
 } // namespace AnsiString
 } // namespace StringMatch
 
