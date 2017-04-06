@@ -102,7 +102,7 @@ struct Algorithm : public StringMatch::AlgorithmBase {
         // Invalid parameters
         return -2;
     }
-};
+}; // class Algorithm
 
 class Pattern {
 private:
@@ -231,7 +231,7 @@ private:
         }
         kmp_next_ = kmp_next;
     }
-};
+}; // class Pattern
 
 class Matcher {
 private:
@@ -339,7 +339,7 @@ private:
         text_.set_ref(text, text_len);
         return Algorithm::search(text, text_len, pattern, pattern_len, kmp_next);
     }
-};
+}; // class Matcher
 
 }; // struct Kmp
 
