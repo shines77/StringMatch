@@ -40,7 +40,7 @@ private:
     }
 
     static void suffixes_old(const char * pattern, size_t length, int * suffix) {
-        int f, g, i;
+        int i, f, g;
         int len = (int)length;
 
         suffix[len - 1] = len;
@@ -67,31 +67,30 @@ private:
         assert(pattern != nullptr);
         assert(suffix != nullptr);
 
-        int i, g, diff;
-        int offset;
+        int index, cursor, distance, offset;
         const int last = (int)length - 1;
-        for (i = last - 1; i >= 0; --i) {
-            suffix[i] = 0;
+        for (index = last - 1; index >= 0; --index) {
+            suffix[index] = 0;
         }
 
         suffix[last] = (int)length;
-        g = last;
+        cursor = last;
         offset = 0;
 
-        for (i = last - 1; i >= 0; --i) {
-            diff = i - g;
-            if (diff > 0 && suffix[i + offset] < diff) {
-                suffix[i] = suffix[i + offset];
+        for (index = last - 1; index >= 0; --index) {
+            distance = index - cursor;
+            if (distance > 0 && suffix[index + offset] < distance) {
+                suffix[index] = suffix[index + offset];
             }
             else {
-                if (diff < 0) {
-                    g = i;
+                if (distance < 0) {
+                    cursor = index;
                 }
-                offset = last - i;
-                while ((g >= 0) && (pattern[g] == pattern[g + offset])) {
-                    --g;
+                offset = last - index;
+                while ((cursor >= 0) && (pattern[cursor] == pattern[cursor + offset])) {
+                    --cursor;
                 }
-                suffix[i] = i - g;
+                suffix[index] = index - cursor;
             }
         }
     }
