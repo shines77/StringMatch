@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
+#include <string>
 #include <string.h>
 
 #include "Kmp.h"
