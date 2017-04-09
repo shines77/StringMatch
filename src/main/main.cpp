@@ -42,6 +42,53 @@ static const char * szPatterns[] = {
     "between 150,000"
 };
 
+void StringMatch_examples()
+{
+    // Usage 1
+    {
+        AnsiString::Kmp::Pattern p;
+        p.prepare("example");
+
+        int pos = p.match("Here is a sample example.");
+    }
+
+    // Usage 2
+    {
+        AnsiString::Kmp::Pattern p("example");
+
+        int pos = p.match("Here is a sample example.");
+    }
+
+    // Usage 3
+    {
+        AnsiString::Kmp::Pattern p("example");
+        AnsiString::Kmp::Matcher m;
+
+        int pos = m.find("Here is a sample example.", p);
+    }
+
+    // Usage 4
+    {
+        AnsiString::Kmp::Pattern p1("example");
+        AnsiString::Kmp::Pattern p2("sample");
+        AnsiString::Kmp::Matcher m("Here is a sample example.");
+
+        int pos1 = m.find(p1);
+        int pos2 = m.find(p2);
+    }
+
+    // Usage 5
+    {
+        AnsiString::Kmp::Pattern p1("example");
+        AnsiString::Kmp::Pattern p2("sample");
+        AnsiString::Kmp::Matcher m;
+        m.set_text("Here is a sample example.");
+
+        int pos1 = m.find(p1);
+        int pos2 = m.find(p2);
+    }
+}
+
 template <typename algorithm_type>
 void StringMatch_test()
 {
@@ -134,6 +181,8 @@ void StringMatch_benchmark()
 
 int main(int argc, char * argv[])
 {
+    StringMatch_examples();
+
     StringMatch_test<AnsiString::Kmp>();
     StringMatch_test<AnsiString::BoyerMoore>();
 
