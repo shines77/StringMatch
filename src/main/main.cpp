@@ -87,6 +87,13 @@ void StringMatch_examples()
         int pos1 = m.find(p1);
         int pos2 = m.find(p2);
     }
+
+    {
+        AnsiString::ShiftAnd::Pattern p("example");
+
+        int pos = p.match("Here is a sample example.");
+        printf("pos = %d\n\n", pos);
+    }
 }
 
 template <typename algorithm_type>

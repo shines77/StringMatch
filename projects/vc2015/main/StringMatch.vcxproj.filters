@@ -38,5 +38,11 @@
     <ClInclude Include="..\..\..\src\main\BoyerMoore.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\ShiftOr.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\StringRef.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

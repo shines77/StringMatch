@@ -15,6 +15,8 @@
 #include <inttypes.h>
 #include <assert.h>
 
+#include "StringRef.h"
+
 namespace StringMatch {
 namespace AnsiString {
 
