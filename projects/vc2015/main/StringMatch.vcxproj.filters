@@ -21,14 +21,8 @@
     <ClCompile Include="..\..\..\src\main\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\main\StringMatch.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\main\StringMatch.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\support\StopWatch.h">
       <Filter>include\support</Filter>
     </ClInclude>
@@ -38,10 +32,10 @@
     <ClInclude Include="..\..\..\src\main\BoyerMoore.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\main\ShiftOr.h">
+    <ClInclude Include="..\..\..\src\main\StringRef.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\main\StringRef.h">
+    <ClInclude Include="..\..\..\src\main\StringMatch.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

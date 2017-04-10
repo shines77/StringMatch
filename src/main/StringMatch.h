@@ -170,7 +170,6 @@ struct BasicAlgorithm {
     private:
         string_ref text_;
         string_ref pattern_;
-        algorithm_type algorithm_;
 
     public:
         Matcher() : text_(), pattern_() {
