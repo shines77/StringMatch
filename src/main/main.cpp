@@ -1,5 +1,7 @@
 
+#ifdef _DEBUG
 #include <vld.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
