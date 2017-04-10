@@ -170,7 +170,7 @@ struct BasicAlgorithm {
         }
 
         bool prepare(const char_type * pattern) {
-            return this->prepare(pattern, strlen(pattern));
+            return this->prepare(pattern, detail::strlen(pattern));
         }
 
         template <size_t N>
@@ -194,7 +194,7 @@ struct BasicAlgorithm {
         }
 
         int match(const char_type * text) {
-            return this->match(text, strlen(text));
+            return this->match(text, detail::strlen(text));
         }
 
         template <size_t N>
@@ -299,7 +299,7 @@ struct BasicAlgorithm {
         }
 
         int find(const char_type * text, const Pattern & pattern) {
-            return this->find(text, strlen(text), pattern);
+            return this->find(text, detail::strlen(text), pattern);
         }
 
         template <size_t N>
