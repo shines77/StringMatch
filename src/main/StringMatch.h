@@ -51,22 +51,27 @@ namespace StringMatch {
 
 template <typename CharT>
 class ShiftAndImpl {
-private:
-    std::unique_ptr<int> kmp_next_;
-
 public:
     typedef CharT char_type;
+    typedef std::tuple<int *> tuple_type;
 
-    ShiftAndImpl() : kmp_next_() {}
+private:
+    std::unique_ptr<int> kmp_next_;
+    tuple_type args_;
+
+public:
+    ShiftAndImpl() : kmp_next_(), args_(nullptr) {}
     ~ShiftAndImpl() {}
 
-    int * arg1() const { return this->kmp_next(); }
-    int * arg2() const { return nullptr; }
+    const tuple_type & get_args() const { return args_; }
+    void set_args(const tuple_type & args) { args_ = args; }
 
     int * kmp_next() const { return this->kmp_next_.get(); }
+    void set_kmp_next(int * kmp_next) {
+        this->kmp_next_.reset(kmp_next);
+    }
 
     bool is_alive() const {
-        assert(this->arg2() == nullptr);
         return (this->kmp_next() != nullptr);
     }
 
@@ -75,14 +80,21 @@ public:
     }
 
     /* Preprocessing */
-    static void preprocessing(const char_type * pattern, size_t length) {
-        //
+    bool preprocessing(const char_type * pattern, size_t length) {
+        args_ = std::make_tuple(kmp_next_.get());
+        return true;
+    }
+
+    /* Preprocessing */
+    static bool preprocessing(const char_type * pattern, size_t length, tuple_type & args) {
+        args = std::make_tuple(nullptr);
+        return true;
     }
 
     /* Search */
     static int search(const char_type * text, size_t text_len,
                       const char_type * pattern_, size_t pattern_len,
-                      int * arg1, int * arg2) {
+                      const tuple_type & args) {
         //
         return 0;
     }
@@ -114,9 +126,9 @@ struct AlgorithmBase {
         printf("\n");
     }
 
-    static void display_test(const char * text, size_t text_len,
-                             const char * pattern, size_t pattern_len, int index_of,
-                             int sum, double time_spent) {
+    static void display(const char * text, size_t text_len,
+                        const char * pattern, size_t pattern_len, int index_of,
+                        int sum, double time_spent) {
         display(text, text_len, pattern, pattern_len, index_of);
         printf("sum: %11d, time spent: %0.3f ms\n", sum, time_spent);
         printf("\n");

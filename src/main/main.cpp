@@ -121,7 +121,7 @@ void StringMatch_test()
         sum += index_of;
     }
     sw.stop();
-    pattern.display_test(index_of, sum, sw.getElapsedMillisec());
+    pattern.display(index_of, sum, sw.getElapsedMillisec());
 
     pattern_type pattern1(pattern_text_1);
     //pattern1.prepare(pattern_text_1);
@@ -133,7 +133,7 @@ void StringMatch_test()
         sum += index_of;
     }
     sw.stop();
-    pattern1.display_test(index_of, sum, sw.getElapsedMillisec());
+    pattern1.display(index_of, sum, sw.getElapsedMillisec());
 
     pattern_type pattern2(pattern_text_2);
     //pattern2.prepare(pattern_text_2);
@@ -145,7 +145,7 @@ void StringMatch_test()
         sum += index_of;
     }
     sw.stop();
-    pattern2.display_test(index_of, sum, sw.getElapsedMillisec());
+    pattern2.display(index_of, sum, sw.getElapsedMillisec());
 }
 
 template <typename algorithm_type>

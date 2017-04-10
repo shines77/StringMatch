@@ -14,16 +14,63 @@
 #include <string>
 #include <memory>
 
+#include <tuple>
+#include <type_traits>
+
 #include "StringRef.h"
 
 namespace StringMatch {
 
-template <typename T, typename Arg1 = int, typename Arg2 = int>
+namespace detail {
+
+    //
+    // About std::tuple<T...>
+    //
+    // See: http://www.cnblogs.com/qicosmos/p/3318070.html
+    //
+    template <size_t N>
+    struct Apply {
+        template<typename Func, typename Tuple, typename... Args>
+        static inline auto apply(Func && func, Tuple && tuple, Args &&... args)
+            -> decltype(Apply<N - 1>::apply(
+                ::std::forward<Func>(func), ::std::forward<Tuple>(tuple),
+                ::std::get<N - 1>(::std::forward<Tuple>(tuple)),
+                ::std::forward<Args>(args)...
+                ))
+        {
+            return Apply<N - 1>::apply(::std::forward<Func>(func),
+                                       ::std::forward<Tuple>(tuple),
+                                       ::std::get<N - 1>(::std::forward<Tuple>(tuple)),
+                                       ::std::forward<Args>(args)...);
+        }
+    };
+
+    template <>
+    struct Apply<0> {
+        template<typename Func, typename Tuple, typename... Args>
+        static inline auto apply(Func && func, Tuple && tuple, Args &&... args)
+            -> decltype(::std::forward<Func>(func)(::std::forward<Args>(args)...))
+        {
+            return ::std::forward<Func>(func)(::std::forward<Args>(args)...);
+        }
+    };
+
+    template <typename Func, typename Tuple>
+    inline auto apply(Func && func, Tuple && tuple)
+        -> decltype(Apply< ::std::tuple_size<typename ::std::decay<Tuple>::type>::value >
+            ::apply(::std::forward<Func>(func), ::std::forward<Tuple>(tuple)))
+    {
+        return Apply< ::std::tuple_size<typename ::std::decay<Tuple>::type>::value >
+            ::apply(::std::forward<Func>(func), ::std::forward<Tuple>(tuple));
+    }
+
+} // namespace detail
+
+template <typename T>
 struct BasicAlgorithm {
 
     typedef T                                   algorithm_type;
-    typedef Arg1                                arg1_type;
-    typedef Arg2                                arg2_type;
+    typedef typename algorithm_type::tuple_type tuple_type;
     typedef typename algorithm_type::char_type  char_type;
     typedef std::basic_string<char_type>        string_type;
     typedef BasicStringRef<char_type>           string_ref;
@@ -92,30 +139,50 @@ struct BasicAlgorithm {
         size_t size() const { return pattern_.size(); }
         size_t length() const { return pattern_.length(); }
 
-        arg1_type * arg1() const { return this->algorithm_.arg1(); }
-        arg2_type * arg2() const { return this->algorithm_.arg2(); }
+        tuple_type & get_args() const {
+            return const_cast<tuple_type &>(this->algorithm_.get_args());
+        }
+
+        const tuple_type & get_cargs() const {
+            return this->algorithm_.get_args();
+        }
+
+        void set_args(const tuple_type & args) {
+            this->algorithm_.set_args(args);
+        }
+
+        template <size_t N>
+        inline auto get(const tuple_type & args) const
+            ->decltype(std::tuple_element<N, tuple_type>::type) {
+            return std::get<N>(args);
+        }
+
+        template <size_t N>
+        inline void set(const tuple_type & args, typename std::tuple_element<N, tuple_type>::type && value) const {
+            std::set<N>(args, value);
+        }
 
         bool is_valid() const { return (pattern_.c_str() != nullptr); }
         bool is_alive() const { return (this->is_valid() && this->algorithm_.is_alive()); }
 
-        void prepare(const char_type * pattern, size_t length) {
+        bool prepare(const char_type * pattern, size_t length) {
             return this->preprocessing(pattern, length);
         }
 
-        void prepare(const char_type * pattern) {
+        bool prepare(const char_type * pattern) {
             return this->prepare(pattern, strlen(pattern));
         }
 
         template <size_t N>
-        void prepare(const char_type (&pattern)[N]) {
+        bool prepare(const char_type (&pattern)[N]) {
             return this->prepare(pattern, N);
         }
 
-        void prepare(const string_type & pattern) {
+        bool prepare(const string_type & pattern) {
             return this->prepare(pattern.c_str(), pattern.size());
         }
 
-        void prepare(const string_ref & pattern) {
+        bool prepare(const string_ref & pattern) {
             return this->prepare(pattern.c_str(), pattern.size());
         }
 
@@ -123,8 +190,7 @@ struct BasicAlgorithm {
             matcher_.set_ref(text, length);
             return algorithm_type::search(text, length,
                                           this->c_str(), this->size(),
-                                          this->algorithm_.arg1(),
-                                          this->algorithm_.arg2());
+                                          this->get_args());
         }
 
         int match(const char_type * text) {
@@ -151,8 +217,9 @@ struct BasicAlgorithm {
             this->algorithm_.free();
         }
 
-        void preprocessing(const char_type * pattern, size_t length) {
-            this->algorithm_.preprocessing(pattern, length);
+        bool preprocessing(const char_type * pattern, size_t length) {
+            pattern_.set_ref(pattern, length);
+            return this->algorithm_.preprocessing(pattern, length);
         }
     }; // class Pattern
 
@@ -221,14 +288,14 @@ struct BasicAlgorithm {
         int find(const Pattern & pattern) {
             return algorithm_type::search(text_.c_str(), text_.size(),
                                           pattern.c_str(), pattern.size(),
-                                          pattern.arg1(), pattern.arg2);
+                                          pattern.get_args());
         }
 
         int find(const char_type * text, size_t length, const Pattern & pattern) {
             pattern_.set_ref(pattern.c_str(), pattern.size());
             return this->search(text, length,
                                 pattern.c_str(), pattern.size(),
-                                pattern.arg1(), pattern.arg2);
+                                pattern.get_args());
         }
 
         int find(const char_type * text, const Pattern & pattern) {
@@ -251,18 +318,18 @@ struct BasicAlgorithm {
     private:
         int search(const char_type * text, size_t text_len,
                    const char_type * pattern, size_t pattern_len,
-                   arg1_type * arg1, arg2_type * arg2) {
+                   const tuple_type & tuple) {
             text_.set_ref(text, text_len);
-            return algorithm_type::search(text, text_len, pattern, pattern_len, arg1, arg2);
+            return algorithm_type::search(text, text_len, pattern, pattern_len, tuple);
         }
     }; // class Matcher
 
-}; // struct BasicAlgorithm<T, Args>
+}; // struct BasicAlgorithm<T>
 
-template <typename T, typename Arg1, typename Arg2>
+template <typename T>
 inline
-int StringMatch::BasicAlgorithm<T, Arg1, Arg2>::Pattern::match(
-    const typename StringMatch::BasicAlgorithm<T, Arg1, Arg2>::Matcher & matcher) {
+int BasicAlgorithm<T>::Pattern::match(
+    const typename BasicAlgorithm<T>::Matcher & matcher) {
     return this->match(matcher.c_str(), matcher.size());
 }
 

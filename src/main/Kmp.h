@@ -206,13 +206,13 @@ public:
         }
     }
 
-    void display_test(int index_of, int sum, double time_spent) {
+    void display(int index_of, int sum, double time_spent) {
         if (this->is_alive()) {
-            Algorithm::display_test(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(),
+            Algorithm::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(),
                 index_of, sum, time_spent);
         }
         else {
-            Algorithm::display_test(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of, sum, time_spent);
+            Algorithm::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of, sum, time_spent);
         }
     }
 
@@ -329,9 +329,9 @@ public:
         Algorithm::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(), index_of);
     }
 
-    void display_test(int index_of, int sum, double time_spent) {
-        Algorithm::display_test(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(),
-                                index_of, sum, time_spent);
+    void display(int index_of, int sum, double time_spent) {
+        Algorithm::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(),
+                           index_of, sum, time_spent);
     }
 
 private:
