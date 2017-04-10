@@ -139,6 +139,10 @@ struct BasicAlgorithm {
         size_t size() const { return pattern_.size(); }
         size_t length() const { return pattern_.length(); }
 
+        bool is_valid() const { return (pattern_.c_str() != nullptr); }
+        bool is_alive() const { return (this->is_valid() && this->algorithm_.is_alive()); }
+
+        // args
         tuple_type & get_args() const {
             return const_cast<tuple_type &>(this->algorithm_.get_args());
         }
@@ -162,9 +166,7 @@ struct BasicAlgorithm {
             std::set<N>(args, value);
         }
 
-        bool is_valid() const { return (pattern_.c_str() != nullptr); }
-        bool is_alive() const { return (this->is_valid() && this->algorithm_.is_alive()); }
-
+        // prepare()
         bool prepare(const char_type * pattern, size_t length) {
             return this->preprocessing(pattern, length);
         }
@@ -186,6 +188,7 @@ struct BasicAlgorithm {
             return this->prepare(pattern.c_str(), pattern.size());
         }
 
+        // match(text, length);
         int match(const char_type * text, size_t length) {
             matcher_.set_ref(text, length);
             return algorithm_type::search(text, length,
@@ -210,7 +213,28 @@ struct BasicAlgorithm {
             return this->match(text.c_str(), text.size());
         }
 
+        // match(matcher);
         int match(const Matcher & matcher);
+
+        // display()
+        void display(int index_of) {
+            if (this->is_alive()) {
+                Basic::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(), index_of);
+            }
+            else {
+                Basic::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of);
+            }
+        }
+
+        void display(int index_of, int sum, double time_spent) {
+            if (this->is_alive()) {
+                Basic::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(),
+                    index_of, sum, time_spent);
+            }
+            else {
+                Basic::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of, sum, time_spent);
+            }
+        }
 
     private:
         void free() {
@@ -219,7 +243,10 @@ struct BasicAlgorithm {
 
         bool preprocessing(const char_type * pattern, size_t length) {
             pattern_.set_ref(pattern, length);
-            return this->algorithm_.preprocessing(pattern, length);
+            bool success = this->algorithm_.preprocessing(pattern, length);
+            //this->algorithm_.set_args(this->algorithm_.get_args());
+            this->algorithm_.update_args();
+            return success;
         }
     }; // class Pattern
 
@@ -284,13 +311,14 @@ struct BasicAlgorithm {
             text_.set_ref(text);
         }
 
-        // find()
+        // find(pattern);
         int find(const Pattern & pattern) {
             return algorithm_type::search(text_.c_str(), text_.size(),
                                           pattern.c_str(), pattern.size(),
                                           pattern.get_args());
         }
 
+        // find(text, length, pattern);
         int find(const char_type * text, size_t length, const Pattern & pattern) {
             pattern_.set_ref(pattern.c_str(), pattern.size());
             return this->search(text, length,
@@ -313,6 +341,16 @@ struct BasicAlgorithm {
 
         int find(const string_ref & text, const Pattern & pattern) {
             return this->find(text.c_str(), text.size(), pattern);
+        }
+
+        // display()
+        void display(int index_of) {
+            Basic::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(), index_of);
+        }
+
+        void display(int index_of, int sum, double time_spent) {
+            Basic::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(),
+                           index_of, sum, time_spent);
         }
 
     private:

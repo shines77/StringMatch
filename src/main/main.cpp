@@ -1,4 +1,6 @@
 
+#include <vld.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdio>
@@ -89,7 +91,7 @@ void StringMatch_examples()
     }
 
     {
-        AnsiString::ShiftAnd::Pattern p("example");
+        AnsiString::BoyerMoore::Pattern p("example");
 
         int pos = p.match("Here is a sample example.");
         printf("pos = %d\n\n", pos);

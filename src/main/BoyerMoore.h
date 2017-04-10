@@ -18,13 +18,56 @@
 #include "StringRef.h"
 
 namespace StringMatch {
-namespace AnsiString {
 
-struct BoyerMoore {
+template <typename CharT>
+class BoyerMooreImpl {
+public:
+    typedef CharT                       char_type;
+    typedef std::tuple<int *, int *>    tuple_type;
+    typedef BoyerMooreImpl<CharT>       this_type;
 
-class Matcher;
+private:
+    std::unique_ptr<int[]> bmGs_;
+    std::unique_ptr<int[]> bmBc_;
+    tuple_type args_;
 
-class Algorithm : public StringMatch::AlgorithmBase {
+public:
+    BoyerMooreImpl() : bmGs_(), bmBc_(), args_(nullptr, nullptr) {}
+    ~BoyerMooreImpl() {}
+
+    const tuple_type & get_args() const { return args_; }
+    void set_args(const tuple_type & args) {
+        if ((void *)&args_ != (void *)&args) {
+            args_ = args;
+        }
+        update_args();
+    }
+
+    void update_args() {
+        bmGs_.reset(std::get<0>(args_));
+        bmBc_.reset(std::get<1>(args_));
+    }
+
+    int * bmGs() const { return this->bmGs_.get(); }
+    void set_bmGs(int * bmGs) {
+        this->bmGs_.reset(bmGs);
+    }
+
+    int * bmBc() const { return this->bmBc_.get(); }
+    void set_bmBc(int * bmBc) {
+        this->bmBc_.reset(bmBc);
+    }
+
+    bool is_alive() const {
+        return (this->bmGs() != nullptr && this->bmBc() != nullptr);
+    }
+
+    void free() {
+        bmGs_.reset();
+        bmBc_.reset();
+    }
+
+private:
 private:
     /* Preprocessing bad characters. */
     static void preBmBc(const char * pattern, size_t length,
@@ -41,30 +84,7 @@ private:
         }
     }
 
-    static void suffixes_old(const char * pattern, size_t length, int * suffix) {
-        int i, f, g;
-        int len = (int)length;
-
-        suffix[len - 1] = len;
-        g = len - 1;
-
-        for (i = len - 2; i >= 0; --i) {
-            if (i > g && suffix[i + len - 1 - f] < i - g) {
-                suffix[i] = suffix[i + len - 1 - f];
-            }
-            else {
-                if (i < g) {
-                    g = i;
-                }
-                f = i;
-                while ((g >= 0) && (pattern[g] == pattern[g + len - 1 - f])) {
-                    --g;
-                }
-                suffix[i] = f - g;
-            }
-        }
-    }
-
+    /* Preprocessing suffixes. */
     static void suffixes(const char * pattern, size_t length, int * suffix) {
         assert(pattern != nullptr);
         assert(suffix != nullptr);
@@ -97,7 +117,7 @@ private:
         }
     }
 
-    /* Preprocessing good suffixs. */
+    /* Preprocessing good suffixes. */
     static bool preBmGs(const char * pattern, size_t length,
                         int * bmGs, int gsLen) {
         int i, j;
@@ -107,11 +127,11 @@ private:
             return false;
         }
 
-        int * suffix = new int[len];
-        if (suffix == nullptr) {
+        std::unique_ptr<int[]> suffix(new int[len]);
+        if (suffix.get() == nullptr) {
             return false;
         }
-        Algorithm::suffixes(pattern, length, suffix);
+        this_type::suffixes(pattern, length, suffix.get());
 
         assert(pattern != nullptr);
         assert(bmGs != nullptr);
@@ -133,31 +153,52 @@ private:
         for (i = 0; i <= len - 2; ++i) {
             bmGs[(len - 1) - suffix[i]] = (len - 1) - i;
         }
-
-        if (suffix != nullptr) {
-            delete[] suffix;
-        }
         return true;
     }
 
 public:
     /* Preprocessing */
+    bool preprocessing(const char_type * pattern, size_t length) {
+        int * bmGs = nullptr;
+        int * bmBc = nullptr;
+        bool success = this_type::preprocessing(pattern, length, bmGs, bmBc);
+        args_ = std::make_tuple(bmGs, bmBc);
+        return success;
+    }
+
+    /* Preprocessing */
     static bool preprocessing(const char * pattern, size_t length,
-                              int * bmBc, int bcLen,
-                              int * bmGs, int gsLen) {
+                              int * &out_bmGs, int * &out_bmBc) {
+        bool success = false;
         assert(pattern != nullptr);
 
-        /* Preprocessing bad characters. */
-        Algorithm::preBmBc(pattern, length, bmBc, bcLen);
+        int gsLen = (int)length + 1;
+        int * bmGs = new int[gsLen];
+        if (bmGs != nullptr) {
+            /* Preprocessing good suffixes. */
+            success = this_type::preBmGs(pattern, length, bmGs, gsLen);
+        }
+        out_bmGs = bmGs;
 
-        /* Preprocessing good suffixs. */
-        return Algorithm::preBmGs(pattern, length, bmGs, gsLen);
+        const int bcLen = 256;
+        int * bmBc = new int[bcLen];
+        if (bmBc != nullptr) {
+            /* Preprocessing bad characters. */
+            this_type::preBmBc(pattern, length, bmBc, bcLen);
+            success &= true;
+        }
+        out_bmBc = bmBc;
+
+        return (success && (bmGs != nullptr) && (bmBc != nullptr));
     }
 
     /* Search */
-    static int search(const char * text, size_t text_len,
-                      const char * pattern_, size_t pattern_len,
-                      int * bmBc, int * bmGs) {
+    static int search(const char_type * text, size_t text_len,
+                      const char_type * pattern_, size_t pattern_len,
+                      const tuple_type & args) {
+        int * bmGs = std::get<0>(args);
+        int * bmBc = std::get<1>(args);
+
         assert(text != nullptr);
         assert(pattern_ != nullptr);
         assert(bmBc != nullptr);
@@ -165,10 +206,10 @@ public:
 
         if (text_len < pattern_len) {
             // Not found
-            return -1;
+            return Status::NotFound;
         }
 
-        if ((size_t)text | (size_t)pattern_ | (size_t)bmBc | (size_t)bmGs) {
+        if ((size_t)text | (size_t)pattern_ | (size_t)bmGs | (size_t)bmBc) {
             const char * pattern_end = pattern_;
             const char * target_end = text + (text_len - pattern_len);
             const int pattern_last = (int)pattern_len - 1;
@@ -200,262 +241,46 @@ public:
             } while (target_idx <= (int)(text_len - pattern_len));
 
             // Not found
-            return -1;
+            return Status::NotFound;
         }
         // Invalid parameters
-        return -2;
+        return Status::InvalidParameter;
+    }
+
+private:
+    static void suffixes_old(const char * pattern, size_t length, int * suffix) {
+        int i, f, g;
+        int len = (int)length;
+
+        suffix[len - 1] = len;
+        g = len - 1;
+
+        for (i = len - 2; i >= 0; --i) {
+            if (i > g && suffix[i + len - 1 - f] < i - g) {
+                suffix[i] = suffix[i + len - 1 - f];
+            }
+            else {
+                if (i < g) {
+                    g = i;
+                }
+                f = i;
+                while ((g >= 0) && (pattern[g] == pattern[g + len - 1 - f])) {
+                    --g;
+                }
+                suffix[i] = f - g;
+            }
+        }
     }
 };
 
-class Pattern {
-private:
-    StringRef pattern_;
-    int * bmGs_;
-    StringRef matcher_;
-    int bmBc_[256];
-
-public:
-    Pattern() : pattern_(), bmGs_(nullptr), matcher_() {
-        // Do nothing!
-    }
-    Pattern(const char * pattern)
-        : pattern_(pattern), bmGs_(nullptr), matcher_() {
-        prepare(pattern);
-    }
-    Pattern(const char * pattern, size_t length)
-        : pattern_(pattern, length), bmGs_(nullptr), matcher_() {
-        prepare(pattern, length);
-    }
-    template <size_t N>
-    Pattern(const char (&pattern)[N])
-        : pattern_(pattern, N), bmGs_(nullptr), matcher_() {
-        return prepare(pattern, N);
-    }
-    Pattern(const std::string & pattern)
-        : pattern_(pattern), bmGs_(nullptr), matcher_() {
-        prepare(pattern);
-    }
-    Pattern(const StringRef & pattern)
-        : pattern_(pattern), bmGs_(nullptr), matcher_() {
-        prepare(pattern);
-    }
-    ~Pattern() {
-        this->free();
-    }
-
-    const char * c_str() const { return pattern_.c_str(); }
-    char * data() { return pattern_.data(); }
-    size_t size() const { return pattern_.size(); }
-    size_t length() const { return pattern_.length(); }
-
-    int * bmBc() const { return (int *)&bmBc_[0]; }
-    int * bmGs() const { return bmGs_; }
-
-    bool is_valid() const { return (pattern_.c_str() != nullptr); }
-    bool is_alive() const { return ((pattern_.c_str() != nullptr) && (bmGs_ != nullptr)); }
-
-    void prepare(const char * pattern, size_t length) {
-        return this->preprocessing(pattern, length);
-    }
-
-    void prepare(const char * pattern) {
-        return this->prepare(pattern, strlen(pattern));
-    }
-
-    template <size_t N>
-    void prepare(const char (&pattern)[N]) {
-        return prepare(pattern, N);
-    }
-
-    void prepare(const std::string & pattern) {
-        return prepare(pattern.c_str(), pattern.size());
-    }
-
-    void prepare(const StringRef & pattern) {
-        return prepare(pattern.c_str(), pattern.size());
-    }
-
-    int match(const char * text, size_t length) {
-        matcher_.set_ref(text, length);
-        return Algorithm::search(text, length,
-                                 this->c_str(), this->size(),
-                                 this->bmBc(),
-                                 this->bmGs());
-    }
-
-    int match(const char * text) {
-        return this->match(text, strlen(text));
-    }
-
-    template <size_t N>
-    int match(const char(&text)[N]) {
-        return this->match(text, N);
-    }
-
-    int match(const std::string & text) {
-        return this->match(text.c_str(), text.size());
-    }
-
-    int match(const StringRef & text) {
-        return this->match(text.c_str(), text.size());
-    }
-
-    int match(const Matcher & matcher);
-
-    void display(int index_of) {
-        if (this->is_alive()) {
-            Algorithm::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(), index_of);
-        }
-        else {
-            Algorithm::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of);
-        }
-    }
-
-    void display(int index_of, int sum, double time_spent) {
-        if (this->is_alive()) {
-            Algorithm::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(),
-                index_of, sum, time_spent);
-        }
-        else {
-            Algorithm::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of, sum, time_spent);
-        }
-    }
-
-private:
-    void free() {
-        if (bmGs_ != nullptr) {
-            delete[] bmGs_;
-            bmGs_ = nullptr;
-        }
-    }
-
-    void preprocessing(const char * pattern, size_t length) {
-        pattern_.set_ref(pattern, length);
-
-        int * bmGs = new int[(int)length + 1];
-        if (bmGs != nullptr)  {
-            bool success = Algorithm::preprocessing(pattern, length, bmBc_, 256L, bmGs, (int)length);
-            assert(success);
-        }
-        bmGs_ = bmGs;
-    }
-};
-
-class Matcher {
-private:
-    StringRef text_;
-    StringRef pattern_;
-
-public:
-    Matcher() : text_(), pattern_() {
-    }
-    Matcher(const char * text)
-        : text_(text), pattern_() {
-    }
-    Matcher(const char * text, size_t length)
-        : text_(text, length), pattern_() {
-    }
-    template <size_t N>
-    Matcher(const char (&text)[N])
-        : text_(text, N), pattern_() {
-    }
-    Matcher(const std::string & text)
-        : text_(text), pattern_() {
-    }
-    Matcher(const StringRef & text)
-        : text_(text), pattern_() {
-    }
-    ~Matcher() {
-    }
-
-    const char * c_str() const { return text_.c_str(); }
-    char * data() const { return text_.data(); }
-
-    size_t size() const { return text_.size(); }
-    size_t length() const { return this->size(); }
-
-    const char * text() const { return text_.c_str(); }
-    size_t text_length() const { return text_.size(); }
-
-    const char * pattern() const { return pattern_.c_str(); }
-    size_t pattern_length() const { return pattern_.size(); }
-
-    void set_text(const char * text, size_t length) {
-        text_.set_ref(text, length);
-    }
-
-    void set_text(const char * text) {
-        text_.set_ref(text);
-    }
-
-    template <size_t N>
-    void set_text(const char (&text)[N]) {
-        text_.set_ref(text, N);
-    }
-
-    void set_text(const std::string & text) {
-        text_.set_ref(text);
-    }
-
-    void set_text(const StringRef & text) {
-        text_.set_ref(text);
-    }
-
-    int find(const char * text, size_t length, const Pattern & pattern) {
-        pattern_.set_ref(pattern.c_str(), pattern.size());
-        return this->search(text, length,
-                            pattern.c_str(), pattern.size(),
-                            pattern.bmBc(), pattern.bmGs());
-    }
-
-    int find(const char * text, const Pattern & pattern) {
-        return this->find(text, strlen(text), pattern);
-    }
-
-    template <size_t N>
-    int find(const char (&text)[N], const Pattern & pattern) {
-        return this->find(text, N, pattern);
-    }
-
-    int find(const std::string & text, const Pattern & pattern) {
-        return this->find(text.c_str(), text.size(), pattern);
-    }
-
-    int find(const StringRef & text, const Pattern & pattern) {
-        return this->find(text.c_str(), text.size(), pattern);
-    }
-
-    int find(const Pattern & pattern) {
-        return Algorithm::search(text_.c_str(), text_.size(),
-                                 pattern.c_str(), pattern.size(),
-                                 pattern.bmBc(), pattern.bmGs());
-    }
-
-    void display(int index_of) {
-        Algorithm::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(), index_of);
-    }
-
-    void display(int index_of, int sum, double time_spent) {
-        Algorithm::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(),
-                           index_of, sum, time_spent);
-    }
-
-private:
-    int search(const char * text, size_t text_len,
-               const char * pattern, size_t pattern_len,
-               int * bmBc, int * bmGs) {
-        text_.set_ref(text, text_len);
-        return Algorithm::search(text, text_len, pattern, pattern_len, bmBc, bmGs);
-    }
-};
-
-}; // struct BoyerMoore
-
-inline int BoyerMoore::Pattern::match(const BoyerMoore::Matcher & matcher) {
-    return this->match(matcher.c_str(), matcher.size());
-}
-
+namespace AnsiString {
+    typedef BasicAlgorithm< BoyerMooreImpl<char> >    BoyerMoore;
 } // namespace AnsiString
+
+namespace UnicodeString {
+    typedef BasicAlgorithm< BoyerMooreImpl<wchar_t> > BoyerMoore;
+} // namespace UnicodeString
+
 } // namespace StringMatch
 
 #endif // STRING_MATCH_BOYERMOORE_H

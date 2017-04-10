@@ -18,18 +18,60 @@
 #include "StringRef.h"
 
 namespace StringMatch {
-namespace AnsiString {
 
-struct Kmp {
+template <typename CharT>
+class KmpImpl {
+public:
+    typedef CharT               char_type;
+    typedef std::tuple<int *>   tuple_type;
+    typedef KmpImpl<CharT>      this_type;
 
-class Matcher;
+private:
+    std::unique_ptr<int[]> kmp_next_;
+    tuple_type args_;
 
-struct Algorithm : public StringMatch::AlgorithmBase {
+public:
+    KmpImpl() : kmp_next_(), args_(nullptr) {}
+    ~KmpImpl() {}
+
+    const tuple_type & get_args() const { return args_; }
+    void set_args(const tuple_type & args) {
+        if ((void *)&args_ != (void *)&args) {
+            args_ = args;
+        }
+        update_args();
+    }
+
+    void update_args() {
+        kmp_next_.reset(std::get<0>(args_));
+    }
+
+    int * kmp_next() const { return this->kmp_next_.get(); }
+    void set_kmp_next(int * kmp_next) {
+        this->kmp_next_.reset(kmp_next);
+    }
+
+    bool is_alive() const {
+        return (this->kmp_next() != nullptr);
+    }
+
+    void free() {
+        kmp_next_.reset();
+    }
+
     /* Preprocessing */
-    static int * preprocessing(const char * pattern, size_t length) {
+    bool preprocessing(const char_type * pattern, size_t length) {
+        int * kmp_next = nullptr;
+        bool success = this_type::preprocessing(pattern, length, kmp_next);
+        args_ = std::make_tuple(kmp_next);
+        return success;
+    }
+
+    /* Preprocessing */
+    static bool preprocessing(const char * pattern, size_t length, int * &out_kmp_next) {
         assert(pattern != nullptr);
 
-        int * kmp_next = new int[length + 1];
+        int * kmp_next = new int[(int)length + 1];
         if (kmp_next != nullptr) {
             kmp_next[0] = -1;
             kmp_next[1] = 0;
@@ -42,20 +84,23 @@ struct Algorithm : public StringMatch::AlgorithmBase {
                 }
             }
         }
-        return kmp_next;
+        out_kmp_next = kmp_next;
+        return (kmp_next != nullptr);
     }
 
     /* Search */
-    static int search(const char * text, size_t text_len,
-                      const char * pattern_, size_t pattern_len,
-                      int * kmp_next) {
+    static int search(const char_type * text, size_t text_len,
+                      const char_type * pattern_, size_t pattern_len,
+                      const tuple_type & args) {
+        int * kmp_next = std::get<0>(args);
+
         assert(text != nullptr);
         assert(pattern_ != nullptr);
         assert(kmp_next != nullptr);
 
         if (text_len < pattern_len) {
             // Not found
-            return -1;
+            return Status::NotFound;
         }
 
         register const char * target = text;
@@ -71,7 +116,7 @@ struct Algorithm : public StringMatch::AlgorithmBase {
                         target++;
                         if (target > target_end) {
                             // Not found
-                            return -1;
+                            return Status::NotFound;
                         }
                     }
                     else {
@@ -83,7 +128,7 @@ struct Algorithm : public StringMatch::AlgorithmBase {
                         target = target + target_offset;
                         if (target > target_end) {
                             // Not found
-                            return -1;
+                            return Status::NotFound;
                         }
                     }
                 }
@@ -102,254 +147,18 @@ struct Algorithm : public StringMatch::AlgorithmBase {
             } while (1);
         }
         // Invalid parameters
-        return -2;
+        return Status::InvalidParameter;
     }
-}; // class Algorithm
+};
 
-class Pattern {
-private:
-    StringRef pattern_;
-    int * kmp_next_;
-    StringRef matcher_;
-
-public:
-    Pattern() : pattern_(), kmp_next_(nullptr), matcher_() {
-        // Do nothing!
-    }
-    Pattern(const char * pattern)
-        : pattern_(pattern), kmp_next_(nullptr), matcher_() {
-        prepare(pattern);
-    }
-    Pattern(const char * pattern, size_t length)
-        : pattern_(pattern, length), kmp_next_(nullptr), matcher_() {
-        prepare(pattern, length);
-    }
-    template <size_t N>
-    Pattern(const char (&pattern)[N])
-        : pattern_(pattern, N), kmp_next_(nullptr), matcher_() {
-        return prepare(pattern, N);
-    }
-    Pattern(const std::string & pattern)
-        : pattern_(pattern), kmp_next_(nullptr), matcher_() {
-        prepare(pattern);
-    }
-    Pattern(const StringRef & pattern)
-        : pattern_(pattern), kmp_next_(nullptr), matcher_() {
-        prepare(pattern);
-    }
-    ~Pattern() {
-        this->free();
-    }
-
-    const char * c_str() const { return pattern_.c_str(); }
-    char * data() { return pattern_.data(); }
-    size_t size() const { return pattern_.size(); }
-    size_t length() const { return pattern_.length(); }
-    int * kmp_next() const { return kmp_next_; }
-
-    bool is_valid() const { return (pattern_.c_str() != nullptr); }
-    bool is_alive() const { return ((pattern_.c_str() != nullptr) && (kmp_next_ != nullptr)); }
-
-    void prepare(const char * pattern, size_t length) {
-        return this->preprocessing(pattern, length);
-    }
-
-    void prepare(const char * pattern) {
-        return this->prepare(pattern, strlen(pattern));
-    }
-
-    template <size_t N>
-    void prepare(const char (&pattern)[N]) {
-        return prepare(pattern, N);
-    }
-
-    void prepare(const std::string & pattern) {
-        return prepare(pattern.c_str(), pattern.size());
-    }
-
-    void prepare(const StringRef & pattern) {
-        return prepare(pattern.c_str(), pattern.size());
-    }
-
-    int match(const char * text, size_t length) {
-        matcher_.set_ref(text, length);
-        return Algorithm::search(text, length,
-                                 this->c_str(), this->size(),
-                                 this->kmp_next());
-    }
-
-    int match(const char * text) {
-        return this->match(text, strlen(text));
-    }
-
-    template <size_t N>
-    int match(const char(&text)[N]) {
-        return this->match(text, N);
-    }
-
-    int match(const std::string & text) {
-        return this->match(text.c_str(), text.size());
-    }
-
-    int match(const StringRef & text) {
-        return this->match(text.c_str(), text.size());
-    }
-
-    int match(const Matcher & matcher);
-
-    void display(int index_of) {
-        if (this->is_alive()) {
-            Algorithm::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(), index_of);
-        }
-        else {
-            Algorithm::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of);
-        }
-    }
-
-    void display(int index_of, int sum, double time_spent) {
-        if (this->is_alive()) {
-            Algorithm::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(),
-                index_of, sum, time_spent);
-        }
-        else {
-            Algorithm::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of, sum, time_spent);
-        }
-    }
-
-private:
-    void free() {
-        if (kmp_next_ != nullptr) {
-            delete[] kmp_next_;
-            kmp_next_ = nullptr;
-        }
-    }
-
-    void preprocessing(const char * pattern, size_t length) {
-        pattern_.set_ref(pattern, length);
-
-        int * kmp_next = Algorithm::preprocessing(pattern, length);
-        if (kmp_next_ != nullptr) {
-            delete[] kmp_next_;
-        }
-        kmp_next_ = kmp_next;
-    }
-}; // class Pattern
-
-class Matcher {
-private:
-    StringRef text_;
-    StringRef pattern_;
-
-public:
-    Matcher() : text_(), pattern_() {
-    }
-    Matcher(const char * text)
-        : text_(text), pattern_() {
-    }
-    Matcher(const char * text, size_t length)
-        : text_(text, length), pattern_() {
-    }
-    template <size_t N>
-    Matcher(const char (&text)[N])
-        : text_(text, N), pattern_() {
-    }
-    Matcher(const std::string & text)
-        : text_(text), pattern_() {
-    }
-    Matcher(const StringRef & text)
-        : text_(text), pattern_() {
-    }
-    ~Matcher() {
-    }
-
-    const char * c_str() const { return text_.c_str(); }
-    char * data() const { return text_.data(); }
-
-    size_t size() const { return text_.size(); }
-    size_t length() const { return this->size(); }
-
-    const char * text() const { return text_.c_str(); }
-    size_t text_length() const { return text_.size(); }
-
-    const char * pattern() const { return pattern_.c_str(); }
-    size_t pattern_length() const { return pattern_.size(); }
-
-    void set_text(const char * text, size_t length) {
-        text_.set_ref(text, length);
-    }
-
-    void set_text(const char * text) {
-        text_.set_ref(text);
-    }
-
-    template <size_t N>
-    void set_text(const char (&text)[N]) {
-        text_.set_ref(text, N);
-    }
-
-    void set_text(const std::string & text) {
-        text_.set_ref(text);
-    }
-
-    void set_text(const StringRef & text) {
-        text_.set_ref(text);
-    }
-
-    int find(const Pattern & pattern) {
-        return Algorithm::search(text_.c_str(), text_.size(),
-                                 pattern.c_str(), pattern.size(),
-                                 pattern.kmp_next());
-    }
-
-    int find(const char * text, size_t length, const Pattern & pattern) {
-        pattern_.set_ref(pattern.c_str(), pattern.size());
-        return this->search(text, length,
-                            pattern.c_str(), pattern.size(),
-                            pattern.kmp_next());
-    }
-
-    int find(const char * text, const Pattern & pattern) {
-        return this->find(text, strlen(text), pattern);
-    }
-
-    template <size_t N>
-    int find(const char (&text)[N], const Pattern & pattern) {
-        return this->find(text, N, pattern);
-    }
-
-    int find(const std::string & text, const Pattern & pattern) {
-        return this->find(text.c_str(), text.size(), pattern);
-    }
-
-    int find(const StringRef & text, const Pattern & pattern) {
-        return this->find(text.c_str(), text.size(), pattern);
-    }
-
-    void display(int index_of) {
-        Algorithm::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(), index_of);
-    }
-
-    void display(int index_of, int sum, double time_spent) {
-        Algorithm::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(),
-                           index_of, sum, time_spent);
-    }
-
-private:
-    int search(const char * text, size_t text_len,
-               const char * pattern, size_t pattern_len,
-               int * kmp_next) {
-        text_.set_ref(text, text_len);
-        return Algorithm::search(text, text_len, pattern, pattern_len, kmp_next);
-    }
-}; // class Matcher
-
-}; // struct Kmp
-
-inline int Kmp::Pattern::match(const Kmp::Matcher & matcher) {
-    return this->match(matcher.c_str(), matcher.size());
-}
-
+namespace AnsiString {
+    typedef BasicAlgorithm< KmpImpl<char> >    Kmp;
 } // namespace AnsiString
+
+namespace UnicodeString {
+    typedef BasicAlgorithm< KmpImpl<wchar_t> > Kmp;
+} // namespace UnicodeString
+
 } // namespace StringMatch
 
 #endif // STRING_MATCH_KMP_H
