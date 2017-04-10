@@ -38,5 +38,8 @@
     <ClInclude Include="..\..\..\src\main\StringMatch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\BasicAlgorithm.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

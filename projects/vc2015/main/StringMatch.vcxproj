@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\support\StopWatch.h" />
+    <ClInclude Include="..\..\..\src\main\BasicAlgorithm.h" />
     <ClInclude Include="..\..\..\src\main\BoyerMoore.h" />
     <ClInclude Include="..\..\..\src\main\Kmp.h" />
     <ClInclude Include="..\..\..\src\main\StringMatch.h" />
