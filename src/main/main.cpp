@@ -1,6 +1,6 @@
 
 #ifdef _DEBUG
-#include <vld.h>
+//#include <vld.h>
 #endif
 
 #include <stdio.h>
