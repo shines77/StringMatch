@@ -13,9 +13,9 @@
 
 #ifndef __COMPILER_BARRIER
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER) || defined(__ICL)
-#define __COMPILER_BARRIER()		_ReadWriteBarrier()
+#define __COMPILER_BARRIER()        _ReadWriteBarrier()
 #else
-#define __COMPILER_BARRIER()		asm volatile ("" : : : "memory")
+#define __COMPILER_BARRIER()        asm volatile ("" : : : "memory")
 #endif
 #endif
 
@@ -92,14 +92,14 @@ public:
     };
     ~StopWatchBase() {};
 
-	void reset() {
+    void reset() {
         __COMPILER_BARRIER();
         elapsed_time_ = kTimeZero;
         total_elapsed_time_ = kTimeZero;
         start_time_ = implement_type::get_timepoint_now();
         running_ = false;
         __COMPILER_BARRIER();
-	}
+    }
 
     void restart() {
         __COMPILER_BARRIER();
@@ -121,7 +121,7 @@ public:
     }
 
     void stop() {
-		__COMPILER_BARRIER();
+        __COMPILER_BARRIER();
         if (running_) {
             stop_time_ = implement_type::get_timepoint_now();
             running_ = false;
@@ -146,7 +146,7 @@ public:
         this->start();
     }
 
-	void pause() {
+    void pause() {
         __COMPILER_BARRIER();
         if (running_) {
             stop_time_ = implement_type::get_timepoint_now();
@@ -156,7 +156,7 @@ public:
             total_elapsed_time_ += elapsed_time_;
         }
         __COMPILER_BARRIER();
-	}
+    }
 
     void again() {
         __COMPILER_BARRIER();
