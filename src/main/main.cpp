@@ -186,7 +186,7 @@ void StringMatch_benchmark()
     }
     sw.stop();
 
-    printf("sum: %12d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
+    printf("sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
 }
 
 int main(int argc, char * argv[])

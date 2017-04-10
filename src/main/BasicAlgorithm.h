@@ -94,7 +94,7 @@ struct BasicAlgorithm {
                             const char * pattern, size_t pattern_len, int index_of,
                             int sum, double time_spent) {
             display(text, text_len, pattern, pattern_len, index_of);
-            printf("sum: %11d, time spent: %0.3f ms\n", sum, time_spent);
+            printf("sum: %-11d, time spent: %0.3f ms\n", sum, time_spent);
             printf("\n");
         }
     };
