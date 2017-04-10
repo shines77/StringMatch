@@ -110,7 +110,7 @@ void StringMatch_test()
     char pattern_text_2[] = "a sample";
 
     printf("-----------------------------------------------------------\n");
-    printf("  UnitTest: %s)\n", typeid(algorithm_type).name());
+    printf("  UnitTest: %s\n", typeid(algorithm_type).name());
     printf("-----------------------------------------------------------\n\n");
 
     test::StopWatch sw;
@@ -163,7 +163,7 @@ void StringMatch_benchmark()
     static const size_t iters = Iterations / (sm_countof(szSearchText) * sm_countof(szPatterns));
 
     printf("-----------------------------------------------------------\n");
-    printf("  Benchmark: %s)\n", typeid(algorithm_type).name());
+    printf("  Benchmark: %s\n", typeid(algorithm_type).name());
     printf("-----------------------------------------------------------\n\n");
 
     pattern_type pattern[sm_countof(szPatterns)];
@@ -191,6 +191,39 @@ void StringMatch_benchmark()
     printf("sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
 }
 
+void StringMatch_strstr_benchmark()
+{
+    test::StopWatch sw;
+    int sum;
+    static const size_t iters = Iterations / (sm_countof(szSearchText) * sm_countof(szPatterns));
+
+    printf("-----------------------------------------------------------\n");
+    printf("  Benchmark: %s\n", "strstr()");
+    printf("-----------------------------------------------------------\n\n");
+
+    StringRef search_text[sm_countof(szSearchText)];
+    for (int i = 0; i < sm_countof(szSearchText); ++i) {
+        search_text[i].set_ref(szSearchText[i], strlen(szSearchText[i]));
+    }
+
+    sum = 0;
+    sw.start();
+    for (size_t loop = 0; loop < iters; ++loop) {
+        for (int i = 0; i < sm_countof(szSearchText); ++i) {
+            for (int j = 0; j < sm_countof(szPatterns); ++j) {
+                const char * substr = strstr(search_text[i].c_str(), szPatterns[j]);
+                if (substr != nullptr) {
+                    int index_of = (int)(substr - search_text[i].c_str());
+                    sum += index_of;
+                }
+            }
+        }
+    }
+    sw.stop();
+
+    printf("sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
+}
+
 int main(int argc, char * argv[])
 {
     StringMatch_examples();
@@ -198,6 +231,7 @@ int main(int argc, char * argv[])
     StringMatch_test<AnsiString::Kmp>();
     StringMatch_test<AnsiString::BoyerMoore>();
 
+    StringMatch_strstr_benchmark();
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
 
