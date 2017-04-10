@@ -22,9 +22,9 @@ namespace StringMatch {
 template <typename CharT>
 class BoyerMooreImpl {
 public:
+    typedef BoyerMooreImpl<CharT>       this_type;
     typedef CharT                       char_type;
     typedef std::tuple<int *, int *>    tuple_type;
-    typedef BoyerMooreImpl<CharT>       this_type;
 
 private:
     std::unique_ptr<int[]> bmGs_;
@@ -67,7 +67,6 @@ public:
         bmBc_.reset();
     }
 
-private:
 private:
     /* Preprocessing bad characters. */
     static void preBmBc(const char * pattern, size_t length,
@@ -159,8 +158,7 @@ private:
 public:
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_t length) {
-        int * bmGs = nullptr;
-        int * bmBc = nullptr;
+        int * bmGs = nullptr, * bmBc = nullptr;
         bool success = this_type::preprocessing(pattern, length, bmGs, bmBc);
         args_ = std::make_tuple(bmGs, bmBc);
         return success;
@@ -172,7 +170,7 @@ public:
         bool success = false;
         assert(pattern != nullptr);
 
-        int gsLen = (int)length + 1;
+        const int gsLen = (int)length + 1;
         int * bmGs = new int[gsLen];
         if (bmGs != nullptr) {
             /* Preprocessing good suffixes. */
@@ -180,16 +178,15 @@ public:
         }
         out_bmGs = bmGs;
 
-        const int bcLen = 256;
+        static const int bcLen = 256;
         int * bmBc = new int[bcLen];
         if (bmBc != nullptr) {
             /* Preprocessing bad characters. */
             this_type::preBmBc(pattern, length, bmBc, bcLen);
-            success &= true;
         }
         out_bmBc = bmBc;
 
-        return (success && (bmGs != nullptr) && (bmBc != nullptr));
+        return (success && (bmBc != nullptr) && (bmGs != nullptr));
     }
 
     /* Search */
@@ -248,6 +245,7 @@ public:
     }
 
 private:
+    // Reserve codes
     static void suffixes_old(const char * pattern, size_t length, int * suffix) {
         int i, f, g;
         int len = (int)length;

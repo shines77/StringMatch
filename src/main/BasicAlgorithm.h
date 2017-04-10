@@ -244,7 +244,6 @@ struct BasicAlgorithm {
         bool preprocessing(const char_type * pattern, size_t length) {
             pattern_.set_ref(pattern, length);
             bool success = this->algorithm_.preprocessing(pattern, length);
-            //this->algorithm_.set_args(this->algorithm_.get_args());
             this->algorithm_.update_args();
             return success;
         }

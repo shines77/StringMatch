@@ -90,6 +90,7 @@ void StringMatch_examples()
         int pos2 = m.find(p2);
     }
 
+    // BoyerMoore
     {
         AnsiString::BoyerMoore::Pattern p("example");
 

@@ -22,9 +22,9 @@ namespace StringMatch {
 template <typename CharT>
 class KmpImpl {
 public:
+    typedef KmpImpl<CharT>      this_type;
     typedef CharT               char_type;
     typedef std::tuple<int *>   tuple_type;
-    typedef KmpImpl<CharT>      this_type;
 
 private:
     std::unique_ptr<int[]> kmp_next_;
