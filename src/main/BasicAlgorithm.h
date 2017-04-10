@@ -24,7 +24,7 @@ namespace StringMatch {
 namespace detail {
 
     //
-    // About std::tuple<T...>
+    // About std::tuple<Args...>
     //
     // See: http://www.cnblogs.com/qicosmos/p/3318070.html
     //
@@ -162,7 +162,8 @@ struct BasicAlgorithm {
         }
 
         template <size_t N>
-        inline void set(const tuple_type & args, typename std::tuple_element<N, tuple_type>::type && value) const {
+        inline void set(const tuple_type & args,
+                        typename std::tuple_element<N, tuple_type>::type && value) const {
             std::set<N>(args, value);
         }
 
@@ -219,20 +220,24 @@ struct BasicAlgorithm {
         // display()
         void display(int index_of) {
             if (this->is_alive()) {
-                Basic::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(), index_of);
+                Basic::display(matcher_.c_str(), matcher_.size(),
+                               this->c_str(), this->size(), index_of);
             }
             else {
-                Basic::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of);
+                Basic::display(matcher_.c_str(), matcher_.size(),
+                               nullptr, 0, index_of);
             }
         }
 
         void display(int index_of, int sum, double time_spent) {
             if (this->is_alive()) {
-                Basic::display(matcher_.c_str(), matcher_.size(), this->c_str(), this->size(),
-                    index_of, sum, time_spent);
+                Basic::display(matcher_.c_str(), matcher_.size(),
+                               this->c_str(), this->size(),
+                               index_of, sum, time_spent);
             }
             else {
-                Basic::display(matcher_.c_str(), matcher_.size(), nullptr, 0, index_of, sum, time_spent);
+                Basic::display(matcher_.c_str(), matcher_.size(), nullptr, 0,
+                               index_of, sum, time_spent);
             }
         }
 
@@ -344,7 +349,8 @@ struct BasicAlgorithm {
 
         // display()
         void display(int index_of) {
-            Basic::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(), index_of);
+            Basic::display(text_.c_str(), text_.size(),
+                           pattern_.c_str(), pattern_.size(), index_of);
         }
 
         void display(int index_of, int sum, double time_spent) {
