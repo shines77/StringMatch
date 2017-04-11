@@ -14,17 +14,17 @@ namespace StringMatch {
 
 namespace detail {
     template <typename CharT>
-    static size_t strlen(const CharT * str) {
+    inline size_t strlen(const CharT * str) {
         return ::strlen(str);
     }
 
     template <>
-    static size_t strlen(const char * str) {
+    inline size_t strlen(const char * str) {
         return ::strlen(str);
     }
 
     template <>
-    static size_t strlen(const wchar_t * str) {
+    inline size_t strlen(const wchar_t * str) {
         return ::wcslen(str);
     }
 } // namespace detail
@@ -44,22 +44,26 @@ public:
     }
     BasicStringRef(const char_type * data)
         : data_(data), length_(detail::strlen(data)) {
+        // Do nothing!
     }
     BasicStringRef(const char_type * data, size_t length)
         : data_(data), length_(length) {
+        // Do nothing!
     }
     template <size_t N>
     BasicStringRef(const char_type(&data)[N])
         : data_(data), length_(length) {
-        return prepare(pattern, N);
+        // Do nothing!
     }
     BasicStringRef(const std::basic_string<char_type> & src)
         : data_(src.c_str()), length_(src.size()) {
+        // Do nothing!
     }
     BasicStringRef(const BasicStringRef<char_type> & src)
         : data_(src.c_str()), length_(src.size()) {
+        // Do nothing!
     }
-    ~BasicStringRef() {}
+    ~BasicStringRef() { /* Do nothing! */ }
 
     const char_type * c_str() const { return data_; }
     char_type * data() const { return const_cast<char_type *>(data_); }

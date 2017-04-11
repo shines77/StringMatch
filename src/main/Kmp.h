@@ -10,9 +10,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include <stdint.h>
 #include <inttypes.h>
+#include <cstdint>
+#include <string>
 #include <assert.h>
 
 #include "StringRef.h"
@@ -143,8 +144,8 @@ public:
                     pattern++;
                     if (pattern >= pattern_end) {
                         // Found
-                        assert((target - text) >= (ptrdiff_t)pattern_len);
-                        int pos = (int)((target - text) - (ptrdiff_t)pattern_len);
+                        assert((target - text) >= (intptr_t)pattern_len);
+                        int pos = (int)((target - text) - (intptr_t)pattern_len);
                         assert(pos >= 0);
                         return pos;
                     }

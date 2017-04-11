@@ -10,9 +10,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include <stdint.h>
 #include <inttypes.h>
+#include <cstdint>
+#include <string>
 #include <assert.h>
 
 #include "StringRef.h"
@@ -233,7 +234,7 @@ public:
                 if (pattern >= pattern_end) {
                     int pattern_idx = (int)(pattern - pattern_);
                     target_idx += sm_max(bmGs[pattern_idx],
-                                         bmBc[*target] - (pattern_last - pattern_idx));
+                                         bmBc[(int)*target] - (pattern_last - pattern_idx));
                 }
                 else {
                     assert(target_idx >= 0);

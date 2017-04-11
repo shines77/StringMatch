@@ -94,7 +94,7 @@ void StringMatch_examples()
 template <typename algorithm_type>
 void StringMatch_test()
 {
-    typedef algorithm_type::Pattern pattern_type;
+    typedef typename algorithm_type::Pattern pattern_type;
 
     const char pattern_text_1[] = "sample";
     char pattern_text_2[] = "a sample";
@@ -147,7 +147,7 @@ void StringMatch_test()
 template <typename algorithm_type>
 void StringMatch_benchmark()
 {
-    typedef algorithm_type::Pattern pattern_type;
+    typedef typename algorithm_type::Pattern pattern_type;
 
     test::StopWatch sw;
     int sum;
@@ -157,21 +157,21 @@ void StringMatch_benchmark()
     printf("  Benchmark: %s\n", typeid(algorithm_type).name());
     printf("-----------------------------------------------------------\n\n");
 
-    pattern_type pattern[sm_countof(szPatterns)];
-    for (int i = 0; i < sm_countof(szPatterns); ++i) {
+    pattern_type pattern[sm_countof_i(szPatterns)];
+    for (int i = 0; i < sm_countof_i(szPatterns); ++i) {
         pattern[i].prepare(szPatterns[i]);
     }
 
-    StringRef search_text[sm_countof(szSearchText)];
-    for (int i = 0; i < sm_countof(szSearchText); ++i) {
+    StringRef search_text[sm_countof_i(szSearchText)];
+    for (int i = 0; i < sm_countof_i(szSearchText); ++i) {
         search_text[i].set_ref(szSearchText[i], strlen(szSearchText[i]));
     }
 
     sum = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < sm_countof(szSearchText); ++i) {
-            for (int j = 0; j < sm_countof(szPatterns); ++j) {
+        for (int i = 0; i < sm_countof_i(szSearchText); ++i) {
+            for (int j = 0; j < sm_countof_i(szPatterns); ++j) {
                 int index_of = pattern[j].match(search_text[i]);
                 sum += index_of;
             }
@@ -192,16 +192,16 @@ void StringMatch_strstr_benchmark()
     printf("  Benchmark: %s\n", "strstr()");
     printf("-----------------------------------------------------------\n\n");
 
-    StringRef search_text[sm_countof(szSearchText)];
-    for (int i = 0; i < sm_countof(szSearchText); ++i) {
+    StringRef search_text[sm_countof_i(szSearchText)];
+    for (int i = 0; i < sm_countof_i(szSearchText); ++i) {
         search_text[i].set_ref(szSearchText[i], strlen(szSearchText[i]));
     }
 
     sum = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < sm_countof(szSearchText); ++i) {
-            for (int j = 0; j < sm_countof(szPatterns); ++j) {
+        for (int i = 0; i < sm_countof_i(szSearchText); ++i) {
+            for (int j = 0; j < sm_countof_i(szPatterns); ++j) {
                 const char * substr = strstr(search_text[i].c_str(), szPatterns[j]);
                 if (substr != nullptr) {
                     int index_of = (int)(substr - search_text[i].c_str());
@@ -226,6 +226,8 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
 
-    ::system("pause");
+#if defined(_WIN32) || defined(OS_WINDOWS)
+    int result = ::system("pause");
+#endif
     return 0;
 }

@@ -77,7 +77,7 @@ struct BasicAlgorithm {
         template <size_t N>
         Pattern(const char_type (&pattern)[N])
             : pattern_(pattern, N), matcher_() {
-            return prepare(pattern, N);
+            prepare(pattern, N);
         }
         Pattern(const string_type & pattern)
             : pattern_(pattern), matcher_() {
@@ -121,7 +121,7 @@ struct BasicAlgorithm {
         template <size_t N>
         inline void set(const tuple_type & args,
                         typename std::tuple_element<N, tuple_type>::type && value) const {
-            std::set<N>(args, value);
+            //std::set<N>(args, value);
         }
 
         // Pattern::prepare()

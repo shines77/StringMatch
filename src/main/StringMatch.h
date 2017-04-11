@@ -32,12 +32,19 @@
         template <typename CountOfType, size_t SizeOfArray>
         char(*sm_countof_helper(sm_unaligned CountOfType(&_Array)[SizeOfArray]))[SizeOfArray];
 
-        #define sm_countof(_Array) (sizeof(*sm_countof_helper(_Array)) + 0)
+        #define sm_countof(_Array)      (sizeof(*sm_countof_helper(_Array)) + 0)
+        
     }
 #else
-    #define sm_countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
+    #define sm_countof(_Array)      (sizeof(_Array) / sizeof(_Array[0]))
 #endif // __cplusplus
 #endif // sm_countof
+
+#ifndef sm_countof_i
+#define sm_countof_i(_Array)    (int)(sm_countof(_Array))
+#define sm_countof_l(_Array)    (long)(sm_countof(_Array))
+#define sm_countof_p(_Array)    (intptr_t)(sm_countof(_Array))
+#endif // sm_countof_i
 
 #ifndef sm_min
 #define sm_min(a, b)    (((a) <= (b)) ? (a) : (b))
