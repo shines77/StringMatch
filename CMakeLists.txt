@@ -46,6 +46,7 @@ else()
     set(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
+include_directories(include)
 include_directories(src)
 include_directories(src/main)
 include_directories(src/test)
