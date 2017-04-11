@@ -60,32 +60,33 @@ struct BasicAlgorithm {
     private:
         string_ref pattern_;
         string_ref matcher_;
+        bool compiled_;
         algorithm_type algorithm_;
 
     public:
-        Pattern() : pattern_(), matcher_() {
+        Pattern() : pattern_(), matcher_(), compiled_(false) {
             // Do nothing!
         }
         Pattern(const char_type * pattern)
-            : pattern_(pattern), matcher_() {
-            prepare(pattern);
+            : pattern_(pattern), matcher_(), compiled_(false) {
+            compiled_ = prepare(pattern);
         }
         Pattern(const char_type * pattern, size_t length)
-            : pattern_(pattern, length), matcher_() {
-            prepare(pattern, length);
+            : pattern_(pattern, length), matcher_(), compiled_(false) {
+            compiled_ = prepare(pattern, length);
         }
         template <size_t N>
         Pattern(const char_type (&pattern)[N])
-            : pattern_(pattern, N), matcher_() {
-            prepare(pattern, N);
+            : pattern_(pattern, N), matcher_(), compiled_(false) {
+            compiled_ = prepare(pattern, N);
         }
         Pattern(const string_type & pattern)
-            : pattern_(pattern), matcher_() {
-            prepare(pattern);
+            : pattern_(pattern), matcher_(), compiled_(false) {
+            compiled_ = prepare(pattern);
         }
         Pattern(const string_ref & pattern)
-            : pattern_(pattern), matcher_() {
-            prepare(pattern);
+            : pattern_(pattern), matcher_(), compiled_(false) {
+            compiled_ = prepare(pattern);
         }
         ~Pattern() {
             this->free();
@@ -98,6 +99,7 @@ struct BasicAlgorithm {
 
         bool is_valid() const { return (pattern_.c_str() != nullptr); }
         bool is_alive() const { return (this->is_valid() && this->algorithm_.is_alive()); }
+        bool is_compiled() const { return this->compiled_; }
 
         // Pattern::args
         tuple_type & get_args() const {
@@ -126,7 +128,9 @@ struct BasicAlgorithm {
 
         // Pattern::prepare()
         bool prepare(const char_type * pattern, size_t length) {
-            return this->preprocessing(pattern, length);
+            bool success = this->preprocessing(pattern, length);
+            compiled_ = success;
+            return success;
         }
 
         bool prepare(const char_type * pattern) {

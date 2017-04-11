@@ -51,21 +51,27 @@ void StringMatch_examples()
     // Usage 1
     {
         AnsiString::Kmp::Pattern p("example");
-        int pos = p.match("Here is a sample example.");
+        if (p.is_compiled()) {
+            int pos = p.match("Here is a sample example.");
+        }
     }
 
     // Usage 2
     {
         AnsiString::Kmp::Pattern p;
-        p.prepare("example");
-        int pos = p.match("Here is a sample example.");
+        bool compiled = p.prepare("example");
+        if (compiled) {
+            int pos = p.match("Here is a sample example.");
+        }
     }
 
     // Usage 3
     {
         AnsiString::Kmp::Pattern p("example");
         AnsiString::Kmp::Matcher m("Here is a sample example.");
-        int pos = m.find(p);
+        if (p.is_compiled()) {
+            int pos = m.find(p);
+        }
     }
 
     // Usage 4
@@ -73,21 +79,27 @@ void StringMatch_examples()
         AnsiString::Kmp::Pattern p("example");
         AnsiString::Kmp::Matcher m;
         m.set_text("Here is a sample example.");
-        int pos = m.find(p);
+        if (p.is_compiled()) {
+            int pos = m.find(p);
+        }
     }
 
     // Usage 5
     {
         AnsiString::Kmp::Pattern p("example");
         AnsiString::Kmp::Matcher m;
-        int pos = m.find("Here is a sample example.", p);
+        if (p.is_compiled()) {
+            int pos = m.find("Here is a sample example.", p);
+        }
     }
 
     // Usage 6
     {
         AnsiString::Kmp::Pattern p("example");
         AnsiString::Kmp::Matcher m("Here is a sample example.");
-        int pos = AnsiString::Kmp::find(m, p);
+        if (p.is_compiled()) {
+            int pos = AnsiString::Kmp::find(m, p);
+        }
     }
 }
 
