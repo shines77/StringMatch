@@ -100,12 +100,13 @@ void StringMatch_test()
     char pattern_text_2[] = "a sample";
 
     printf("-----------------------------------------------------------\n");
-    printf("  UnitTest: %s\n", typeid(algorithm_type).name());
+    printf("  Test: %s\n", typeid(algorithm_type).name());
     printf("-----------------------------------------------------------\n\n");
 
     test::StopWatch sw;
     int sum, index_of;
 
+    // pattern: "example"
     pattern_type pattern;
     pattern.prepare("example");
 
@@ -118,8 +119,8 @@ void StringMatch_test()
     sw.stop();
     pattern.display(index_of, sum, sw.getElapsedMillisec());
 
+    // pattern: pattern_text_1
     pattern_type pattern1(pattern_text_1);
-    //pattern1.prepare(pattern_text_1);
 
     sum = 0;
     sw.start();
@@ -130,8 +131,8 @@ void StringMatch_test()
     sw.stop();
     pattern1.display(index_of, sum, sw.getElapsedMillisec());
 
+    // pattern: pattern_text_2
     pattern_type pattern2(pattern_text_2);
-    //pattern2.prepare(pattern_text_2);
 
     sum = 0;
     sw.start();
