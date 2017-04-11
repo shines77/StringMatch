@@ -41,10 +41,7 @@ public:
         if ((void *)&args_ != (void *)&args) {
             args_ = args;
         }
-        update_args();
-    }
-
-    void update_args() {
+        // Update args
         bmGs_.reset(std::get<0>(args_));
         bmBc_.reset(std::get<1>(args_));
     }
@@ -161,7 +158,10 @@ public:
     bool preprocessing(const char_type * pattern, size_t length) {
         int * bmGs = nullptr, * bmBc = nullptr;
         bool success = this_type::preprocessing(pattern, length, bmGs, bmBc);
+        // Update args
         args_ = std::make_tuple(bmGs, bmBc);
+        bmGs_.reset(bmGs);
+        bmBc_.reset(bmBc);
         return success;
     }
 

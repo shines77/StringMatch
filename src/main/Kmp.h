@@ -40,10 +40,7 @@ public:
         if ((void *)&args_ != (void *)&args) {
             args_ = args;
         }
-        update_args();
-    }
-
-    void update_args() {
+        // Update args
         kmp_next_.reset(std::get<0>(args_));
     }
 
@@ -64,7 +61,9 @@ public:
     bool preprocessing(const char_type * pattern, size_t length) {
         int * kmp_next = nullptr;
         bool success = this_type::preprocessing(pattern, length, kmp_next);
+        // Update args
         args_ = std::make_tuple(kmp_next);
+        kmp_next_.reset(kmp_next);
         return success;
     }
 
