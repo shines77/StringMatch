@@ -80,7 +80,7 @@ private:
             bmBc[i] = (int)length;
         }
         for (int i = 0; i < (int)length - 1; ++i) {
-            bmBc[pattern[i]] = ((int)length - 1) - i;
+            bmBc[(int)pattern[i]] = ((int)length - 1) - i;
         }
     }
 
