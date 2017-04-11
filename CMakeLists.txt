@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-project(StringMatch)
+project(string_match)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -52,7 +52,7 @@ include_directories(src/test)
 include_directories(src/unittest)
 
 set(SOURCE_FILES
-    src/main/StringMatch/main.cpp
+    src/main/main.cpp
     )
 
 add_custom_target(debug
@@ -67,5 +67,5 @@ add_custom_target(release
     COMMENT "Switch CMAKE_BUILD_TYPE to Release"
 )
 
-add_executable(jimi_http_parser ${SOURCE_FILES})
-target_link_libraries(jimi_http_parser ${EXTRA_LIBS})
+add_executable(string_match ${SOURCE_FILES})
+target_link_libraries(string_match ${EXTRA_LIBS})
