@@ -191,11 +191,17 @@ public:
 
     /* Search */
     static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern_, size_t pattern_len,
+                      const char_type * pattern, size_t pattern_len,
                       const tuple_type & args) {
         int * bmGs = std::get<0>(args);
         int * bmBc = std::get<1>(args);
+        return search(text, text_len, pattern, pattern_len, bmGs, bmBc);
+    }
 
+    /* Search */
+    static int search(const char_type * text, size_t text_len,
+                      const char_type * pattern_, size_t pattern_len,
+                      const int * bmGs, const int * bmBc) {
         assert(text != nullptr);
         assert(pattern_ != nullptr);
         assert(bmBc != nullptr);

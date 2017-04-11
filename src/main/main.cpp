@@ -50,54 +50,44 @@ void StringMatch_examples()
 {
     // Usage 1
     {
-        AnsiString::Kmp::Pattern p;
-        p.prepare("example");
-
+        AnsiString::Kmp::Pattern p("example");
         int pos = p.match("Here is a sample example.");
     }
 
     // Usage 2
     {
-        AnsiString::Kmp::Pattern p("example");
-
+        AnsiString::Kmp::Pattern p;
+        p.prepare("example");
         int pos = p.match("Here is a sample example.");
     }
 
     // Usage 3
     {
         AnsiString::Kmp::Pattern p("example");
-        AnsiString::Kmp::Matcher m;
-
-        int pos = m.find("Here is a sample example.", p);
+        AnsiString::Kmp::Matcher m("Here is a sample example.");
+        int pos = m.find(p);
     }
 
     // Usage 4
     {
-        AnsiString::Kmp::Pattern p1("example");
-        AnsiString::Kmp::Pattern p2("sample");
-        AnsiString::Kmp::Matcher m("Here is a sample example.");
-
-        int pos1 = m.find(p1);
-        int pos2 = m.find(p2);
+        AnsiString::Kmp::Pattern p("example");
+        AnsiString::Kmp::Matcher m;
+        m.set_text("Here is a sample example.");
+        int pos = m.find(p);
     }
 
     // Usage 5
     {
-        AnsiString::Kmp::Pattern p1("example");
-        AnsiString::Kmp::Pattern p2("sample");
+        AnsiString::Kmp::Pattern p("example");
         AnsiString::Kmp::Matcher m;
-        m.set_text("Here is a sample example.");
-
-        int pos1 = m.find(p1);
-        int pos2 = m.find(p2);
+        int pos = m.find("Here is a sample example.", p);
     }
 
-    // BoyerMoore
+    // Usage 6
     {
-        AnsiString::BoyerMoore::Pattern p("example");
-
-        int pos = p.match("Here is a sample example.");
-        printf("pos = %d\n\n", pos);
+        AnsiString::Kmp::Pattern p("example");
+        AnsiString::Kmp::Matcher m("Here is a sample example.");
+        int pos = AnsiString::Kmp::find(m, p);
     }
 }
 

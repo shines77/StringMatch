@@ -367,6 +367,12 @@ struct BasicAlgorithm {
         }
     }; // class Matcher
 
+    static int find(const Matcher & matcher, const Pattern & pattern) {
+        return algorithm_type::search(matcher.c_str(), matcher.size(),
+                                      pattern.c_str(), pattern.size(),
+                                      pattern.get_cargs());
+    }
+
 }; // struct BasicAlgorithm<T>
 
 template <typename T>

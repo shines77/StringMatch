@@ -71,7 +71,7 @@ public:
     static bool preprocessing(const char * pattern, size_t length, int * &out_kmp_next) {
         assert(pattern != nullptr);
 
-        int * kmp_next = new int[(int)length + 1];
+        int * kmp_next = new int[length + 1];
         if (kmp_next != nullptr) {
             kmp_next[0] = -1;
             kmp_next[1] = 0;
@@ -90,10 +90,16 @@ public:
 
     /* Search */
     static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern_, size_t pattern_len,
+                      const char_type * pattern, size_t pattern_len,
                       const tuple_type & args) {
         int * kmp_next = std::get<0>(args);
+        return search(text, text_len, pattern, pattern_len, kmp_next);
+    }
 
+    /* Search */
+    static int search(const char_type * text, size_t text_len,
+                      const char_type * pattern_, size_t pattern_len,
+                      const int * kmp_next) {
         assert(text != nullptr);
         assert(pattern_ != nullptr);
         assert(kmp_next != nullptr);
