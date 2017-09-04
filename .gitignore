@@ -43,41 +43,40 @@
 # Ignore thumbnails and icon cache files created by Windows
 Thumbs.db
 ehthumbs.db
-
-# Ignore some files on Windows
 .DS_Store*
 Icon?
 
 # Ignore files build by Visual Studio
-*.obj
-*.pdb
-*.iobj
-*.ipdb
-*.dep
-*.user
-*.ncb
 *.aps
-*.pch
-*.vspscc
+*.bak
+*.dep
 *.idb
 *.ilk
+*.intermediate.manifest
+*.iobj
+*.ipdb
+*.meta
+*.manifest
+*.ncb
+*.obj
+*.opensdf
+*.pdb
+*.pch
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.sdf
+*.sln.old
+*.sln_old
+*.suo
 *.tlb
 *.tlh
 *.tli
 *.tmp
-*.sbr
-*.rsp
-*.pgc
-*.pgd
-*.suo
-*.sdf
-*.opensdf
-*.sln.old
-*.sln_old
-*.meta
-*.manifest
-*.intermediate.manifest
-*.bak
+*.user
+*.vspscc
+# *.vcxproj.user
 
 # Ignore folders create by Visual Studio 2015
 /.vs/
