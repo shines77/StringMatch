@@ -67,4 +67,3 @@ struct Status {
 } // namespace StringMatch
 
 #endif // MAIN_STRING_MATCH_H
-

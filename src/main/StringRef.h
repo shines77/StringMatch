@@ -119,4 +119,3 @@ typedef BasicStringRef<char>    Utf8StringRef;
 } // namespace StringMatch
 
 #endif // MAIN_STRING_REF_H
-

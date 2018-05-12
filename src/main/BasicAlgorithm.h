@@ -347,4 +347,3 @@ int BasicAlgorithm<T>::Pattern::match(const typename BasicAlgorithm<T>::Matcher 
 } // namespace StringMatch
 
 #endif // STRING_MATCH_BASIC_ALGORITHM_H
-
