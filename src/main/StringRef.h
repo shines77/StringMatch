@@ -83,6 +83,11 @@ public:
     size_t size() const { return this->length_; }
     size_t length() const { return this->size(); }
 
+    void reset() {
+        this->data_ = nullptr;
+        this->length_ = 0;
+    }
+
     void set_data(const char_type * data, size_t length) {
         this->data_ = data;
         this->length_ = length;

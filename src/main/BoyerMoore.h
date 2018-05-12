@@ -36,14 +36,14 @@ public:
     BoyerMooreImpl() : bmGs_(), bmBc_(), args_(nullptr, nullptr) {}
     ~BoyerMooreImpl() {}
 
-    const tuple_type & get_args() const { return args_; }
+    const tuple_type & get_args() const { return this->args_; }
     void set_args(const tuple_type & args) {
         if ((void *)&args_ != (void *)&args) {
             args_ = args;
         }
         // Update args
-        bmGs_.reset(std::get<0>(args_));
-        bmBc_.reset(std::get<1>(args_));
+        this->bmGs_.reset(std::get<0>(args_));
+        this->bmBc_.reset(std::get<1>(args_));
     }
 
     int * bmGs() const { return this->bmGs_.get(); }
@@ -61,8 +61,8 @@ public:
     }
 
     void destroy() {
-        bmGs_.reset();
-        bmBc_.reset();
+        this->bmGs_.reset();
+        this->bmBc_.reset();
     }
 
 private:

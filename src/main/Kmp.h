@@ -35,13 +35,13 @@ public:
     KmpImpl() : kmp_next_(), args_(nullptr) {}
     ~KmpImpl() {}
 
-    const tuple_type & get_args() const { return args_; }
+    const tuple_type & get_args() const { return this->args_; }
     void set_args(const tuple_type & args) {
         if ((void *)&args_ != (void *)&args) {
             args_ = args;
         }
         // Update args
-        kmp_next_.reset(std::get<0>(args_));
+        this->kmp_next_.reset(std::get<0>(args_));
     }
 
     int * kmp_next() const { return this->kmp_next_.get(); }
@@ -54,7 +54,7 @@ public:
     }
 
     void destroy() {
-        kmp_next_.reset();
+        this->kmp_next_.reset();
     }
 
     /* Preprocessing */
@@ -62,8 +62,8 @@ public:
         int * kmp_next = nullptr;
         bool success = this_type::preprocessing(pattern, length, kmp_next);
         // Update args
-        args_ = std::make_tuple(kmp_next);
-        kmp_next_.reset(kmp_next);
+        this->args_ = std::make_tuple(kmp_next);
+        this->kmp_next_.reset(kmp_next);
         return success;
     }
 
@@ -98,10 +98,10 @@ public:
 
     /* Search */
     static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern_, size_t pattern_len,
+                      const char_type * pattern_in, size_t pattern_len,
                       const int * kmp_next) {
         assert(text != nullptr);
-        assert(pattern_ != nullptr);
+        assert(pattern_in != nullptr);
         assert(kmp_next != nullptr);
 
         if (text_len < pattern_len) {
@@ -110,14 +110,14 @@ public:
         }
 
         register const char * target = text;
-        register const char * pattern = pattern_;
+        register const char * pattern = pattern_in;
 
         if ((size_t)target | (size_t)pattern | (size_t)kmp_next) {
             const char * target_end = text + (text_len - pattern_len);
             const char * pattern_end = pattern + pattern_len;
             do {
                 if (*target != *pattern) {
-                    int search_index = (int)(pattern - pattern_);
+                    int search_index = (int)(pattern - pattern_in);
                     if (search_index == 0) {
                         target++;
                         if (target > target_end) {
@@ -130,7 +130,7 @@ public:
                         int search_offset = kmp_next[search_index];
                         int target_offset = search_index - search_offset;
                         assert(target_offset >= 1);
-                        pattern = pattern_ + search_offset;
+                        pattern = pattern_in + search_offset;
                         target = target + target_offset;
                         if (target > target_end) {
                             // Not found
