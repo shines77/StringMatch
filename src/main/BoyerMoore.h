@@ -60,7 +60,7 @@ public:
         return (this->bmGs() != nullptr && this->bmBc() != nullptr);
     }
 
-    void free() {
+    void destroy() {
         bmGs_.reset();
         bmBc_.reset();
     }
@@ -196,7 +196,7 @@ public:
                       const tuple_type & args) {
         int * bmGs = std::get<0>(args);
         int * bmBc = std::get<1>(args);
-        return search(text, text_len, pattern, pattern_len, bmGs, bmBc);
+        return this_type::search(text, text_len, pattern, pattern_len, bmGs, bmBc);
     }
 
     /* Search */

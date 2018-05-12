@@ -34,7 +34,7 @@ public:
     // 1 second = 1,000,000 microsec
     const time_float_t kMicrosecCoff = static_cast<time_float_t>(1000000.0);
     // 1 second = 1,000,000,000 nanosec
-    const time_float_t kNanosecCoff = static_cast<time_float_t>(1000000.0);
+    const time_float_t kNanosecCoff = static_cast<time_float_t>(1000000000.0);
 
 private:
     time_float_t duration_;

@@ -26,14 +26,14 @@ const size_t Iterations = 10000;
 //
 // See: http://volnitsky.com/project/str_search/index.html
 //
-static const char * szSearchText[] = {
+static const char * s_SearchTexts[] = {
     "Here is a sample example.",
 
     "8'E . It consists of a number of low-lying, largely mangrove covered islands covering an area of around 665 km^2. "
     "The population of Bakassi is the subject of some dispute, but is generally put at between 150,000 and 300,000 people."
 };
 
-static const char * szPatterns[] = {
+static const char * s_Patterns[] = {
     "sample",
     "example",
 
@@ -111,9 +111,9 @@ void StringMatch_test()
     const char pattern_text_1[] = "sample";
     char pattern_text_2[] = "a sample";
 
-    printf("-----------------------------------------------------------\n");
+    printf("---------------------------------------------------------------------------------------\n");
     printf("  Test: %s\n", typeid(algorithm_type).name());
-    printf("-----------------------------------------------------------\n\n");
+    printf("---------------------------------------------------------------------------------------\n\n");
 
     test::StopWatch sw;
     int sum, index_of;
@@ -156,36 +156,42 @@ void StringMatch_test()
     pattern2.display(index_of, sum, sw.getElapsedMillisec());
 }
 
-template <typename algorithm_type>
-void StringMatch_benchmark()
+void StringMatch_strstr_benchmark()
 {
-    typedef typename algorithm_type::Pattern pattern_type;
-
     test::StopWatch sw;
     int sum;
-    static const size_t iters = Iterations / (sm_countof(szSearchText) * sm_countof(szPatterns));
+    static const size_t iters = Iterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
     printf("-----------------------------------------------------------\n");
-    printf("  Benchmark: %s\n", typeid(algorithm_type).name());
+    printf("  Benchmark: %s\n", "strstr()");
     printf("-----------------------------------------------------------\n\n");
 
-    pattern_type pattern[sm_countof_i(szPatterns)];
-    for (int i = 0; i < sm_countof_i(szPatterns); ++i) {
-        pattern[i].prepare(szPatterns[i]);
+    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
+    static const int kPatterns = sm_countof_i(s_Patterns);
+
+    StringRef texts[kSearchTexts];
+    for (int i = 0; i < kSearchTexts; ++i) {
+        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
     }
 
-    StringRef search_text[sm_countof_i(szSearchText)];
-    for (int i = 0; i < sm_countof_i(szSearchText); ++i) {
-        search_text[i].set_ref(szSearchText[i], strlen(szSearchText[i]));
+    StringRef patterns[kPatterns];
+    for (int i = 0; i < kPatterns; ++i) {
+        patterns[i].set_data(s_Patterns[i], strlen(s_Patterns[i]));
     }
 
     sum = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < sm_countof_i(szSearchText); ++i) {
-            for (int j = 0; j < sm_countof_i(szPatterns); ++j) {
-                int index_of = pattern[j].match(search_text[i]);
-                sum += index_of;
+        for (int i = 0; i < kSearchTexts; ++i) {
+            for (int j = 0; j < kPatterns; ++j) {
+                const char * substr = strstr(texts[i].c_str(), patterns[j].c_str());
+                if (substr != nullptr) {
+                    int index_of = (int)(substr - texts[i].c_str());
+                    sum += index_of;
+                }
+                else {
+                    sum += (int)Status::NotFound;
+                }
             }
         }
     }
@@ -194,31 +200,39 @@ void StringMatch_benchmark()
     printf("sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
 }
 
-void StringMatch_strstr_benchmark()
+template <typename algorithm_type>
+void StringMatch_benchmark()
 {
+    typedef typename algorithm_type::Pattern pattern_type;
+
     test::StopWatch sw;
     int sum;
-    static const size_t iters = Iterations / (sm_countof(szSearchText) * sm_countof(szPatterns));
+    static const size_t iters = Iterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
-    printf("-----------------------------------------------------------\n");
-    printf("  Benchmark: %s\n", "strstr()");
-    printf("-----------------------------------------------------------\n\n");
+    printf("---------------------------------------------------------------------------------------\n");
+    printf("  Benchmark: %s\n", typeid(algorithm_type).name());
+    printf("---------------------------------------------------------------------------------------\n\n");
 
-    StringRef search_text[sm_countof_i(szSearchText)];
-    for (int i = 0; i < sm_countof_i(szSearchText); ++i) {
-        search_text[i].set_ref(szSearchText[i], strlen(szSearchText[i]));
+    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
+    static const int kPatterns = sm_countof_i(s_Patterns);
+
+    StringRef texts[kSearchTexts];
+    for (int i = 0; i < kSearchTexts; ++i) {
+        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
+    }
+
+    pattern_type pattern[kPatterns];
+    for (int i = 0; i < kPatterns; ++i) {
+        pattern[i].prepare(s_Patterns[i]);
     }
 
     sum = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < sm_countof_i(szSearchText); ++i) {
-            for (int j = 0; j < sm_countof_i(szPatterns); ++j) {
-                const char * substr = strstr(search_text[i].c_str(), szPatterns[j]);
-                if (substr != nullptr) {
-                    int index_of = (int)(substr - search_text[i].c_str());
-                    sum += index_of;
-                }
+        for (int i = 0; i < kSearchTexts; ++i) {
+            for (int j = 0; j < kPatterns; ++j) {
+                int index_of = pattern[j].match(texts[i].c_str());
+                sum += index_of;
             }
         }
     }

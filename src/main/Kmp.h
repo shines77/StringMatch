@@ -53,7 +53,7 @@ public:
         return (this->kmp_next() != nullptr);
     }
 
-    void free() {
+    void destroy() {
         kmp_next_.reset();
     }
 
@@ -93,7 +93,7 @@ public:
                       const char_type * pattern, size_t pattern_len,
                       const tuple_type & args) {
         int * kmp_next = std::get<0>(args);
-        return search(text, text_len, pattern, pattern_len, kmp_next);
+        return this_type::search(text, text_len, pattern, pattern_len, kmp_next);
     }
 
     /* Search */

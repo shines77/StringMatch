@@ -89,7 +89,7 @@ struct BasicAlgorithm {
             compiled_ = prepare(pattern);
         }
         ~Pattern() {
-            this->free();
+            this->destroy();
         }
 
         const char_type * c_str() const { return pattern_.c_str(); }
@@ -152,7 +152,7 @@ struct BasicAlgorithm {
 
         // Pattern::match(text, length);
         int match(const char_type * text, size_t length) {
-            matcher_.set_ref(text, length);
+            matcher_.set_data(text, length);
             return algorithm_type::search(text, length,
                                           this->c_str(), this->size(),
                                           this->get_args());
@@ -203,12 +203,12 @@ struct BasicAlgorithm {
         }
 
     private:
-        void free() {
-            this->algorithm_.free();
+        void destroy() {
+            this->algorithm_.destroy();
         }
 
         bool preprocessing(const char_type * pattern, size_t length) {
-            pattern_.set_ref(pattern, length);
+            pattern_.set_data(pattern, length);
             return this->algorithm_.preprocessing(pattern, length);
         }
     }; // class Pattern
@@ -240,50 +240,50 @@ struct BasicAlgorithm {
         ~Matcher() {
         }
 
-        const char_type * c_str() const { return text_.c_str(); }
-        char_type * data() const { return text_.data(); }
+        const char_type * c_str() const { return this->text_.c_str(); }
+        char_type * data() const { return this->text_.data(); }
 
-        size_t size() const { return text_.size(); }
+        size_t size() const { return this->text_.size(); }
         size_t length() const { return this->size(); }
 
-        const char_type * text() const { return text_.c_str(); }
-        size_t text_length() const { return text_.size(); }
+        string_ref & text() const { return this->text_; }
+        size_t text_length() const { return this->text_.size(); }
 
-        const char_type * pattern() const { return pattern_.c_str(); }
-        size_t pattern_length() const { return pattern_.size(); }
+        string_ref & pattern() const { return this->pattern_; }
+        size_t pattern_length() const { return this->pattern_.size(); }
 
         // Matcher::set_text()
         void set_text(const char_type * text, size_t length) {
-            text_.set_ref(text, length);
+            this->text_.set_data(text, length);
         }
 
         void set_text(const char_type * text) {
-            text_.set_ref(text);
+            this->text_.set_data(text);
         }
 
         template <size_t N>
         void set_text(const char_type (&text)[N]) {
-            text_.set_ref(text, N);
+            this->text_.set_data(text, N);
         }
 
         void set_text(const string_type & text) {
-            text_.set_ref(text);
+            this->text_.set_data(text);
         }
 
         void set_text(const string_ref & text) {
-            text_.set_ref(text);
+            this->text_.set_data(text);
         }
 
         // Matcher::find(pattern);
         int find(const Pattern & pattern) {
-            return algorithm_type::search(text_.c_str(), text_.size(),
+            return algorithm_type::search(this->text_.c_str(), this->text_.size(),
                                           pattern.c_str(), pattern.size(),
                                           pattern.get_args());
         }
 
         // Matcher::find(text, length, pattern);
         int find(const char_type * text, size_t length, const Pattern & pattern) {
-            pattern_.set_ref(pattern.c_str(), pattern.size());
+            pattern_.set_data(pattern.c_str(), pattern.size());
             return this->search(text, length,
                                 pattern.c_str(), pattern.size(),
                                 pattern.get_args());
@@ -309,11 +309,12 @@ struct BasicAlgorithm {
         // Matcher::display()
         void display(int index_of) {
             Basic::display(text_.c_str(), text_.size(),
-                           pattern_.c_str(), pattern_.size(), index_of);
+                           this->pattern_.c_str(), this->pattern_.size(), index_of);
         }
 
         void display(int index_of, int sum, double time_spent) {
-            Basic::display(text_.c_str(), text_.size(), pattern_.c_str(), pattern_.size(),
+            Basic::display(this->text_.c_str(), this->text_.size(),
+                           this->pattern_.c_str(), this->pattern_.size(),
                            index_of, sum, time_spent);
         }
 
@@ -321,7 +322,7 @@ struct BasicAlgorithm {
         int search(const char_type * text, size_t text_len,
                    const char_type * pattern, size_t pattern_len,
                    const tuple_type & tuple) {
-            text_.set_ref(text, text_len);
+            text_.set_data(text, text_len);
             return algorithm_type::search(text, text_len, pattern, pattern_len, tuple);
         }
     }; // class Matcher
@@ -337,8 +338,7 @@ struct BasicAlgorithm {
 
 template <typename T>
 inline
-int BasicAlgorithm<T>::Pattern::match(
-    const typename BasicAlgorithm<T>::Matcher & matcher) {
+int BasicAlgorithm<T>::Pattern::match(const typename BasicAlgorithm<T>::Matcher & matcher) {
     return this->match(matcher.c_str(), matcher.size());
 }
 
