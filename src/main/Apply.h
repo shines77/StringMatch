@@ -60,3 +60,4 @@ namespace detail {
 } // namespace StringMatch
 
 #endif // STRING_MATCH_APPLY_H
+

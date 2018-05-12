@@ -348,3 +348,4 @@ typedef StopWatchBase<StdStopWatchImpl<double>> getTickCountStopWatch;
 #undef __COMPILER_BARRIER
 
 } // namespace test
+

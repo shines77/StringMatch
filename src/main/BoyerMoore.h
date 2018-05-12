@@ -289,3 +289,4 @@ namespace UnicodeString {
 } // namespace StringMatch
 
 #endif // STRING_MATCH_BOYERMOORE_H
+
