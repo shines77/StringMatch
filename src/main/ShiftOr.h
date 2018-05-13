@@ -81,13 +81,13 @@ public:
         assert(pattern != nullptr);
         static const size_t kMaxAscii = 256;
 
-        limit = 0;
+        limit = 0ULL;
         uint64_t * bitmap = new uint64_t[kMaxAscii];
         if (bitmap != nullptr) {
             for (int i = 0; i < kMaxAscii; ++i)
-                bitmap[i] = ~0;
+                bitmap[i] = ~(0ULL);
 
-            uint64_t mask = 1;
+            uint64_t mask = 1ULL;
             for (int i = 0; i < length; mask <<= 1, ++i) {
                 bitmap[pattern[i]] &= ~mask;
                 limit |= mask;
