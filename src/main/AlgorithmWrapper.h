@@ -130,7 +130,7 @@ struct AlgorithmWrapper {
             //std::set<N>(args, value);
         }
 
-        // Pattern::prepare()
+        // Pattern::preprocessing()
         bool preprocessing(const char_type * pattern, size_t length) {
             bool success = this->internal_preprocessing(pattern, length);
             this->compiled_ = success;
