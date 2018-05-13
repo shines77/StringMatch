@@ -54,6 +54,7 @@ public:
     BasicStringRef(const char_type(&data)[N])
         : data_(data), length_(N) {
         // Do nothing!
+        printf("template <size_t N> BasicStringRef(const char_type(&data)[N]); N = %u\n", (unsigned)N);
     }
     BasicStringRef(const std::basic_string<char_type> & src)
         : data_(src.c_str()), length_(src.size()) {

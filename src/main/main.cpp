@@ -110,7 +110,7 @@ void StringMatch_test()
     typedef typename algorithm_type::Pattern pattern_type;
 
     const char pattern_text_1[] = "sample";
-    const char pattern_text_2[] = "a sample";
+    char pattern_text_2[] = "a sample";
 
     printf("---------------------------------------------------------------------------------------\n");
     printf("  Test: %s\n", typeid(algorithm_type).name());

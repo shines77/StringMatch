@@ -81,6 +81,7 @@ struct AlgorithmWrapper {
         template <size_t N>
         Pattern(const char_type (&pattern)[N])
             : pattern_(pattern, N), compiled_(false) {
+            printf("template <size_t N> Pattern(const char_type (&pattern)[N]); N = %u\n", (unsigned)N);
             this->compiled_ = this->preprocessing(pattern, N);
         }
         Pattern(const string_type & pattern)
