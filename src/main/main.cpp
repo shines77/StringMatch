@@ -19,9 +19,9 @@
 using namespace StringMatch;
 
 #ifndef _DEBUG
-const size_t Iterations = 5000000;
+static const size_t kIterations = 5000000;
 #else
-const size_t Iterations = 10000;
+static const size_t kIterations = 10000;
 #endif
 
 //
@@ -110,7 +110,7 @@ void StringMatch_test()
     typedef typename algorithm_type::Pattern pattern_type;
 
     const char pattern_text_1[] = "sample";
-    char pattern_text_2[] = "a sample";
+    const char pattern_text_2[] = "a sample";
 
     printf("---------------------------------------------------------------------------------------\n");
     printf("  Test: %s\n", typeid(algorithm_type).name());
@@ -125,7 +125,7 @@ void StringMatch_test()
 
     sum = 0;
     sw.start();
-    for (size_t i = 0; i < Iterations; ++i) {
+    for (size_t i = 0; i < kIterations; ++i) {
         index_of = pattern.match("Here is a sample example.");
         sum += index_of;
     }
@@ -137,7 +137,7 @@ void StringMatch_test()
 
     sum = 0;
     sw.start();
-    for (size_t i = 0; i < Iterations; ++i) {
+    for (size_t i = 0; i < kIterations; ++i) {
         index_of = pattern1.match("Here is a sample example.");
         sum += index_of;
     }
@@ -149,7 +149,7 @@ void StringMatch_test()
 
     sum = 0;
     sw.start();
-    for (size_t i = 0; i < Iterations; ++i) {
+    for (size_t i = 0; i < kIterations; ++i) {
         index_of = pattern2.match("Here is a sample example.");
         sum += index_of;
     }
@@ -161,7 +161,7 @@ void StringMatch_strstr_benchmark()
 {
     test::StopWatch sw;
     int sum;
-    static const size_t iters = Iterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
+    static const size_t iters = kIterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
     printf("-----------------------------------------------------------\n");
     printf("  Benchmark: %s\n", "strstr()");
@@ -208,7 +208,7 @@ void StringMatch_benchmark()
 
     test::StopWatch sw;
     int sum;
-    static const size_t iters = Iterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
+    static const size_t iters = kIterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
     printf("---------------------------------------------------------------------------------------\n");
     printf("  Benchmark: %s\n", typeid(algorithm_type).name());
