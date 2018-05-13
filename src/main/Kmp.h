@@ -33,7 +33,9 @@ private:
 
 public:
     KmpImpl() : kmp_next_(), args_(nullptr) {}
-    ~KmpImpl() {}
+    ~KmpImpl() {
+        this->destroy();
+    }
 
     bool need_preprocessing() const { return true; }
 
@@ -106,56 +108,55 @@ public:
         assert(pattern_in != nullptr);
         assert(kmp_next != nullptr);
 
-        if (text_len < pattern_len) {
-            // Not found
-            return Status::NotFound;
-        }
+        if (pattern_len <= text_len) {
+            register const char * target = text;
+            register const char * pattern = pattern_in;
 
-        register const char * target = text;
-        register const char * pattern = pattern_in;
-
-        if ((size_t)target | (size_t)pattern | (size_t)kmp_next) {
-            const char * target_end = text + (text_len - pattern_len);
-            const char * pattern_end = pattern + pattern_len;
-            do {
-                if (*target != *pattern) {
-                    int search_index = (int)(pattern - pattern_in);
-                    if (search_index == 0) {
-                        target++;
-                        if (target > target_end) {
-                            // Not found
-                            return Status::NotFound;
+            //if ((size_t)target | (size_t)pattern | (size_t)kmp_next) {
+                const char * target_end = text + (text_len - pattern_len);
+                const char * pattern_end = pattern + pattern_len;
+                do {
+                    if (*target != *pattern) {
+                        int search_index = (int)(pattern - pattern_in);
+                        if (search_index == 0) {
+                            target++;
+                            if (target > target_end) {
+                                // Not found
+                                return Status::NotFound;
+                            }
+                        }
+                        else {
+                            assert(search_index >= 1);
+                            int search_offset = kmp_next[search_index];
+                            int target_offset = search_index - search_offset;
+                            assert(target_offset >= 1);
+                            pattern = pattern_in + search_offset;
+                            target = target + target_offset;
+                            if (target > target_end) {
+                                // Not found
+                                return Status::NotFound;
+                            }
                         }
                     }
                     else {
-                        assert(search_index >= 1);
-                        int search_offset = kmp_next[search_index];
-                        int target_offset = search_index - search_offset;
-                        assert(target_offset >= 1);
-                        pattern = pattern_in + search_offset;
-                        target = target + target_offset;
-                        if (target > target_end) {
-                            // Not found
-                            return Status::NotFound;
+                        target++;
+                        pattern++;
+                        if (pattern >= pattern_end) {
+                            // Found
+                            assert((target - text) >= (intptr_t)pattern_len);
+                            int pos = (int)((target - text) - (intptr_t)pattern_len);
+                            assert(pos >= 0);
+                            return pos;
                         }
+                        assert(target < (text + text_len));
                     }
-                }
-                else {
-                    target++;
-                    pattern++;
-                    if (pattern >= pattern_end) {
-                        // Found
-                        assert((target - text) >= (intptr_t)pattern_len);
-                        int pos = (int)((target - text) - (intptr_t)pattern_len);
-                        assert(pos >= 0);
-                        return pos;
-                    }
-                    assert(target < (text + text_len));
-                }
-            } while (1);
+                } while (1);
+            //}
+            // Invalid parameters
+            return Status::InvalidParameter;
         }
-        // Invalid parameters
-        return Status::InvalidParameter;
+
+        return Status::NotFound;
     }
 };
 

@@ -11,7 +11,6 @@
 #include <utility>
 
 namespace StringMatch {
-
 namespace detail {
 
     //
@@ -56,7 +55,6 @@ namespace detail {
     }
 
 } // namespace detail
-
 } // namespace StringMatch
 
 #endif // STRING_MATCH_APPLY_H

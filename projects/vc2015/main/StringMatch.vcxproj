@@ -29,6 +29,7 @@
     <ClInclude Include="..\..\..\src\main\Kmp.h" />
     <ClInclude Include="..\..\..\src\main\StringMatch.h" />
     <ClInclude Include="..\..\..\src\main\StringRef.h" />
+    <ClInclude Include="..\..\..\src\main\StrStr.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{51B07AE8-6218-4611-BCD1-7117914F48D5}</ProjectGuid>

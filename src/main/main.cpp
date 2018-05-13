@@ -11,6 +11,7 @@
 #include <string>
 #include <string.h>
 
+#include "StrStr.h"
 #include "Kmp.h"
 #include "BoyerMoore.h"
 #include "support/StopWatch.h"
@@ -249,6 +250,7 @@ int main(int argc, char * argv[])
     StringMatch_test<AnsiString::BoyerMoore>();
 
     StringMatch_strstr_benchmark();
+    StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
 

@@ -34,7 +34,9 @@ private:
 
 public:
     BoyerMooreImpl() : bmGs_(), bmBc_(), args_(nullptr, nullptr) {}
-    ~BoyerMooreImpl() {}
+    ~BoyerMooreImpl() {
+        this->destroy();
+    }
 
     bool need_preprocessing() const { return true; }
 
@@ -210,47 +212,46 @@ public:
         assert(bmBc != nullptr);
         assert(bmGs != nullptr);
 
-        if (text_len < pattern_len) {
-            // Not found
-            return Status::NotFound;
-        }
+        if (pattern_len <= text_len) {
+            //if ((size_t)text | (size_t)pattern_in | (size_t)bmGs | (size_t)bmBc) {
+                const char * pattern_end = pattern_in;
+                const char * target_end = text + (text_len - pattern_len);
+                const int pattern_last = (int)pattern_len - 1;
+                int target_idx = 0;
+                do {
+                    register const char * target = text + target_idx + pattern_last;
+                    register const char * pattern = pattern_in + pattern_last;
+                    assert(target < (text + text_len));
 
-        if ((size_t)text | (size_t)pattern_in | (size_t)bmGs | (size_t)bmBc) {
-            const char * pattern_end = pattern_in;
-            const char * target_end = text + (text_len - pattern_len);
-            const int pattern_last = (int)pattern_len - 1;
-            int target_idx = 0;
-            do {
-                register const char * target = text + target_idx + pattern_last;
-                register const char * pattern = pattern_in + pattern_last;
-                assert(target < (text + text_len));
-
-                while (pattern >= pattern_end) {
-                    if (*target != *pattern) {
-                        break;
+                    while (pattern >= pattern_end) {
+                        if (*target != *pattern) {
+                            break;
+                        }
+                        target--;
+                        pattern--;
                     }
-                    target--;
-                    pattern--;
-                }
 
-                if (pattern >= pattern_end) {
-                    int pattern_idx = (int)(pattern - pattern_in);
-                    target_idx += sm_max(bmGs[pattern_idx],
-                                         bmBc[(int)*target] - (pattern_last - pattern_idx));
-                }
-                else {
-                    assert(target_idx >= 0);
-                    assert(target_idx < (int)text_len);
-                    // Found
-                    return target_idx;
-                }
-            } while (target_idx <= (int)(text_len - pattern_len));
+                    if (pattern >= pattern_end) {
+                        int pattern_idx = (int)(pattern - pattern_in);
+                        target_idx += sm_max(bmGs[pattern_idx],
+                                             bmBc[(int)*target] - (pattern_last - pattern_idx));
+                    }
+                    else {
+                        assert(target_idx >= 0);
+                        assert(target_idx < (int)text_len);
+                        // Found
+                        return target_idx;
+                    }
+                } while (target_idx <= (int)(text_len - pattern_len));
 
-            // Not found
-            return Status::NotFound;
+                // Not found
+                return Status::NotFound;
+            //}
+            // Invalid parameters
+            return Status::InvalidParameter;
         }
-        // Invalid parameters
-        return Status::InvalidParameter;
+
+        return Status::NotFound;
     }
 
 private:

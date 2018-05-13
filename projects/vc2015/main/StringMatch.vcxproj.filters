@@ -44,5 +44,8 @@
     <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\StrStr.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
