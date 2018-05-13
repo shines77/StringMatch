@@ -43,7 +43,7 @@ public:
     const tuple_type & get_args() const { return this->args_; }
     void set_args(const tuple_type & args) {
         if ((void *)&args_ != (void *)&args) {
-            args_ = args;
+            this->args_ = args;
         }
     }
 
@@ -69,7 +69,7 @@ public:
                       const char_type * pattern_in, size_t pattern_len) {
         assert(text != nullptr);
         assert(pattern_in != nullptr);
-#if 0
+#if 1
         const char * substr = strstr(text, pattern_in);
         if (substr != nullptr)
             return (int)(substr - text);

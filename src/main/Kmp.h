@@ -42,7 +42,7 @@ public:
     const tuple_type & get_args() const { return this->args_; }
     void set_args(const tuple_type & args) {
         if ((void *)&args_ != (void *)&args) {
-            args_ = args;
+            this->args_ = args;
         }
         // Update args
         this->kmp_next_.reset(std::get<0>(args_));
