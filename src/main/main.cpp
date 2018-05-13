@@ -51,7 +51,7 @@ void StringMatch_examples()
     // Usage 1
     {
         AnsiString::Kmp::Pattern pattern("example");
-        if (pattern.is_compiled()) {
+        if (pattern.has_compiled()) {
             int pos = pattern.match("Here is a sample example.");
         }
     }
@@ -69,7 +69,7 @@ void StringMatch_examples()
     {
         AnsiString::Kmp::Pattern pattern("example");
         AnsiString::Kmp::Matcher matcher("Here is a sample example.");
-        if (pattern.is_compiled()) {
+        if (pattern.has_compiled()) {
             int pos = matcher.find(pattern);
         }
     }
@@ -79,7 +79,7 @@ void StringMatch_examples()
         AnsiString::Kmp::Pattern pattern("example");
         AnsiString::Kmp::Matcher matcher;
         matcher.set_text("Here is a sample example.");
-        if (pattern.is_compiled()) {
+        if (pattern.has_compiled()) {
             int pos = matcher.find(pattern);
         }
     }
@@ -88,7 +88,7 @@ void StringMatch_examples()
     {
         AnsiString::Kmp::Pattern pattern("example");
         AnsiString::Kmp::Matcher matcher;
-        if (pattern.is_compiled()) {
+        if (pattern.has_compiled()) {
             int pos = matcher.find("Here is a sample example.", pattern);
         }
     }
@@ -97,7 +97,7 @@ void StringMatch_examples()
     {
         AnsiString::Kmp::Pattern pattern("example");
         AnsiString::Kmp::Matcher matcher("Here is a sample example.");
-        if (pattern.is_compiled()) {
+        if (pattern.has_compiled()) {
             int pos = AnsiString::Kmp::find(matcher, pattern);
         }
     }
@@ -131,7 +131,7 @@ void StringMatch_test()
     sw.stop();
     pattern.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
 
-    // pattern: pattern_text_1
+    // pattern1: "sample"
     pattern_type pattern1(pattern_text_1);
 
     sum = 0;
@@ -143,7 +143,7 @@ void StringMatch_test()
     sw.stop();
     pattern1.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
 
-    // pattern: pattern_text_2
+    // pattern2: "a sample"
     pattern_type pattern2(pattern_text_2);
 
     sum = 0;

@@ -102,7 +102,8 @@ struct AlgorithmWrapper {
 
         bool is_valid() const { return (this->pattern_.c_str() != nullptr); }
         bool is_alive() const { return (this->is_valid() && this->algorithm_.is_alive()); }
-        bool is_compiled() const { return this->compiled_; }
+        bool has_compiled() const { return (this->need_preprocessing() ? this->compiled_ : true); }
+        bool need_preprocessing() const { return this->algorithm_.need_preprocessing(); }
 
         // Pattern::args
         tuple_type & get_args() const {

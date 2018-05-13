@@ -36,6 +36,8 @@ public:
     BoyerMooreImpl() : bmGs_(), bmBc_(), args_(nullptr, nullptr) {}
     ~BoyerMooreImpl() {}
 
+    bool need_preprocessing() const { return true; }
+
     const tuple_type & get_args() const { return this->args_; }
     void set_args(const tuple_type & args) {
         if ((void *)&args_ != (void *)&args) {
@@ -201,10 +203,10 @@ public:
 
     /* Search */
     static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern_, size_t pattern_len,
+                      const char_type * pattern_in, size_t pattern_len,
                       const int * bmGs, const int * bmBc) {
         assert(text != nullptr);
-        assert(pattern_ != nullptr);
+        assert(pattern_in != nullptr);
         assert(bmBc != nullptr);
         assert(bmGs != nullptr);
 
@@ -213,14 +215,14 @@ public:
             return Status::NotFound;
         }
 
-        if ((size_t)text | (size_t)pattern_ | (size_t)bmGs | (size_t)bmBc) {
-            const char * pattern_end = pattern_;
+        if ((size_t)text | (size_t)pattern_in | (size_t)bmGs | (size_t)bmBc) {
+            const char * pattern_end = pattern_in;
             const char * target_end = text + (text_len - pattern_len);
             const int pattern_last = (int)pattern_len - 1;
             int target_idx = 0;
             do {
                 register const char * target = text + target_idx + pattern_last;
-                register const char * pattern = pattern_ + pattern_last;
+                register const char * pattern = pattern_in + pattern_last;
                 assert(target < (text + text_len));
 
                 while (pattern >= pattern_end) {
@@ -232,7 +234,7 @@ public:
                 }
 
                 if (pattern >= pattern_end) {
-                    int pattern_idx = (int)(pattern - pattern_);
+                    int pattern_idx = (int)(pattern - pattern_in);
                     target_idx += sm_max(bmGs[pattern_idx],
                                          bmBc[(int)*target] - (pattern_last - pattern_idx));
                 }

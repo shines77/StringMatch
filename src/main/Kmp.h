@@ -35,6 +35,8 @@ public:
     KmpImpl() : kmp_next_(), args_(nullptr) {}
     ~KmpImpl() {}
 
+    bool need_preprocessing() const { return true; }
+
     const tuple_type & get_args() const { return this->args_; }
     void set_args(const tuple_type & args) {
         if ((void *)&args_ != (void *)&args) {
