@@ -25,14 +25,14 @@ class StrStrImpl {
 public:
     typedef StrStrImpl<CharT>   this_type;
     typedef CharT               char_type;
-    typedef std::tuple<int *>    tuple_type;
+    typedef std::tuple<int *>   tuple_type;
 
 private:
     bool alive_;
     tuple_type args_;
 
 public:
-    StrStrImpl() : alive_(false), args_(nullptr) {}
+    StrStrImpl() : alive_(true), args_(nullptr) {}
     ~StrStrImpl() {
         this->destroy();
     }
@@ -42,9 +42,6 @@ public:
 
     const tuple_type & get_args() const { return this->args_; }
     void set_args(const tuple_type & args) {
-        if ((void *)&args_ != (void *)&args) {
-            this->args_ = args;
-        }
     }
 
     void destroy() {
@@ -53,7 +50,6 @@ public:
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_t length) {
-        this->alive_ = true;
         return true;
     }
 
