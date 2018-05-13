@@ -80,13 +80,13 @@ public:
             register const char * target = text;
             register const char * pattern = pattern_in;
 
-            //if ((size_t)target | (size_t)pattern) {
+            if ((size_t)target | (size_t)pattern) {
                 const char * substr = strstr(target, pattern);
                 if (substr != nullptr)
                     return (int)(substr - target);
                 else
                     return Status::NotFound;
-            //}
+            }
             // Invalid parameters
             return Status::InvalidParameter;
         }

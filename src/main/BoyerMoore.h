@@ -213,7 +213,7 @@ public:
         assert(bmGs != nullptr);
 
         if (pattern_len <= text_len) {
-            //if ((size_t)text | (size_t)pattern_in | (size_t)bmGs | (size_t)bmBc) {
+            if ((size_t)text | (size_t)pattern_in | (size_t)bmGs | (size_t)bmBc) {
                 const char * pattern_end = pattern_in;
                 const char * target_end = text + (text_len - pattern_len);
                 const int pattern_last = (int)pattern_len - 1;
@@ -246,7 +246,7 @@ public:
 
                 // Not found
                 return Status::NotFound;
-            //}
+            }
             // Invalid parameters
             return Status::InvalidParameter;
         }

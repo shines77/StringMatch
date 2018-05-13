@@ -112,7 +112,7 @@ public:
             register const char * target = text;
             register const char * pattern = pattern_in;
 
-            //if ((size_t)target | (size_t)pattern | (size_t)kmp_next) {
+            if ((size_t)target | (size_t)pattern | (size_t)kmp_next) {
                 const char * target_end = text + (text_len - pattern_len);
                 const char * pattern_end = pattern + pattern_len;
                 do {
@@ -151,7 +151,7 @@ public:
                         assert(target < (text + text_len));
                     }
                 } while (1);
-            //}
+            }
             // Invalid parameters
             return Status::InvalidParameter;
         }
