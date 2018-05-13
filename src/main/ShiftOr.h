@@ -20,11 +20,27 @@
 
 namespace StringMatch {
 
+namespace detail {
+
+template <typename CharT>
+struct unsigned_traist {
+    typedef CharT type;
+};
+
+template <>
+struct unsigned_traist<char> {
+    typedef unsigned char type;
+};
+
+} // namespace detail
+
 template <typename CharT>
 class ShiftOrImpl {
 public:
     typedef ShiftOrImpl<CharT>                  this_type;
     typedef CharT                               char_type;
+    typedef typename detail::unsigned_traist<CharT>::type
+                                                uchar_type;
     typedef std::tuple<uint64_t *, uint64_t>    tuple_type;
 
 private:
@@ -84,12 +100,12 @@ public:
         limit = 0ULL;
         uint64_t * bitmap = new uint64_t[kMaxAscii];
         if (bitmap != nullptr) {
-            for (int i = 0; i < kMaxAscii; ++i)
+            for (size_t i = 0; i < kMaxAscii; ++i)
                 bitmap[i] = ~(0ULL);
 
             uint64_t mask = 1ULL;
-            for (int i = 0; i < length; mask <<= 1, ++i) {
-                bitmap[pattern[i]] &= ~mask;
+            for (size_t i = 0; i < length; mask <<= 1, ++i) {
+                bitmap[(uchar_type)pattern[i]] &= ~mask;
                 limit |= mask;
             }
             limit = ~(limit >> 1);
@@ -119,7 +135,7 @@ public:
             if ((size_t)text | (size_t)pattern | (size_t)bitmap) {
                 uint64_t state = ~0;
                 for (size_t i = 0; i < text_len; ++i) {
-                    state = (state << 1) | bitmap[text[i]];
+                    state = (state << 1) | bitmap[(uchar_type)text[i]];
                     if (state < limit)
                         return (int)(i + 1 - pattern_len);
                 }
