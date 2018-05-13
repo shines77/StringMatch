@@ -50,55 +50,55 @@ void StringMatch_examples()
 {
     // Usage 1
     {
-        AnsiString::Kmp::Pattern p("example");
-        if (p.is_compiled()) {
-            int pos = p.match("Here is a sample example.");
+        AnsiString::Kmp::Pattern pattern("example");
+        if (pattern.is_compiled()) {
+            int pos = pattern.match("Here is a sample example.");
         }
     }
 
     // Usage 2
     {
-        AnsiString::Kmp::Pattern p;
-        bool compiled = p.prepare("example");
+        AnsiString::Kmp::Pattern pattern;
+        bool compiled = pattern.preprocessing("example");
         if (compiled) {
-            int pos = p.match("Here is a sample example.");
+            int pos = pattern.match("Here is a sample example.");
         }
     }
 
     // Usage 3
     {
-        AnsiString::Kmp::Pattern p("example");
-        AnsiString::Kmp::Matcher m("Here is a sample example.");
-        if (p.is_compiled()) {
-            int pos = m.find(p);
+        AnsiString::Kmp::Pattern pattern("example");
+        AnsiString::Kmp::Matcher matcher("Here is a sample example.");
+        if (pattern.is_compiled()) {
+            int pos = matcher.find(pattern);
         }
     }
 
     // Usage 4
     {
-        AnsiString::Kmp::Pattern p("example");
-        AnsiString::Kmp::Matcher m;
-        m.set_text("Here is a sample example.");
-        if (p.is_compiled()) {
-            int pos = m.find(p);
+        AnsiString::Kmp::Pattern pattern("example");
+        AnsiString::Kmp::Matcher matcher;
+        matcher.set_text("Here is a sample example.");
+        if (pattern.is_compiled()) {
+            int pos = matcher.find(pattern);
         }
     }
 
     // Usage 5
     {
-        AnsiString::Kmp::Pattern p("example");
-        AnsiString::Kmp::Matcher m;
-        if (p.is_compiled()) {
-            int pos = m.find("Here is a sample example.", p);
+        AnsiString::Kmp::Pattern pattern("example");
+        AnsiString::Kmp::Matcher matcher;
+        if (pattern.is_compiled()) {
+            int pos = matcher.find("Here is a sample example.", pattern);
         }
     }
 
     // Usage 6
     {
-        AnsiString::Kmp::Pattern p("example");
-        AnsiString::Kmp::Matcher m("Here is a sample example.");
-        if (p.is_compiled()) {
-            int pos = AnsiString::Kmp::find(m, p);
+        AnsiString::Kmp::Pattern pattern("example");
+        AnsiString::Kmp::Matcher matcher("Here is a sample example.");
+        if (pattern.is_compiled()) {
+            int pos = AnsiString::Kmp::find(matcher, pattern);
         }
     }
 }
@@ -120,7 +120,7 @@ void StringMatch_test()
 
     // pattern: "example"
     pattern_type pattern;
-    pattern.prepare("example");
+    pattern.preprocessing("example");
 
     sum = 0;
     sw.start();
@@ -129,7 +129,7 @@ void StringMatch_test()
         sum += index_of;
     }
     sw.stop();
-    pattern.display(index_of, sum, sw.getElapsedMillisec());
+    pattern.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
 
     // pattern: pattern_text_1
     pattern_type pattern1(pattern_text_1);
@@ -141,7 +141,7 @@ void StringMatch_test()
         sum += index_of;
     }
     sw.stop();
-    pattern1.display(index_of, sum, sw.getElapsedMillisec());
+    pattern1.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
 
     // pattern: pattern_text_2
     pattern_type pattern2(pattern_text_2);
@@ -153,7 +153,7 @@ void StringMatch_test()
         sum += index_of;
     }
     sw.stop();
-    pattern2.display(index_of, sum, sw.getElapsedMillisec());
+    pattern2.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
 }
 
 void StringMatch_strstr_benchmark()
@@ -223,7 +223,7 @@ void StringMatch_benchmark()
 
     pattern_type pattern[kPatterns];
     for (int i = 0; i < kPatterns; ++i) {
-        pattern[i].prepare(s_Patterns[i]);
+        pattern[i].preprocessing(s_Patterns[i]);
     }
 
     sum = 0;
@@ -252,8 +252,8 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
 
-#if defined(_WIN32) || defined(OS_WINDOWS)
-    int result = ::system("pause");
+#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
+    ::system("pause");
 #endif
     return 0;
 }

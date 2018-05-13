@@ -159,9 +159,9 @@ public:
         int * bmGs = nullptr, * bmBc = nullptr;
         bool success = this_type::preprocessing(pattern, length, bmGs, bmBc);
         // Update args
-        args_ = std::make_tuple(bmGs, bmBc);
-        bmGs_.reset(bmGs);
-        bmBc_.reset(bmBc);
+        this->args_ = std::make_tuple(bmGs, bmBc);
+        this->bmGs_.reset(bmGs);
+        this->bmBc_.reset(bmBc);
         return success;
     }
 
