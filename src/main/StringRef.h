@@ -52,7 +52,7 @@ public:
     }
     template <size_t N>
     BasicStringRef(const char_type(&data)[N])
-        : data_(data), length_(length) {
+        : data_(data), length_(N) {
         // Do nothing!
     }
     BasicStringRef(const std::basic_string<char_type> & src)
