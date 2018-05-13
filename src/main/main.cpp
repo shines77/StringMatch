@@ -14,6 +14,7 @@
 #include "StrStr.h"
 #include "Kmp.h"
 #include "BoyerMoore.h"
+#include "ShiftOr.h"
 #include "support/StopWatch.h"
 
 using namespace StringMatch;
@@ -248,11 +249,14 @@ int main(int argc, char * argv[])
 
     StringMatch_test<AnsiString::Kmp>();
     StringMatch_test<AnsiString::BoyerMoore>();
+    StringMatch_test<AnsiString::ShiftOr>();
 
     StringMatch_strstr_benchmark();
+
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
+    StringMatch_benchmark<AnsiString::ShiftOr>();
 
 #if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
     ::system("pause");
