@@ -1,6 +1,6 @@
 
-#ifndef STRING_MATCH_BASIC_ALGORITHM_H
-#define STRING_MATCH_BASIC_ALGORITHM_H
+#ifndef STRING_MATCH_ALGORITHM_WRAPPER_H
+#define STRING_MATCH_ALGORITHM_WRAPPER_H
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -24,7 +24,7 @@
 namespace StringMatch {
 
 template <typename T>
-struct BasicAlgorithm {
+struct AlgorithmWrapper {
 
     typedef T                                   algorithm_type;
     typedef typename algorithm_type::tuple_type tuple_type;
@@ -324,21 +324,21 @@ struct BasicAlgorithm {
         }
     }; // class Matcher
 
-    // BasicAlgorithm::find(matcher, pattern)
+    // AlgorithmWrapper::find(matcher, pattern)
     static int find(const Matcher & matcher, const Pattern & pattern) {
         return algorithm_type::search(matcher.c_str(), matcher.size(),
                                       pattern.c_str(), pattern.size(),
                                       pattern.get_cargs());
     }
 
-}; // struct BasicAlgorithm<T>
+}; // struct AlgorithmWrapper<T>
 
 template <typename T>
 inline
-int BasicAlgorithm<T>::Pattern::match(const typename BasicAlgorithm<T>::Matcher & matcher) {
+int AlgorithmWrapper<T>::Pattern::match(const typename AlgorithmWrapper<T>::Matcher & matcher) {
     return this->match(matcher.c_str(), matcher.size());
 }
 
 } // namespace StringMatch
 
-#endif // STRING_MATCH_BASIC_ALGORITHM_H
+#endif // STRING_MATCH_ALGORITHM_WRAPPER_H

@@ -15,7 +15,7 @@
 #include <memory>
 
 #include "StringRef.h"
-#include "BasicAlgorithm.h"
+#include "AlgorithmWrapper.h"
 
 //
 // marco sm_countof(array)

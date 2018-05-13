@@ -158,11 +158,11 @@ public:
 };
 
 namespace AnsiString {
-    typedef BasicAlgorithm< KmpImpl<char> >    Kmp;
+    typedef AlgorithmWrapper< KmpImpl<char> >    Kmp;
 } // namespace AnsiString
 
 namespace UnicodeString {
-    typedef BasicAlgorithm< KmpImpl<wchar_t> > Kmp;
+    typedef AlgorithmWrapper< KmpImpl<wchar_t> > Kmp;
 } // namespace UnicodeString
 
 } // namespace StringMatch

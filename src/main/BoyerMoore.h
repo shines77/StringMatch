@@ -279,11 +279,11 @@ private:
 };
 
 namespace AnsiString {
-    typedef BasicAlgorithm< BoyerMooreImpl<char> >    BoyerMoore;
+    typedef AlgorithmWrapper< BoyerMooreImpl<char> >    BoyerMoore;
 } // namespace AnsiString
 
 namespace UnicodeString {
-    typedef BasicAlgorithm< BoyerMooreImpl<wchar_t> > BoyerMoore;
+    typedef AlgorithmWrapper< BoyerMooreImpl<wchar_t> > BoyerMoore;
 } // namespace UnicodeString
 
 } // namespace StringMatch

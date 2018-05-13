@@ -38,10 +38,10 @@
     <ClInclude Include="..\..\..\src\main\StringMatch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\main\BasicAlgorithm.h">
+    <ClInclude Include="..\..\..\src\main\Apply.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\main\Apply.h">
+    <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
