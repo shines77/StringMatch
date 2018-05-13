@@ -1,4 +1,10 @@
+
+#ifndef SUPPORT_TEST_STOPWATCH_H
+#define SUPPORT_TEST_STOPWATCH_H
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
+#endif
 
 #if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
 #ifndef WIN32_LEAN_AND_MEAN
@@ -348,3 +354,5 @@ typedef StopWatchBase<StdStopWatchImpl<double>> getTickCountStopWatch;
 #undef __COMPILER_BARRIER
 
 } // namespace test
+
+#endif // SUPPORT_TEST_STOPWATCH_H
