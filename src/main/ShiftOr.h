@@ -138,8 +138,8 @@ public:
  || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
                 register mask_type state1 = ~0;
                 register mask_type state2 = ~0;
-                register size_t half_len = (text_len / 2);
-                register size_t i;
+                size_t half_len = (text_len / 2);
+                size_t i;
                 for (i = 0; i < half_len; ++i) {
                     state1 = (state1 << 1) | bitmap[(uchar_type)text[i]];
                     state2 = (state2 << 1) | bitmap[(uchar_type)text[half_len + i]];
