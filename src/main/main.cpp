@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "StrStr.h"
+#include "StdSearch.h"
 #include "Kmp.h"
 #include "BoyerMoore.h"
 #include "ShiftOr.h"
@@ -24,6 +25,12 @@ static const size_t kIterations = 5000000;
 #else
 static const size_t kIterations = 10000;
 #endif
+
+//
+// EXACT STRING MATCHING ALGORITHMS (Animation in Java)
+//
+// See: http://www-igm.univ-mlv.fr/~lecroq/string/
+//
 
 //
 // See: http://volnitsky.com/project/str_search/index.html
@@ -259,6 +266,7 @@ int main(int argc, char * argv[])
     StringMatch_strstr_benchmark();
 
     StringMatch_benchmark<AnsiString::StrStr>();
+    StringMatch_benchmark<AnsiString::StdSearch>();
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
     StringMatch_benchmark<AnsiString::ShiftOr>();

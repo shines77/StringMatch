@@ -50,5 +50,17 @@
     <ClInclude Include="..\..\..\src\main\ShiftOr.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\StdSearch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\forward_iterator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\standard_iterator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\string_iterator.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

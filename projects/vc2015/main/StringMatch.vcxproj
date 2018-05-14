@@ -26,10 +26,14 @@
     <ClInclude Include="..\..\..\src\main\Apply.h" />
     <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h" />
     <ClInclude Include="..\..\..\src\main\BoyerMoore.h" />
+    <ClInclude Include="..\..\..\src\main\forward_iterator.h" />
     <ClInclude Include="..\..\..\src\main\Kmp.h" />
     <ClInclude Include="..\..\..\src\main\ShiftOr.h" />
+    <ClInclude Include="..\..\..\src\main\standard_iterator.h" />
+    <ClInclude Include="..\..\..\src\main\StdSearch.h" />
     <ClInclude Include="..\..\..\src\main\StringMatch.h" />
     <ClInclude Include="..\..\..\src\main\StringRef.h" />
+    <ClInclude Include="..\..\..\src\main\string_iterator.h" />
     <ClInclude Include="..\..\..\src\main\StrStr.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
