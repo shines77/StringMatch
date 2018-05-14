@@ -134,12 +134,39 @@ public:
 
         if (pattern_len <= text_len) {
             if ((size_t)text | (size_t)pattern | (size_t)bitmap) {
-                mask_type state = ~0;
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+                register mask_type state1 = ~0;
+                register mask_type state2 = ~0;
+                register size_t half_len = (text_len / 2);
+                register size_t i;
+                for (i = 0; i < half_len; ++i) {
+                    state1 = (state1 << 1) | bitmap[(uchar_type)text[i]];
+                    state2 = (state2 << 1) | bitmap[(uchar_type)text[half_len + i]];
+                    if (state1 < limit)
+                        return (int)(i + 1 - pattern_len);
+                    if (state2 < limit)
+                        return (int)(i + half_len + 1 - pattern_len);
+                }
+                size_t j;
+                for (j = 0; j < pattern_len - 1; ++j) {
+                    state1 = (state1 << 1) | bitmap[(uchar_type)text[i + j]];
+                    if (state1 < limit)
+                        return (int)(i + j + 1 - pattern_len);
+                }
+                if ((text_len & 2) != 0) {
+                    state2 = (state2 << 1) | bitmap[(uchar_type)text[half_len + i]];
+                    if (state2 < limit)
+                        return (int)(i + half_len + 1 - pattern_len);
+                }
+#else
+                register mask_type state = ~0;
                 for (size_t i = 0; i < text_len; ++i) {
                     state = (state << 1) | bitmap[(uchar_type)text[i]];
                     if (state < limit)
                         return (int)(i + 1 - pattern_len);
                 }
+#endif // _WIN64 || __amd64__
                 return Status::NotFound;
             }
             else {
