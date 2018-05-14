@@ -20,11 +20,11 @@
 
 namespace StringMatch {
 
-template <typename CharT>
+template <typename CharTy>
 class StrStrImpl {
 public:
-    typedef StrStrImpl<CharT>   this_type;
-    typedef CharT               char_type;
+    typedef StrStrImpl<CharTy>  this_type;
+    typedef CharTy              char_type;
     typedef std::tuple<int *>   tuple_type;
 
 private:

@@ -13,8 +13,8 @@
 namespace StringMatch {
 
 namespace detail {
-    template <typename CharT>
-    inline size_t strlen(const CharT * str) {
+    template <typename CharTy>
+    inline size_t strlen(const CharTy * str) {
         return ::strlen(str);
     }
 
@@ -29,10 +29,10 @@ namespace detail {
     }
 } // namespace detail
 
-template <typename CharT>
+template <typename CharTy>
 class BasicStringRef {
 public:
-    typedef CharT char_type;
+    typedef CharTy char_type;
 
 private:
     const char_type * data_;

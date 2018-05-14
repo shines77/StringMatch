@@ -22,9 +22,9 @@ namespace StringMatch {
 
 namespace detail {
 
-template <typename CharT>
+template <typename CharTy>
 struct unsigned_traist {
-    typedef CharT type;
+    typedef CharTy type;
 };
 
 template <>
@@ -34,18 +34,19 @@ struct unsigned_traist<char> {
 
 } // namespace detail
 
-template <typename CharT>
+template <typename CharTy, typename MaskTy = uint64_t>
 class ShiftOrImpl {
 public:
-    typedef ShiftOrImpl<CharT>                  this_type;
-    typedef CharT                               char_type;
-    typedef typename detail::unsigned_traist<CharT>::type
+    typedef ShiftOrImpl<CharTy, MaskTy>         this_type;
+    typedef CharTy                              char_type;
+    typedef MaskTy                              mask_type;
+    typedef typename detail::unsigned_traist<CharTy>::type
                                                 uchar_type;
-    typedef std::tuple<uint64_t *, uint64_t>    tuple_type;
+    typedef std::tuple<mask_type *, mask_type>  tuple_type;
 
 private:
-    std::unique_ptr<uint64_t[]> bitmap_;
-    uint64_t limit_;
+    std::unique_ptr<mask_type[]> bitmap_;
+    mask_type limit_;
     tuple_type args_;
 
 public:
@@ -66,8 +67,8 @@ public:
         this->limit_ = std::get<1>(args_);
     }
 
-    uint64_t * bitmap() const { return this->bitmap_.get(); }
-    void set_bitmap(uint64_t * bitmap) {
+    mask_type * bitmap() const { return this->bitmap_.get(); }
+    void set_bitmap(mask_type * bitmap) {
         this->bitmap_.reset(bitmap);
     }
 
@@ -81,8 +82,8 @@ public:
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_t length) {
-        uint64_t * bitmap = nullptr;
-        uint64_t limit = 0;
+        mask_type * bitmap = nullptr;
+        mask_type limit = 0;
         bool success = this_type::preprocessing(pattern, length, bitmap, limit);
         // Update args
         this->args_ = std::make_tuple(bitmap, limit);
@@ -93,17 +94,17 @@ public:
 
     /* Preprocessing */
     static bool preprocessing(const char * pattern, size_t length,
-                              uint64_t * &out_bitmap, uint64_t & limit) {
+                              mask_type * & out_bitmap, mask_type & limit) {
         assert(pattern != nullptr);
         static const size_t kMaxAscii = 256;
 
-        limit = 0ULL;
-        uint64_t * bitmap = new uint64_t[kMaxAscii];
+        limit = 0;
+        mask_type * bitmap = new mask_type[kMaxAscii];
         if (bitmap != nullptr) {
             for (size_t i = 0; i < kMaxAscii; ++i)
-                bitmap[i] = ~(0ULL);
+                bitmap[i] = ~0;
 
-            uint64_t mask = 1ULL;
+            mask_type mask = 1;
             for (size_t i = 0; i < length; mask <<= 1, ++i) {
                 bitmap[(uchar_type)pattern[i]] &= ~mask;
                 limit |= mask;
@@ -118,22 +119,22 @@ public:
     static int search(const char_type * text, size_t text_len,
                       const char_type * pattern, size_t pattern_len,
                       const tuple_type & args) {
-        uint64_t * bitmap = std::get<0>(args);
-        uint64_t limit = std::get<1>(args);
+        mask_type * bitmap = std::get<0>(args);
+        mask_type limit = std::get<1>(args);
         return this_type::search(text, text_len, pattern, pattern_len, bitmap, limit);
     }
 
     /* Search */
     static int search(const char_type * text, size_t text_len,
                       const char_type * pattern, size_t pattern_len,
-                      const uint64_t * bitmap, uint64_t limit) {
+                      const mask_type * bitmap, mask_type limit) {
         assert(text != nullptr);
         assert(pattern != nullptr);
         assert(bitmap != nullptr);
 
         if (pattern_len <= text_len) {
             if ((size_t)text | (size_t)pattern | (size_t)bitmap) {
-                uint64_t state = ~0;
+                mask_type state = ~0;
                 for (size_t i = 0; i < text_len; ++i) {
                     state = (state << 1) | bitmap[(uchar_type)text[i]];
                     if (state < limit)
@@ -152,11 +153,11 @@ public:
 };
 
 namespace AnsiString {
-    typedef AlgorithmWrapper< ShiftOrImpl<char> >    ShiftOr;
+    typedef AlgorithmWrapper< ShiftOrImpl<char, uint32_t> >    ShiftOr;
 } // namespace AnsiString
 
 namespace UnicodeString {
-    typedef AlgorithmWrapper< ShiftOrImpl<wchar_t> > ShiftOr;
+    typedef AlgorithmWrapper< ShiftOrImpl<wchar_t, uint32_t> > ShiftOr;
 } // namespace UnicodeString
 
 } // namespace StringMatch
