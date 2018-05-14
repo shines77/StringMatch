@@ -45,7 +45,12 @@ static const char * s_Patterns[] = {
     "between",
     "people",
 
-    "between 150,000"
+    "largely mangrove",
+    "some dispute",
+    "The population of Bakassi",
+
+    "between 150,000",
+    "between 150,000 and 300,000 people."
 };
 
 void StringMatch_examples()
@@ -105,16 +110,16 @@ void StringMatch_examples()
     }
 }
 
-template <typename algorithm_type>
+template <typename AlgorithmTy>
 void StringMatch_test()
 {
-    typedef typename algorithm_type::Pattern pattern_type;
+    typedef typename AlgorithmTy::Pattern pattern_type;
 
     const char pattern_text_1[] = "sample";
     char pattern_text_2[] = "a sample";
 
     printf("---------------------------------------------------------------------------------------\n");
-    printf("  Test: %s\n", typeid(algorithm_type).name());
+    printf("  Test: %s\n", typeid(AlgorithmTy).name());
     printf("---------------------------------------------------------------------------------------\n\n");
 
     test::StopWatch sw;
@@ -202,17 +207,17 @@ void StringMatch_strstr_benchmark()
     printf("sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
 }
 
-template <typename algorithm_type>
+template <typename AlgorithmTy>
 void StringMatch_benchmark()
 {
-    typedef typename algorithm_type::Pattern pattern_type;
+    typedef typename AlgorithmTy::Pattern pattern_type;
 
     test::StopWatch sw;
     int sum;
     static const size_t iters = kIterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
     printf("---------------------------------------------------------------------------------------\n");
-    printf("  Benchmark: %s\n", typeid(algorithm_type).name());
+    printf("  Benchmark: %s\n", typeid(AlgorithmTy).name());
     printf("---------------------------------------------------------------------------------------\n\n");
 
     static const int kSearchTexts = sm_countof_i(s_SearchTexts);
@@ -266,7 +271,7 @@ int main(int argc, char * argv[])
 #endif
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)) \
-    && (defined(NDEBUG) || !defined(NDEBUG))
+    && (defined(NDEBUG) || !defined(_DEBUG))
     ::system("pause");
 #endif
     return 0;

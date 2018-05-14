@@ -99,7 +99,7 @@ public:
 
     template <size_t N>
     void set_data(const char_type(&data)[N]) {
-        this->set_data(data, N);
+        this->set_data(data, N - 1);
     }
 
     void set_data(const std::basic_string<char_type> & data) {
