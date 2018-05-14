@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <cstddef>
+#include <xmemory>
 #include <type_traits>
 
 namespace jstd {
@@ -65,7 +66,7 @@ template <typename PtrTy>
 inline
 auto __const_cast(PtrTy ptr) {
     using Element = typename std::pointer_traits<PtrTy>::element_type;
-    using Modifiable = std::remove_const_t<Element>;
+    using Modifiable = typename std::remove_const<Element>::type;
     using Dest = typename std::pointer_traits<PtrTy>::template std::rebind<Modifiable>;
 
     return (std::pointer_traits<Dest>::pointer_to(const_cast<Modifiable &>(*ptr)));
