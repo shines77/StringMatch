@@ -62,5 +62,8 @@
     <ClInclude Include="..\..\..\src\main\string_iterator.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\iterator.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

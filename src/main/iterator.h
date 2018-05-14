@@ -75,7 +75,7 @@ auto __const_cast(PtrTy ptr) {
 template <typename Ty>
 inline
 auto __const_cast(Ty * ptr) {
-    return (const_cast<std::remove_const_t<Ty> *>(ptr));
+    return (const_cast<typename std::remove_const<Ty>::type *>(ptr));
 }
 
 } // namespace detail

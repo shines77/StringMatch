@@ -189,8 +189,8 @@ public:
     }
 
     reference operator * () const {
-        assert(ptr_ != nullptr_t{});
-        return (*ptr_);
+        assert(this->ptr_ != nullptr_t{});
+        return (*this->ptr_);
     }
 
     // return pointer to class object
