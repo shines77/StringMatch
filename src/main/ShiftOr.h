@@ -152,6 +152,16 @@ public:
     }
 };
 
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+namespace AnsiString {
+    typedef AlgorithmWrapper< ShiftOrImpl<char, uint64_t> >    ShiftOr;
+} // namespace AnsiString
+
+namespace UnicodeString {
+    typedef AlgorithmWrapper< ShiftOrImpl<wchar_t, uint64_t> > ShiftOr;
+} // namespace UnicodeString
+#else
 namespace AnsiString {
     typedef AlgorithmWrapper< ShiftOrImpl<char, uint32_t> >    ShiftOr;
 } // namespace AnsiString
@@ -159,6 +169,7 @@ namespace AnsiString {
 namespace UnicodeString {
     typedef AlgorithmWrapper< ShiftOrImpl<wchar_t, uint32_t> > ShiftOr;
 } // namespace UnicodeString
+#endif // _WIN64 || __amd64__
 
 } // namespace StringMatch
 

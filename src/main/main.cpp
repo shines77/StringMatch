@@ -258,7 +258,8 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::BoyerMoore>();
     StringMatch_benchmark<AnsiString::ShiftOr>();
 
-#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
+#if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)) \
+    && (defined(NDEBUG) || !defined(NDEBUG))
     ::system("pause");
 #endif
     return 0;

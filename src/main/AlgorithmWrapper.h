@@ -23,6 +23,32 @@
 
 namespace StringMatch {
 
+struct Console {
+    static void print_result(const char * text, size_t text_len,
+                                const char * pattern, size_t pattern_len, int index_of) {
+        if (text != nullptr)
+            printf("text     = \"%s\", text_len = %" PRIuPTR "\n", text, text_len);
+        else
+            printf("text     = \"NULL\", text_len = 0\n");
+
+        if (pattern != nullptr)
+            printf("pattern  = \"%s\", pattern_len = %" PRIuPTR "\n", pattern, pattern_len);
+        else
+            printf("pattern  = \"NULL\", pattern_len = 0\n");
+
+        printf("index_of = %d\n", index_of);
+        printf("\n");
+    }
+
+    static void print_result(const char * text, size_t text_len,
+                                const char * pattern, size_t pattern_len, int index_of,
+                                int sum, double time_spent) {
+        print_result(text, text_len, pattern, pattern_len, index_of);
+        printf("sum: %-11d, time spent: %0.3f ms\n", sum, time_spent);
+        printf("\n");
+    }
+};
+
 template <typename T>
 struct AlgorithmWrapper {
 
@@ -33,32 +59,6 @@ struct AlgorithmWrapper {
     typedef BasicStringRef<char_type>           stringref_type;
 
     class Matcher;
-
-    struct Console {
-        static void print_result(const char * text, size_t text_len,
-                                 const char * pattern, size_t pattern_len, int index_of) {
-            if (text != nullptr)
-                printf("text     = \"%s\", text_len = %" PRIuPTR "\n", text, text_len);
-            else
-                printf("text     = \"NULL\", text_len = 0\n");
-
-            if (pattern != nullptr)
-                printf("pattern  = \"%s\", pattern_len = %" PRIuPTR "\n", pattern, pattern_len);
-            else
-                printf("pattern  = \"NULL\", pattern_len = 0\n");
-
-            printf("index_of = %d\n", index_of);
-            printf("\n");
-        }
-
-        static void print_result(const char * text, size_t text_len,
-                                 const char * pattern, size_t pattern_len, int index_of,
-                                 int sum, double time_spent) {
-            print_result(text, text_len, pattern, pattern_len, index_of);
-            printf("sum: %-11d, time spent: %0.3f ms\n", sum, time_spent);
-            printf("\n");
-        }
-    };
 
     class Pattern {
     private:
