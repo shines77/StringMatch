@@ -34,42 +34,6 @@ namespace detail {
     }
 } // namespace detail
 
-template <typename T>
-struct BasicStringRef_Node {
-    typedef T value_type;
-    typedef BasicStringRef_Node node_type;
-    typedef BasicStringRef_Node * node_ptr;
-
-    node_ptr next;
-    value_type value;
-
-    BasicStringRef_Node(node_ptr _next = nullptr) : next(_next), value() {}
-    BasicStringRef_Node(value_type const & _value)
-        : next(nullptr), value(_value) {
-    }
-    BasicStringRef_Node(value_type && _value)
-        : next(nullptr), value(std::forward<value_type>(_value)) {
-    }
-    BasicStringRef_Node(node_ptr _next, value_type const & _value)
-        : next(_next), value(_value) {
-    }
-    BasicStringRef_Node(node_ptr _next, value_type && _value)
-        : next(_next), value(std::forward<value_type>(_value)) {
-    }
-    BasicStringRef_Node(node_type const & src)
-        : next(src.next), value(src.value) {
-    }
-    BasicStringRef_Node(node_type && src)
-        : next(std::forward<value_type>(src).next),
-          value(std::forward<value_type>(src).value) {
-    }
-    ~BasicStringRef_Node() {
-#ifndef NDEBUG
-        next = nullptr;
-#endif
-    }
-};
-
 template <typename CharTy>
 class BasicStringRef {
 public:
@@ -136,8 +100,8 @@ public:
     size_t size() const { return this->length_; }
     size_t length() const { return this->size(); }
 
-    iterator begin() { return iterator(this->data_); }
-    iterator end() { return iterator(this->data_ + this->length_); }
+    iterator begin() const { return iterator(this->data_); }
+    iterator end() const { return iterator(this->data_ + this->length_); }
 
     const_iterator cbegin() const { return const_iterator(this->data_); }
     const_iterator cend() const { return const_iterator(this->data_ + this->length_); }

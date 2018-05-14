@@ -11,12 +11,13 @@
 #include <string>
 #include <string.h>
 
+#include "support/StopWatch.h"
+
 #include "StrStr.h"
 #include "StdSearch.h"
 #include "Kmp.h"
 #include "BoyerMoore.h"
 #include "ShiftOr.h"
-#include "support/StopWatch.h"
 
 using namespace StringMatch;
 
