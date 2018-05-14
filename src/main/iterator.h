@@ -75,7 +75,7 @@ auto __const_cast(Ptr ptr) {
 // remove const-ness from a plain pointer
 template <typename T>
 inline
-auto __const_cast(T * ptr) {
+auto __const_cast(T * ptr) -> const typename std::remove_const<T>::type * {
     return (const_cast<typename std::remove_const<T>::type *>(ptr));
 }
 
