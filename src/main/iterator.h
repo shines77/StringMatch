@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 #include <cstddef>
-#include <xmemory>
+#include <memory>
 #include <type_traits>
 
 namespace jstd {
