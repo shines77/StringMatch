@@ -67,7 +67,7 @@ inline
 auto __const_cast(Ptr ptr) {
     using Element = typename std::pointer_traits<Ptr>::element_type;
     using Modifiable = typename std::remove_const<Element>::type;
-    using Dest = typename std::pointer_traits<Ptr>::template std::pointer_traits::rebind<Modifiable>;
+    using Dest = typename std::pointer_traits<Ptr>::template rebind<Modifiable>;
 
     return (std::pointer_traits<Dest>::pointer_to(const_cast<Modifiable &>(*ptr)));
 }
