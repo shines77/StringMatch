@@ -258,6 +258,13 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::BoyerMoore>();
     StringMatch_benchmark<AnsiString::ShiftOr>();
 
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+    printf("Arch type: __amd64__\n\n");
+#else
+    printf("Arch type: __x86__\n\n");
+#endif
+
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)) \
     && (defined(NDEBUG) || !defined(NDEBUG))
     ::system("pause");
