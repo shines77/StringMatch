@@ -6,8 +6,6 @@
 #pragma once
 #endif
 
-#include "StringMatch.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -16,6 +14,7 @@
 #include <string>
 #include <assert.h>
 
+#include "StringMatch.h"
 #include "StringRef.h"
 
 namespace StringMatch {
