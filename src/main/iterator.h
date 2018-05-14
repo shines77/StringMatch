@@ -62,21 +62,21 @@ namespace detail {
 // function template const_cast
 
 // remove const-ness from a fancy pointer
-template <typename PtrTy>
+template <typename Ptr>
 inline
-auto __const_cast(PtrTy ptr) {
-    using Element = typename std::pointer_traits<PtrTy>::element_type;
+auto __const_cast(Ptr ptr) {
+    using Element = typename std::pointer_traits<Ptr>::element_type;
     using Modifiable = typename std::remove_const<Element>::type;
-    using Dest = typename std::pointer_traits<PtrTy>::template std::rebind<Modifiable>;
+    using Dest = typename std::pointer_traits<Ptr>::template std::pointer_traits::rebind<Modifiable>;
 
     return (std::pointer_traits<Dest>::pointer_to(const_cast<Modifiable &>(*ptr)));
 }
 
 // remove const-ness from a plain pointer
-template <typename Ty>
+template <typename T>
 inline
-auto __const_cast(Ty * ptr) {
-    return (const_cast<typename std::remove_const<Ty>::type *>(ptr));
+auto __const_cast(T * ptr) {
+    return (const_cast<typename std::remove_const<T>::type *>(ptr));
 }
 
 } // namespace detail
