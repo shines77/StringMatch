@@ -185,7 +185,11 @@ public:
 
     // make an unchecked iterator
     _Unchecked_type _Unchecked() const {
+#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
         return (detail::__const_cast(this->ptr_));
+#else
+        return _Unchecked_type(this->ptr_);
+#endif
     }
 
     reference operator * () const {

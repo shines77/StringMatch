@@ -13,6 +13,8 @@
 namespace StringMatch {
 namespace detail {
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1800)
+
     //
     // About std::tuple<Args...>
     //
@@ -53,6 +55,8 @@ namespace detail {
         return Apply< ::std::tuple_size<typename ::std::decay<Tuple>::type>::value >
             ::apply(::std::forward<Func>(func), ::std::forward<Tuple>(tuple));
     }
+
+#endif // (_MSC_VER >= 1800)
 
 } // namespace detail
 } // namespace StringMatch

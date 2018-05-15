@@ -59,13 +59,15 @@ struct iterator {
 
 namespace detail {
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1800)
+
 // function template const_cast
 
 // remove const-ness from a fancy pointer
 template <typename Ptr>
 inline
 auto __const_cast(Ptr ptr)
-#if !defined(_MSC_VER)
+#if !defined(_MSC_VER) || (_MSC_VER < 1900)
                            -> typename std::pointer_traits<
                                 typename std::pointer_traits<Ptr>::template rebind<
                                   typename std::remove_const<
@@ -88,6 +90,8 @@ inline
 auto __const_cast(T * ptr) -> const typename std::remove_const<T>::type * {
     return (const_cast<typename std::remove_const<T>::type *>(ptr));
 }
+
+#endif // (_MSC_VER >= 1800)
 
 } // namespace detail
 

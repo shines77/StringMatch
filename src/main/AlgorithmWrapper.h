@@ -9,7 +9,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#if !defined(_MSC_VER) || (_MSC_VER >= 1800)
 #include <inttypes.h>
+#else
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+	|| defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+#define PRIuPTR		"llu"
+#else
+#define PRIuPTR		"lu"
+#endif
+#endif
 #include <assert.h>
 #include <string>
 #include <memory>

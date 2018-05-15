@@ -14,8 +14,11 @@
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 #endif // _WIN32
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1800)
 #include <chrono>
 #include <mutex>
+#endif
 
 #ifndef __COMPILER_BARRIER
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER) || defined(__ICL)
@@ -25,7 +28,9 @@
 #endif
 #endif
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1800)
 using namespace std::chrono;
+#endif
 
 namespace test {
 namespace detail {
@@ -36,11 +41,11 @@ public:
     typedef T time_float_t;
 
     // 1 second = 1,000 millisec
-    const time_float_t kMillisecCoff = static_cast<time_float_t>(1000.0);
+    static const time_float_t kMillisecCoff = static_cast<time_float_t>(1000.0);
     // 1 second = 1,000,000 microsec
-    const time_float_t kMicrosecCoff = static_cast<time_float_t>(1000000.0);
+    static const time_float_t kMicrosecCoff = static_cast<time_float_t>(1000000.0);
     // 1 second = 1,000,000,000 nanosec
-    const time_float_t kNanosecCoff = static_cast<time_float_t>(1000000000.0);
+    static const time_float_t kNanosecCoff = static_cast<time_float_t>(1000000000.0);
 
 private:
     time_float_t duration_;
@@ -78,9 +83,9 @@ public:
     typedef typename implement_type::duration_type  duration_type;
 
     // The zero value time.
-    const time_float_t kTimeZero = static_cast<time_float_t>(0.0);
+    static time_float_t kTimeZero;		// static_cast<time_float_t>(0.0);
     // 1 second = 1000 millisec
-    const time_float_t kMillisecCoff = static_cast<time_float_t>(1000.0);
+    static time_float_t kMillisecCoff;	// static_cast<time_float_t>(1000.0);
 
 private:
     time_point_t start_time_;
@@ -247,37 +252,51 @@ template <typename T>
 typename StopWatchBase<T>::time_point_t
 StopWatchBase<T>::base_time_ = StopWatchBase<T>::implement_type::get_timepoint_now();
 
+// The zero value time.
+template <typename T>
+typename StopWatchBase<T>::time_float_t
+StopWatchBase<T>::kTimeZero = static_cast<typename StopWatchBase<T>::time_float_t>(0.0);
+
+// 1 second = 1000 millisec
+template <typename T>
+typename StopWatchBase<T>::time_float_t
+StopWatchBase<T>::kMillisecCoff = static_cast<typename StopWatchBase<T>::time_float_t>(1000.0);
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1800)
+
 template <typename TimeFloatType>
 class StdStopWatchImpl {
 public:
-    typedef TimeFloatType                                   time_float_t;
-    typedef double                                          time_stamp_t;
-    typedef std::chrono::time_point<high_resolution_clock>  time_point_t;
-    typedef std::chrono::duration<time_stamp_t>             duration_type;
+	typedef TimeFloatType                                   time_float_t;
+	typedef double                                          time_stamp_t;
+	typedef std::chrono::time_point<high_resolution_clock>  time_point_t;
+	typedef std::chrono::duration<time_stamp_t>             duration_type;
 
 public:
-    StdStopWatchImpl() {}
-    ~StdStopWatchImpl() {}
+	StdStopWatchImpl() {}
+	~StdStopWatchImpl() {}
 
-    static time_point_t get_timepoint_now() {
-        return std::chrono::high_resolution_clock::now();
-    }
+	static time_point_t get_timepoint_now() {
+		return std::chrono::high_resolution_clock::now();
+	}
 
-    static time_float_t get_interval_time(time_stamp_t now_time, time_stamp_t old_time) {
-        return static_cast<time_float_t>(now_time - old_time);
-    }
+	static time_float_t get_interval_time(time_stamp_t now_time, time_stamp_t old_time) {
+		return static_cast<time_float_t>(now_time - old_time);
+	}
 
-    static time_float_t get_interval_time(time_point_t now_time, time_point_t old_time) {
-        duration_type interval_time = std::chrono::duration_cast<duration_type>(now_time - old_time);
-        return interval_time.count();
-    }
+	static time_float_t get_interval_time(time_point_t now_time, time_point_t old_time) {
+		duration_type interval_time = std::chrono::duration_cast<duration_type>(now_time - old_time);
+		return interval_time.count();
+	}
 
-    static time_stamp_t get_timestamp_now(time_point_t now_time, time_point_t base_time) {
-        return static_cast<time_stamp_t>(get_interval_time(now_time, base_time));
-    }
+	static time_stamp_t get_timestamp_now(time_point_t now_time, time_point_t base_time) {
+		return static_cast<time_stamp_t>(get_interval_time(now_time, base_time));
+	}
 };
 
 typedef StopWatchBase<StdStopWatchImpl<double>> StopWatch;
+
+#endif // (_MSC_VER >= 1800)
 
 #if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
 
@@ -350,6 +369,12 @@ typedef StopWatchBase<getTickCountStopWatchImpl<double>> getTickCountStopWatch;
 typedef StopWatchBase<StdStopWatchImpl<double>> getTickCountStopWatch;
 
 #endif // _WIN32
+
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+
+typedef StopWatchBase<timeGetTimeStopWatchImpl<double>> StopWatch;
+
+#endif
 
 #undef __COMPILER_BARRIER
 
