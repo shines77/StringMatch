@@ -80,7 +80,7 @@ struct AlgorithmWrapper {
         }
         Pattern(const char_type * first, const char_type * last)
             : pattern_(first, last), compiled_(false) {
-            this->compiled_ = this->preprocessing(pattern, first, last);
+            this->compiled_ = this->preprocessing(first, last);
         }
         template <size_t N>
         Pattern(const char_type (&pattern)[N])
@@ -150,7 +150,7 @@ struct AlgorithmWrapper {
 
         bool preprocessing(const char_type * first, const char_type * last) {
             assert(first <= last);
-            return this->preprocessing(pattern, (size_t)(last - first));
+            return this->preprocessing(first, (size_t)(last - first));
         }
 
         template <size_t N>
@@ -178,7 +178,7 @@ struct AlgorithmWrapper {
 
         int match(const char_type * first, const char_type * last) const {
             assert(first <= last);
-            return this->match(text, (size_t)(last - first));
+            return this->match(first, (size_t)(last - first));
         }
 
         template <size_t N>

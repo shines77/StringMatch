@@ -64,7 +64,10 @@ namespace detail {
 // remove const-ness from a fancy pointer
 template <typename Ptr>
 inline
-auto __const_cast(Ptr ptr) {
+auto __const_cast(Ptr ptr) -> decltype(typename std::pointer_traits<Ptr>::template rebind<
+                                typename std::remove_const<
+                                    typename std::pointer_traits<Ptr>::element_type
+                                >::type>) {
     using Element = typename std::pointer_traits<Ptr>::element_type;
     using Modifiable = typename std::remove_const<Element>::type;
     using Dest = typename std::pointer_traits<Ptr>::template rebind<Modifiable>;
