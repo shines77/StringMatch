@@ -22,12 +22,12 @@ namespace StringMatch {
 namespace detail {
 
 template <typename CharTy>
-struct unsigned_trait {
+struct uchar_traits {
     typedef CharTy type;
 };
 
 template <>
-struct unsigned_trait<char> {
+struct uchar_traits<char> {
     typedef unsigned char type;
 };
 
@@ -39,7 +39,7 @@ public:
     typedef ShiftOrImpl<CharTy, MaskTy>         this_type;
     typedef CharTy                              char_type;
     typedef MaskTy                              mask_type;
-    typedef typename detail::unsigned_trait<CharTy>::type
+    typedef typename detail::uchar_traits<CharTy>::type
                                                 uchar_type;
 
 private:
