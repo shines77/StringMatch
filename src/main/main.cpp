@@ -5,12 +5,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <string.h>
 
+#include "StringMatch.h"
 #include "support/StopWatch.h"
 
 #include "StrStr.h"

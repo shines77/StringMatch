@@ -8,14 +8,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <cstdint>
+#include "basic/stdint.h"
 #include <string>
+#include <memory>
 #include <algorithm>
 #include <assert.h>
 
 #include "StringMatch.h"
 #include "StringRef.h"
+#include "AlgorithmWrapper.h"
 
 namespace StringMatch {
 

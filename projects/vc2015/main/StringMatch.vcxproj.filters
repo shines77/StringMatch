@@ -16,6 +16,12 @@
     <Filter Include="include\support">
       <UniqueIdentifier>{73b1d226-6545-419a-b123-d1c048d31b7c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\basic">
+      <UniqueIdentifier>{ef0ac070-6ab5-4104-8bb5-e2dbc01ea3b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\basic\msvc">
+      <UniqueIdentifier>{72182ddf-7874-455b-9484-8233c604d7cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\main\main.cpp">
@@ -64,6 +70,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\iterator.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\stdint.h">
+      <Filter>src\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\stdsize.h">
+      <Filter>src\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\inttypes.h">
+      <Filter>src\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\basic\msvc\inttypes.h">
+      <Filter>src\basic\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\basic\msvc\stdbool.h">
+      <Filter>src\basic\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\basic\msvc\stdint.h">
+      <Filter>src\basic\msvc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

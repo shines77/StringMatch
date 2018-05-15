@@ -9,6 +9,8 @@
 #include <memory>
 #include <type_traits>
 
+#include "StringMatch.h"
+
 namespace jstd {
 
 template <typename T>
@@ -27,11 +29,15 @@ protected:
 public:
     forward_iterator_base(node_ptr node = nullptr) : node_(node) {}
     explicit forward_iterator_base(void * p) : node_(static_cast<node_ptr>(p)) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     forward_iterator_base(std::nullptr_t) : node_(nullptr) {}
+#endif
     explicit forward_iterator_base(forward_iterator_base const & src)
         : node_(src.node_) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     explicit forward_iterator_base(forward_iterator_base && src)
         : node_(std::forward<forward_iterator_base>(src).node_) {}
+#endif
     ~forward_iterator_base() {}
 
     forward_iterator_base & operator = (forward_iterator_base const & rhs) {
@@ -39,10 +45,12 @@ public:
         return *this;
     }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     forward_iterator_base & operator = (forward_iterator_base && rhs) {
         this->node_ = std::forward<forward_iterator_base>(rhs).node_;
         return *this;
     }
+#endif
 
     operator node_ptr () { return this->node_; }
     operator const node_ptr () const { return this->node_; }
@@ -104,22 +112,29 @@ public:
         : forward_iterator_base<T>(node) {}
     explicit const_forward_iterator(void * p)
         : forward_iterator_base<T>(p) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     const_forward_iterator(std::nullptr_t node)
         : forward_iterator_base<T>(node) {}
+#endif
     explicit const_forward_iterator(const_forward_iterator const & src)
         : forward_iterator_base<T>(src.node_) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     explicit const_forward_iterator(const_forward_iterator && src)
         : forward_iterator_base<T>(std::forward<const_forward_iterator>(src).node_) {}
+#endif
     ~const_forward_iterator() {}
 
     const_forward_iterator & operator = (const_forward_iterator const & rhs) {
         this->node_ = rhs.node_;
         return *this;
     }
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     const_forward_iterator & operator = (const_forward_iterator && rhs) {
         this->node_ = std::forward<const_forward_iterator>(rhs).node_;
         return *this;
     }
+#endif
 
     bool is_equal(node_ptr rhs) const {
         return (this->node_ == rhs);
@@ -129,9 +144,11 @@ public:
         return (this->node_ == static_cast<node_ptr>(rhs));
     }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     bool is_equal(std::nullptr_t rhs) const {
         return (this->node_ == nullptr);
     }
+#endif
 
     bool is_equal(const_forward_iterator const & rhs) const {
         return (this->node_ == rhs.node_);
@@ -153,9 +170,11 @@ public:
         return this->is_equal(rhs);
     }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     bool operator == (std::nullptr_t rhs) const {
         return this->is_equal(rhs);
     }
+#endif
 
     bool operator != (node_ptr rhs) const {
         return !(this->is_equal(rhs));
@@ -165,9 +184,11 @@ public:
         return !(this->is_equal(rhs));
     }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     bool operator != (std::nullptr_t rhs) const {
         return !(this->is_equal(rhs));
     }
+#endif
 
     const value_type & operator *  () const {
         assert(this->node_ != nullptr);
@@ -240,34 +261,46 @@ public:
 public:
     forward_iterator(node_ptr node = nullptr) : const_forward_iterator<T>(node) {}
     explicit forward_iterator(void * p) : const_forward_iterator<T>(p) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     forward_iterator(std::nullptr_t node) : const_forward_iterator<T>(node) {}
+#endif
     explicit forward_iterator(forward_iterator const & src)
         : const_forward_iterator<T>(src.node_) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     explicit forward_iterator(forward_iterator && src)
         : const_forward_iterator<T>(std::forward<forward_iterator>(src).node_) {}
+#endif
     explicit forward_iterator(const_forward_iterator<T> const & src)
         : const_forward_iterator<T>(src.node_) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     explicit forward_iterator(const_forward_iterator<T> && src)
         : const_forward_iterator<T>(std::forward<const_forward_iterator<T>>(src).node_) {}
+#endif
     ~forward_iterator() {}
 
     forward_iterator & operator = (forward_iterator const & rhs) {
         this->node_ = rhs.node_;
         return *this;
     }
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     forward_iterator & operator = (forward_iterator && rhs) {
         this->node_ = std::forward<forward_iterator>(rhs).node_;
         return *this;
     }
+#endif
 
     forward_iterator & operator = (const_forward_iterator<T> const & rhs) {
         this->node_ = rhs.node_;
         return *this;
     }
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     forward_iterator & operator = (const_forward_iterator<T> && rhs) {
         this->node_ = std::forward<const_forward_iterator<T>>(rhs).node_;
         return *this;
     }
+#endif
 
     bool is_equal(node_ptr rhs) const {
         return (this->node_ == rhs);
@@ -277,9 +310,11 @@ public:
         return (this->node_ == static_cast<node_ptr>(rhs));
     }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     bool is_equal(std::nullptr_t rhs) const {
         return (this->node_ == nullptr);
     }
+#endif
 
     bool is_equal(forward_iterator const & rhs) const {
         return (this->node_ == rhs.node_);
@@ -313,9 +348,11 @@ public:
         return this->is_equal(rhs);
     }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     bool operator == (std::nullptr_t rhs) const {
         return this->is_equal(rhs);
     }
+#endif
 
     bool operator != (node_ptr rhs) const {
         return !(this->is_equal(rhs));
@@ -325,9 +362,11 @@ public:
         return !(this->is_equal(rhs));
     }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     bool operator != (std::nullptr_t rhs) const {
         return !(this->is_equal(rhs));
     }
+#endif
 
     value_type & operator *  () const {
         return *const_cast<value_type *>(&this->node_->value);
@@ -599,6 +638,8 @@ inline bool operator != (void * lhs, const const_forward_iterator<T> & rhs)
 //    return lhs.is_equal(rhs);
 //}
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
+
 template <typename T>
 inline bool operator == (std::nullptr_t lhs, const forward_iterator<T> & rhs)
 {
@@ -610,6 +651,8 @@ inline bool operator == (std::nullptr_t lhs, const const_forward_iterator<T> & r
 {
     return rhs.is_equal(lhs);
 }
+
+#endif
 
 // (forward_iterator<T> lhs != std::nullptr_t rhs)?
 
@@ -625,6 +668,8 @@ inline bool operator == (std::nullptr_t lhs, const const_forward_iterator<T> & r
 //    return !lhs.is_equal(rhs);
 //}
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
+
 template <typename T>
 inline bool operator != (std::nullptr_t lhs, const forward_iterator<T> & rhs)
 {
@@ -636,6 +681,8 @@ inline bool operator != (std::nullptr_t lhs, const const_forward_iterator<T> & r
 {
     return !rhs.is_equal(lhs);
 }
+
+#endif
 
 #endif
 

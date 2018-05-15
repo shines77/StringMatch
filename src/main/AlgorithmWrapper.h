@@ -27,6 +27,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "StringMatch.h"
 #include "StringRef.h"
 #include "Apply.h"
 
@@ -34,7 +35,7 @@ namespace StringMatch {
 
 struct Console {
     static void print_result(const char * text, size_t text_len,
-                                const char * pattern, size_t pattern_len, int index_of) {
+                             const char * pattern, size_t pattern_len, int index_of) {
         if (text != nullptr)
             printf("text     = \"%s\", text_len = %" PRIuPTR "\n", text, text_len);
         else
@@ -50,8 +51,8 @@ struct Console {
     }
 
     static void print_result(const char * text, size_t text_len,
-                                const char * pattern, size_t pattern_len, int index_of,
-                                int sum, double time_spent) {
+                             const char * pattern, size_t pattern_len, int index_of,
+                             int sum, double time_spent) {
         print_result(text, text_len, pattern, pattern_len, index_of);
         printf("sum: %-11d, time spent: %0.3f ms\n", sum, time_spent);
         printf("\n");

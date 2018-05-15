@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <assert.h>
 
+#include "StringMatch.h"
 #include "iterator.h"
 
 namespace jstd {
@@ -38,17 +39,23 @@ protected:
 public:
     // construct with null pointer
     const_string_iterator(pointer ptr = nullptr) : ptr_(ptr) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     const_string_iterator(std::nullptr_t) : ptr_(nullptr) {}
+#endif
 
     reference operator * () const {
-        assert(ptr_ != nullptr_t{});
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
+        assert(ptr_ != std::nullptr_t{});
+#endif
         return (*ptr_);
     }
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     // return pointer to class object
     pointer operator -> () const {
         return (std::pointer_traits<pointer>::pointer_to(**this));
     }
+#endif
 
     // pre-increment
     this_type & operator ++ () {
@@ -175,7 +182,9 @@ public:
 public:
     // construct with null pointer
     string_iterator(pointer ptr = nullptr) : base_type(ptr) {}
+#if !defined(_MSC_VER) || (_MSC_VER >= 1600)
     string_iterator(std::nullptr_t) : base_type(nullptr) {}
+#endif
 
     // reset from unchecked iterator
     this_type & _Rechecked(_Unchecked_type rhs) {

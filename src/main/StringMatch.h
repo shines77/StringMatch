@@ -8,16 +8,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include "stdint.h"
 #if !defined(_MSC_VER) || (_MSC_VER >= 1800)
 #include <inttypes.h>
 #endif
-#include <assert.h>
-#include <string>
-#include <memory>
 
-#include "StringRef.h"
-#include "AlgorithmWrapper.h"
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+    #ifndef nullptr
+    #define nullptr NULL
+    #endif
+#endif
+
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+namespace std {
+    struct nullptr_t {
+        typedef void * type;
+    };
+}
+#endif // std::nullptr_t
 
 //
 // marco sm_countof(array)
@@ -59,7 +67,7 @@
 namespace StringMatch {
 
 struct Status {
-    enum Match_Status {
+    enum MatchStatus {
         InvalidParameter = -2,
         NotFound = -1,
         Found = 0
