@@ -41,35 +41,18 @@ public:
     typedef MaskTy                              mask_type;
     typedef typename detail::unsigned_trait<CharTy>::type
                                                 uchar_type;
-    typedef std::tuple<mask_type *, mask_type>  tuple_type;
 
 private:
     std::unique_ptr<mask_type[]> bitmap_;
     mask_type limit_;
-    tuple_type args_;
 
 public:
-    ShiftOrImpl() : bitmap_(), limit_(0), args_() {}
+    ShiftOrImpl() : bitmap_(), limit_(0) {}
     ~ShiftOrImpl() {
         this->destroy();
     }
 
     bool need_preprocessing() const { return true; }
-
-    const tuple_type & get_args() const { return this->args_; }
-    void set_args(const tuple_type & args) {
-        if ((void *)&args_ != (void *)&args) {
-            this->args_ = args;
-        }
-        // Update args
-        this->bitmap_.reset(std::get<0>(args_));
-        this->limit_ = std::get<1>(args_);
-    }
-
-    mask_type * bitmap() const { return this->bitmap_.get(); }
-    void set_bitmap(mask_type * bitmap) {
-        this->bitmap_.reset(bitmap);
-    }
 
     bool is_alive() const {
         return (this->bitmap() != nullptr);
@@ -81,23 +64,9 @@ public:
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_t length) {
-        mask_type * bitmap = nullptr;
-        mask_type limit = 0;
-        bool success = this_type::preprocessing(pattern, length, bitmap, limit);
-        // Update args
-        this->args_ = std::make_tuple(bitmap, limit);
-        this->bitmap_.reset(bitmap);
-        this->limit_ = limit;
-        return success;
-    }
-
-    /* Preprocessing */
-    static bool preprocessing(const char * pattern, size_t length,
-                              mask_type * & out_bitmap, mask_type & limit) {
         assert(pattern != nullptr);
         static const size_t kMaxAscii = 256;
-
-        limit = 0;
+        mask_type limit = 0;
         mask_type * bitmap = new mask_type[kMaxAscii];
         if (bitmap != nullptr) {
             for (size_t i = 0; i < kMaxAscii; ++i)
@@ -110,25 +79,20 @@ public:
             }
             limit = ~(limit >> 1);
         }
-        out_bitmap = bitmap;
+        this->bitmap_.reset(bitmap);
+        this->limit_ = limit;
         return (bitmap != nullptr);
     }
 
-    /* Search */
-    static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern, size_t pattern_len,
-                      const tuple_type & args) {
-        mask_type * bitmap = std::get<0>(args);
-        mask_type limit = std::get<1>(args);
-        return this_type::search(text, text_len, pattern, pattern_len, bitmap, limit);
-    }
-
-    /* Search */
-    static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern, size_t pattern_len,
-                      const mask_type * bitmap, mask_type limit) {
+    /* Searching */
+    int search(const char_type * text, size_t text_len,
+               const char_type * pattern, size_t pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
+
+        mask_type * bitmap = this->bitmap_.get();
+        mask_type limit = this->limit_;
+
         assert(bitmap != nullptr);
 
         if (pattern_len <= text_len) {

@@ -53,7 +53,7 @@ template <typename T>
 struct AlgorithmWrapper {
 
     typedef T                                   algorithm_type;
-    typedef typename algorithm_type::tuple_type tuple_type;
+//  typedef typename algorithm_type::tuple_type tuple_type;
     typedef typename algorithm_type::char_type  char_type;
     typedef std::basic_string<char_type>        string_type;
     typedef BasicStringRef<char_type>           stringref_type;
@@ -77,6 +77,10 @@ struct AlgorithmWrapper {
         Pattern(const char_type * pattern, size_t length)
             : pattern_(pattern, length), compiled_(false) {
             this->compiled_ = this->preprocessing(pattern, length);
+        }
+        Pattern(const char_type * first, const char_type * last)
+            : pattern_(first, last), compiled_(false) {
+            this->compiled_ = this->preprocessing(pattern, first, last);
         }
         template <size_t N>
         Pattern(const char_type (&pattern)[N])
@@ -105,6 +109,7 @@ struct AlgorithmWrapper {
         bool has_compiled() const { return (this->need_preprocessing() ? this->compiled_ : true); }
         bool need_preprocessing() const { return this->algorithm_.need_preprocessing(); }
 
+        /*
         // Pattern::args
         tuple_type & get_args() const {
             return const_cast<tuple_type &>(this->algorithm_.get_args());
@@ -120,18 +125,20 @@ struct AlgorithmWrapper {
 
         template <size_t N>
         inline auto get(const tuple_type & args) const
-            ->decltype(std::tuple_element<N, tuple_type>::type) {
+            -> decltype(typename std::tuple_element<N, tuple_type>::type) {
             return std::get<N>(args);
         }
 
         template <size_t N>
         inline void set(const tuple_type & args,
                         typename std::tuple_element<N, tuple_type>::type && value) const {
-            //std::set<N>(args, value);
+            std::set<N>(args, value);
         }
+        */
 
         // Pattern::preprocessing()
         bool preprocessing(const char_type * pattern, size_t length) {
+            assert(pattern != nullptr);
             bool success = this->internal_preprocessing(pattern, length);
             this->compiled_ = success;
             return success;
@@ -141,9 +148,14 @@ struct AlgorithmWrapper {
             return this->preprocessing(pattern, detail::strlen(pattern));
         }
 
+        bool preprocessing(const char_type * first, const char_type * last) {
+            assert(first <= last);
+            return this->preprocessing(pattern, (size_t)(last - first));
+        }
+
         template <size_t N>
         bool preprocessing(const char_type (&pattern)[N]) {
-            return this->preprocessing(pattern, N);
+            return this->preprocessing(pattern, N - 1);
         }
 
         bool preprocessing(const string_type & pattern) {
@@ -155,54 +167,46 @@ struct AlgorithmWrapper {
         }
 
         // Pattern::match(text, length);
-        int match(const char_type * text, size_t length) {
-            return algorithm_type::search(text, length,
-                                          this->c_str(), this->size(),
-                                          this->get_args());
+        int match(const char_type * text, size_t length) const {
+            assert(text != nullptr);
+            return this->algorithm_.search(text, length, this->c_str(), this->size());
         }
 
-        int match(const char_type * text) {
+        int match(const char_type * text) const  {
             return this->match(text, detail::strlen(text));
         }
 
-        template <size_t N>
-        int match(const char_type(&text)[N]) {
-            return this->match(text, N);
+        int match(const char_type * first, const char_type * last) const {
+            assert(first <= last);
+            return this->match(text, (size_t)(last - first));
         }
 
-        int match(const string_type & text) {
+        template <size_t N>
+        int match(const char_type(&text)[N]) const {
+            return this->match(text, N - 1);
+        }
+
+        int match(const string_type & text) const {
             return this->match(text.c_str(), text.size());
         }
 
-        int match(const stringref_type & text) {
+        int match(const stringref_type & text) const {
             return this->match(text.c_str(), text.size());
         }
 
         // Pattern::match(matcher);
-        int match(const Matcher & matcher);
+        int match(const Matcher & matcher) const;
 
         // Pattern::print_result()
         void print_result(const Matcher & matcher, int index_of) {
-            if (this->is_alive()) {
-                Console::print_result(this->matcher_.c_str(), this->matcher_.size(),
-                               this->c_str(), this->size(), index_of);
-            }
-            else {
-                Console::print_result(this->matcher_.c_str(), this->matcher_.size(),
-                               nullptr, 0, index_of);
-            }
+            Console::print_result(matcher.c_str(), matcher.size(),
+                                  this->c_str(), this->size(), index_of);
         }
 
         void print_result(const Matcher & matcher, int index_of, int sum, double time_spent) {
-            if (this->is_alive()) {
-                Console::print_result(matcher.c_str(), matcher.size(),
-                               this->c_str(), this->size(),
-                               index_of, sum, time_spent);
-            }
-            else {
-                Console::print_result(matcher.c_str(), matcher.size(), nullptr, 0,
-                               index_of, sum, time_spent);
-            }
+            Console::print_result(matcher.c_str(), matcher.size(),
+                                  this->c_str(), this->size(),
+                                  index_of, sum, time_spent);
         }
 
     private:
@@ -230,9 +234,12 @@ struct AlgorithmWrapper {
         Matcher(const char_type * text, size_t length)
             : text_(text, length) {
         }
+        Matcher(const char_type * first, const char_type * last)
+            : text_(first, last) {
+        }
         template <size_t N>
         Matcher(const char_type (&text)[N])
-            : text_(text, N) {
+            : text_(text, N - 1) {
         }
         Matcher(const string_type & text)
             : text_(text) {
@@ -241,6 +248,7 @@ struct AlgorithmWrapper {
             : text_(text) {
         }
         ~Matcher() {
+            this->text_.reset();
         }
 
         const char_type * c_str() const { return this->text_.c_str(); }
@@ -249,6 +257,7 @@ struct AlgorithmWrapper {
         size_t size() const { return this->text_.size(); }
         size_t length() const { return this->size(); }
 
+        bool is_valid() const { return (this->text_.c_str() != nullptr); }
         stringref_type & text() const { return this->text_; }
 
         // Matcher::set_text()
@@ -260,9 +269,13 @@ struct AlgorithmWrapper {
             this->text_.set_data(text);
         }
 
+        void set_text(const char_type * first, const char_type * last) {
+            this->text_.set_data(first, last);
+        }
+
         template <size_t N>
         void set_text(const char_type (&text)[N]) {
-            this->text_.set_data(text, N);
+            this->text_.set_data(text, N - 1);
         }
 
         void set_text(const string_type & text) {
@@ -273,27 +286,36 @@ struct AlgorithmWrapper {
             this->text_.set_data(text);
         }
 
+        // Matcher::find(text, length, pattern, pattern_len);
+        int find(const char_type * text, size_t length,
+                 const char_type * pattern, size_t pattern_len) const {
+            Pattern _pattern(pattern, pattern_len);
+            return _pattern.match(text, length);
+        }
+
         // Matcher::find(pattern);
-        int find(const Pattern & pattern) {
-            return algorithm_type::search(this->text_.c_str(), this->text_.size(),
-                                          pattern.c_str(), pattern.size(),
-                                          pattern.get_args());
+        int find(const Pattern & pattern) const {
+            return pattern.match(this->text_.c_str(), this->text_.size());
         }
 
         // Matcher::find(text, length, pattern);
         int find(const char_type * text, size_t length, const Pattern & pattern) {
-            return this->search(text, length,
-                                pattern.c_str(), pattern.size(),
-                                pattern.get_args());
+            assert(text != nullptr);
+            return this->internal_find(text, length, pattern);
         }
 
         int find(const char_type * text, const Pattern & pattern) {
             return this->find(text, detail::strlen(text), pattern);
         }
 
+        int find(const char_type * first, const char_type * last, const Pattern & pattern) {
+            assert(first <= last);
+            return this->find(text, (size_t)(last - first), pattern);
+        }
+
         template <size_t N>
         int find(const char_type (&text)[N], const Pattern & pattern) {
-            return this->find(text, N, pattern);
+            return this->find(text, N - 1, pattern);
         }
 
         int find(const string_type & text, const Pattern & pattern) {
@@ -307,36 +329,32 @@ struct AlgorithmWrapper {
         // Matcher::print_result()
         void print_result(const Pattern & pattern, int index_of) {
             Console::print_result(this->text_.c_str(), this->text_.size(),
-                           pattern.c_str(), pattern.size(), index_of);
+                                  pattern.c_str(), pattern.size(), index_of);
         }
 
         void print_result(const Pattern & pattern, int index_of, int sum, double time_spent) {
             Console::print_result(this->text_.c_str(), this->text_.size(),
-                           pattern.c_str(), pattern.size(),
-                           index_of, sum, time_spent);
+                                  pattern.c_str(), pattern.size(),
+                                  index_of, sum, time_spent);
         }
 
     private:
-        int search(const char_type * text, size_t text_len,
-                   const char_type * pattern, size_t pattern_len,
-                   const tuple_type & tuple) {
+        int internal_find(const char_type * text, size_t text_len, const Pattern & pattern) {
             this->text_.set_data(text, text_len);
-            return algorithm_type::search(text, text_len, pattern, pattern_len, tuple);
+            return pattern.match(text, text_len);
         }
     }; // class Matcher
 
     // AlgorithmWrapper::find(matcher, pattern)
     static int find(const Matcher & matcher, const Pattern & pattern) {
-        return algorithm_type::search(matcher.c_str(), matcher.size(),
-                                      pattern.c_str(), pattern.size(),
-                                      pattern.get_cargs());
+        return pattern.match(matcher.c_str(), matcher.size());
     }
 
 }; // struct AlgorithmWrapper<T>
 
 template <typename T>
 inline
-int AlgorithmWrapper<T>::Pattern::match(const typename AlgorithmWrapper<T>::Matcher & matcher) {
+int AlgorithmWrapper<T>::Pattern::match(const typename AlgorithmWrapper<T>::Matcher & matcher) const {
     return this->match(matcher.c_str(), matcher.size());
 }
 

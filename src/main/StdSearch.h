@@ -25,24 +25,18 @@ class StdSearchImpl {
 public:
     typedef StdSearchImpl<CharTy>   this_type;
     typedef CharTy                  char_type;
-    typedef std::tuple<int *>       tuple_type;
 
 private:
     bool alive_;
-    tuple_type args_;
 
 public:
-    StdSearchImpl() : alive_(true), args_(nullptr) {}
+    StdSearchImpl() : alive_(true) {}
     ~StdSearchImpl() {
         this->destroy();
     }
 
     bool need_preprocessing() const { return false; }
     bool is_alive() const { return this->alive_; }
-
-    const tuple_type & get_args() const { return this->args_; }
-    void set_args(const tuple_type & args) {
-    }
 
     void destroy() {
         this->alive_ = false;
@@ -53,21 +47,14 @@ public:
         return true;
     }
 
-    /* Search */
-    static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern, size_t pattern_len,
-                      const tuple_type & args) {
-        return this_type::search(text, text_len, pattern, pattern_len);
-    }
-
-    /* Search */
-    static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern_in, size_t pattern_len) {
+    /* Searching */
+    int search(const char_type * text, size_t text_len,
+               const char_type * pattern, size_t pattern_len) const {
         assert(text != nullptr);
-        assert(pattern_in != nullptr);
+        assert(pattern != nullptr);
 #if 1
         StringRef sText(text, text_len);
-        StringRef sPattern(pattern_in, pattern_len);
+        StringRef sPattern(pattern, pattern_len);
         StringRef::iterator iter = std::search(sText.begin(), sText.end(),
                                                sPattern.begin(), sPattern.end());
         if (iter != sText.end())
@@ -76,7 +63,7 @@ public:
             return Status::NotFound;
 #else
         std::string sText(text, text_len);
-        std::string sPattern(pattern_in, pattern_len);
+        std::string sPattern(pattern, pattern_len);
         std::string::iterator iter = std::search(sText.begin(), sText.end(),
                                                  sPattern.begin(), sPattern.end());
         if (iter != sText.end())

@@ -22,42 +22,20 @@ namespace StringMatch {
 template <typename CharTy>
 class BoyerMooreImpl {
 public:
-    typedef BoyerMooreImpl<CharTy>      this_type;
-    typedef CharTy                      char_type;
-    typedef std::tuple<int *, int *>    tuple_type;
+    typedef BoyerMooreImpl<CharTy>  this_type;
+    typedef CharTy                  char_type;
 
 private:
     std::unique_ptr<int[]> bmGs_;
     std::unique_ptr<int[]> bmBc_;
-    tuple_type args_;
 
 public:
-    BoyerMooreImpl() : bmGs_(), bmBc_(), args_(nullptr, nullptr) {}
+    BoyerMooreImpl() : bmGs_(), bmBc_() {}
     ~BoyerMooreImpl() {
         this->destroy();
     }
 
     bool need_preprocessing() const { return true; }
-
-    const tuple_type & get_args() const { return this->args_; }
-    void set_args(const tuple_type & args) {
-        if ((void *)&args_ != (void *)&args) {
-            this->args_ = args;
-        }
-        // Update args
-        this->bmGs_.reset(std::get<0>(args_));
-        this->bmBc_.reset(std::get<1>(args_));
-    }
-
-    int * bmGs() const { return this->bmGs_.get(); }
-    void set_bmGs(int * bmGs) {
-        this->bmGs_.reset(bmGs);
-    }
-
-    int * bmBc() const { return this->bmBc_.get(); }
-    void set_bmBc(int * bmBc) {
-        this->bmBc_.reset(bmBc);
-    }
 
     bool is_alive() const {
         return (this->bmGs() != nullptr && this->bmBc() != nullptr);
@@ -159,18 +137,6 @@ private:
 public:
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_t length) {
-        int * bmGs = nullptr, * bmBc = nullptr;
-        bool success = this_type::preprocessing(pattern, length, bmGs, bmBc);
-        // Update args
-        this->args_ = std::make_tuple(bmGs, bmBc);
-        this->bmGs_.reset(bmGs);
-        this->bmBc_.reset(bmBc);
-        return success;
-    }
-
-    /* Preprocessing */
-    static bool preprocessing(const char * pattern, size_t length,
-                              int * &out_bmGs, int * &out_bmBc) {
         bool success = false;
         assert(pattern != nullptr);
 
@@ -180,7 +146,7 @@ public:
             /* Preprocessing good suffixes. */
             success = this_type::preBmGs(pattern, length, bmGs, gsLen);
         }
-        out_bmGs = bmGs;
+        this->bmGs_.reset(bmGs);
 
         static const int bcLen = 256;
         int * bmBc = new int[bcLen];
@@ -188,26 +154,19 @@ public:
             /* Preprocessing bad characters. */
             this_type::preBmBc(pattern, length, bmBc, bcLen);
         }
-        out_bmBc = bmBc;
-
-        return (success && (bmBc != nullptr) && (bmGs != nullptr));
+        this->bmBc_.reset(bmBc);
+        return (success && (bmBc != nullptr) && (bmGs != nullptr));;
     }
 
-    /* Search */
-    static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern, size_t pattern_len,
-                      const tuple_type & args) {
-        int * bmGs = std::get<0>(args);
-        int * bmBc = std::get<1>(args);
-        return this_type::search(text, text_len, pattern, pattern_len, bmGs, bmBc);
-    }
-
-    /* Search */
-    static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern_in, size_t pattern_len,
-                      const int * bmGs, const int * bmBc) {
+    /* Searching */
+    int search(const char_type * text, size_t text_len,
+               const char_type * pattern_in, size_t pattern_len) const {
         assert(text != nullptr);
         assert(pattern_in != nullptr);
+
+        int * bmGs = this->bmGs_.get();
+        int * bmBc = this->bmBc_.get();
+
         assert(bmBc != nullptr);
         assert(bmGs != nullptr);
 
@@ -254,7 +213,7 @@ public:
     }
 
 private:
-    // Reserve codes
+    // Reserved codes
     static void suffixes_old(const char * pattern, size_t length, int * suffix) {
         int i, f, g;
         int len = (int)length;

@@ -22,35 +22,19 @@ namespace StringMatch {
 template <typename CharTy>
 class KmpImpl {
 public:
-    typedef KmpImpl<CharTy>     this_type;
-    typedef CharTy              char_type;
-    typedef std::tuple<int *>   tuple_type;
+    typedef KmpImpl<CharTy> this_type;
+    typedef CharTy          char_type;
 
 private:
     std::unique_ptr<int[]> kmp_next_;
-    tuple_type args_;
 
 public:
-    KmpImpl() : kmp_next_(), args_(nullptr) {}
+    KmpImpl() : kmp_next_() {}
     ~KmpImpl() {
         this->destroy();
     }
 
     bool need_preprocessing() const { return true; }
-
-    const tuple_type & get_args() const { return this->args_; }
-    void set_args(const tuple_type & args) {
-        if ((void *)&args_ != (void *)&args) {
-            this->args_ = args;
-        }
-        // Update args
-        this->kmp_next_.reset(std::get<0>(args_));
-    }
-
-    int * kmp_next() const { return this->kmp_next_.get(); }
-    void set_kmp_next(int * kmp_next) {
-        this->kmp_next_.reset(kmp_next);
-    }
 
     bool is_alive() const {
         return (this->kmp_next() != nullptr);
@@ -62,18 +46,7 @@ public:
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_t length) {
-        int * kmp_next = nullptr;
-        bool success = this_type::preprocessing(pattern, length, kmp_next);
-        // Update args
-        this->args_ = std::make_tuple(kmp_next);
-        this->kmp_next_.reset(kmp_next);
-        return success;
-    }
-
-    /* Preprocessing */
-    static bool preprocessing(const char * pattern, size_t length, int * &out_kmp_next) {
         assert(pattern != nullptr);
-
         int * kmp_next = new int[length + 1];
         if (kmp_next != nullptr) {
             kmp_next[0] = -1;
@@ -87,24 +60,17 @@ public:
                 }
             }
         }
-        out_kmp_next = kmp_next;
+        this->kmp_next_.reset(kmp_next);
         return (kmp_next != nullptr);
     }
 
-    /* Search */
-    static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern, size_t pattern_len,
-                      const tuple_type & args) {
-        int * kmp_next = std::get<0>(args);
-        return this_type::search(text, text_len, pattern, pattern_len, kmp_next);
-    }
-
-    /* Search */
-    static int search(const char_type * text, size_t text_len,
-                      const char_type * pattern_in, size_t pattern_len,
-                      const int * kmp_next) {
+    /* Searching */
+    int search(const char_type * text, size_t text_len,
+               const char_type * pattern_in, size_t pattern_len) const {
         assert(text != nullptr);
         assert(pattern_in != nullptr);
+
+        int * kmp_next = this->kmp_next_.get();
         assert(kmp_next != nullptr);
 
         if (pattern_len <= text_len) {
