@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-project(string_match)
+project(StringMatch)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -68,5 +68,5 @@ add_custom_target(release
     COMMENT "Switch CMAKE_BUILD_TYPE to Release"
 )
 
-add_executable(string_match ${SOURCE_FILES})
-target_link_libraries(string_match ${EXTRA_LIBS})
+add_executable(StringMatch ${SOURCE_FILES})
+target_link_libraries(StringMatch ${EXTRA_LIBS})
