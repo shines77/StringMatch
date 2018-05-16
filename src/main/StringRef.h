@@ -58,8 +58,8 @@ public:
     typedef CharTy &        reference;
     typedef const CharTy &  const_reference;
 
-    typedef jstd::string_iterator<BasicStringRef<CharTy>>          iterator;
-    typedef jstd::const_string_iterator<BasicStringRef<CharTy>>    const_iterator;
+    typedef jstd::string_iterator<BasicStringRef<CharTy>>       iterator;
+    typedef jstd::const_string_iterator<BasicStringRef<CharTy>> const_iterator;
 
     typedef std::basic_string<value_type> string_type;
     typedef BasicStringRef<value_type> stringref_type;
