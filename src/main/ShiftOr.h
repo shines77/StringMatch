@@ -19,25 +19,6 @@
 
 namespace StringMatch {
 
-namespace detail {
-
-template <typename CharTy>
-struct uchar_traits {
-    typedef CharTy type;
-};
-
-template <>
-struct uchar_traits<char> {
-    typedef unsigned char type;
-};
-
-template <>
-struct uchar_traits<short> {
-    typedef unsigned short type;
-};
-
-} // namespace detail
-
 template <typename CharTy, typename MaskTy = uint64_t>
 class ShiftOrImpl {
 public:

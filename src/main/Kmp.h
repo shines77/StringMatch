@@ -39,7 +39,7 @@ public:
     static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
-        return (this->kmp_next() != nullptr);
+        return (this->kmp_next_.get() != nullptr);
     }
 
     void destroy() {
@@ -108,7 +108,7 @@ public:
                     target++;
                     pattern++;
                     if (pattern >= pattern_end) {
-                        // Found
+                        // Has found
                         assert((target - text) >= (intptr_t)pattern_len);
                         int pos = (int)((target - text) - (intptr_t)pattern_len);
                         assert(pos >= 0);

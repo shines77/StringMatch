@@ -25,13 +25,17 @@ public:
     typedef BoyerMooreImpl<CharTy>  this_type;
     typedef CharTy                  char_type;
     typedef std::size_t             size_type;
+    typedef typename detail::uchar_traits<CharTy>::type
+                                    uchar_type;
+
+    static const size_t kMaxAscii = 256;
 
 private:
     std::unique_ptr<int[]> bmGs_;
-    std::unique_ptr<int[]> bmBc_;
+    int bmBc_[kMaxAscii];
 
 public:
-    BoyerMooreImpl() : bmGs_(), bmBc_() {}
+    BoyerMooreImpl() : bmGs_() {}
     ~BoyerMooreImpl() {
         this->destroy();
     }
@@ -40,27 +44,24 @@ public:
     static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
-        return (this->bmGs() != nullptr && this->bmBc() != nullptr);
+        return (this->bmGs_.get() != nullptr);
     }
 
     void destroy() {
         this->bmGs_.reset();
-        this->bmBc_.reset();
     }
 
-private:
     /* Preprocessing bad characters. */
     static void preBmBc(const char * pattern, size_type length,
-                        int * bmBc, int bcLen) {
+                        int * bmBc) {
         assert(pattern != nullptr);
         assert(bmBc != nullptr);
-        assert(bcLen == 256L);
 
-        for (int i = 0; i < bcLen; ++i) {
+        for (size_t i = 0; i < kMaxAscii; ++i) {
             bmBc[i] = (int)length;
         }
         for (int i = 0; i < (int)length - 1; ++i) {
-            bmBc[(int)pattern[i]] = ((int)length - 1) - i;
+            bmBc[(uchar_type)pattern[i]] = ((int)length - 1) - i;
         }
     }
 
@@ -103,46 +104,42 @@ private:
         int i, j;
         int len = (int)length;
 
-        if (length <= 0) {
-            return false;
-        }
-
         std::unique_ptr<int[]> suffix(new int[len]);
-        if (suffix.get() == nullptr) {
-            return false;
-        }
-        this_type::suffixes(pattern, length, suffix.get());
+        if (suffix.get() != nullptr) {
+            this_type::suffixes(pattern, length, suffix.get());
 
-        assert(pattern != nullptr);
-        assert(bmGs != nullptr);
-        for (i = 0; i < len; ++i) {
-            bmGs[i] = len;
-        }
+            assert(pattern != nullptr);
+            assert(bmGs != nullptr);
+            for (i = 0; i < len; ++i) {
+                bmGs[i] = len;
+            }
 
-        j = 0;
-        for (i = len - 1; i >= 0; --i) {
-            if (suffix[i] == i + 1) {
-                for (; j < (len - 1) - i; ++j) {
-                    if (bmGs[j] == len) {
-                        bmGs[j] = (len - 1) - i;
+            j = 0;
+            for (i = len - 1; i >= 0; --i) {
+                if (suffix[i] == i + 1) {
+                    for (; j < (len - 1) - i; ++j) {
+                        if (bmGs[j] == len) {
+                            bmGs[j] = (len - 1) - i;
+                        }
                     }
                 }
             }
+
+            for (i = 0; i <= len - 2; ++i) {
+                bmGs[(len - 1) - suffix[i]] = (len - 1) - i;
+            }
+            return true;
         }
 
-        for (i = 0; i <= len - 2; ++i) {
-            bmGs[(len - 1) - suffix[i]] = (len - 1) - i;
-        }
-        return true;
+        return false;
     }
 
-public:
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_type length) {
         bool success = false;
         assert(pattern != nullptr);
 
-        const int gsLen = (int)length + 1;
+        int gsLen = (int)length + 1;
         int * bmGs = new int[gsLen];
         if (bmGs != nullptr) {
             /* Preprocessing good suffixes. */
@@ -150,14 +147,11 @@ public:
         }
         this->bmGs_.reset(bmGs);
 
-        static const int bcLen = 256;
-        int * bmBc = new int[bcLen];
-        if (bmBc != nullptr) {
-            /* Preprocessing bad characters. */
-            this_type::preBmBc(pattern, length, bmBc, bcLen);
-        }
-        this->bmBc_.reset(bmBc);
-        return (success && (bmBc != nullptr) && (bmGs != nullptr));;
+        /* Preprocessing bad characters. */
+        int * bmBc = (int *)&this->bmBc_[0];
+        this_type::preBmBc(pattern, length, bmBc);
+
+        return (success && (bmGs != nullptr));
     }
 
     /* Searching */
@@ -167,10 +161,10 @@ public:
         assert(pattern_in != nullptr);
 
         int * bmGs = this->bmGs_.get();
-        int * bmBc = this->bmBc_.get();
+        int * bmBc = (int *)&this->bmBc_[0];
 
-        assert(bmBc != nullptr);
         assert(bmGs != nullptr);
+        assert(bmBc != nullptr);
 
         if (pattern_len <= text_len) {
             const char * pattern_end = pattern_in;
@@ -193,12 +187,12 @@ public:
                 if (pattern >= pattern_end) {
                     int pattern_idx = (int)(pattern - pattern_in);
                     target_idx += sm_max(bmGs[pattern_idx],
-                                            bmBc[(int)*target] - (pattern_last - pattern_idx));
+                                         bmBc[(uchar_type)*target] - (pattern_last - pattern_idx));
                 }
                 else {
                     assert(target_idx >= 0);
                     assert(target_idx < (int)text_len);
-                    // Found
+                    // Has found
                     return target_idx;
                 }
             } while (target_idx <= (int)(text_len - pattern_len));

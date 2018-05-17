@@ -23,6 +23,25 @@
 
 namespace StringMatch {
 
+namespace detail {
+
+template <typename CharTy>
+struct uchar_traits {
+    typedef CharTy type;
+};
+
+template <>
+struct uchar_traits<char> {
+    typedef unsigned char type;
+};
+
+template <>
+struct uchar_traits<short> {
+    typedef unsigned short type;
+};
+
+} // namespace detail
+
 struct Console {
     static void print_result(const char * text, size_t text_len,
                              const char * pattern, size_t pattern_len, int index_of) {
@@ -64,8 +83,8 @@ struct AlgorithmWrapper {
     class Pattern {
     private:
         stringref_type pattern_;
-        bool compiled_;
         algorithm_type algorithm_;
+        bool compiled_;
 
     public:
         Pattern() : pattern_(), compiled_(false) {
