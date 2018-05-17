@@ -7,7 +7,9 @@
 #endif
 
 #include <string.h>
-#include <stdint.h>
+#include "basic/stdint.h"
+#include <cstdint>  // for std::intptr_t
+#include <cstddef>  // for std::ptrdiff_t
 #include <string>
 #include <type_traits>
 

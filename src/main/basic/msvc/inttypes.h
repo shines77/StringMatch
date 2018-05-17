@@ -42,6 +42,8 @@
 
 #include "basic/msvc/stdint.h"
 
+#define __STDC_FORMAT_MACROS
+
 // 7.8 Format conversion of integer types
 
 typedef struct {

@@ -15,7 +15,6 @@
 #else
 // Compilers supporting C99 or C++0x have stdint.h defining these integer types
 #include <stdint.h>
-//#include <cstdint>
 #endif // _MSC_VER
 
 #if !defined(_STDINT) && !defined(_STDINT_H)
@@ -35,6 +34,6 @@
 #define INT64_SUPPORTED  // Remove this if the compiler doesn't support 64-bit integers
 
 // For define size_t and ssize_t
-#include "stdsize.h"
+#include "basic/stdsize.h"
 
 #endif // JIMI_BASIC_STDINT_H
