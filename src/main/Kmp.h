@@ -22,8 +22,9 @@ namespace StringMatch {
 template <typename CharTy>
 class KmpImpl {
 public:
-    typedef KmpImpl<CharTy> this_type;
-    typedef CharTy          char_type;
+    typedef KmpImpl<CharTy>     this_type;
+    typedef CharTy              char_type;
+    typedef std::size_t         size_type;
 
 private:
     std::unique_ptr<int[]> kmp_next_;
@@ -46,7 +47,7 @@ public:
     }
 
     /* Preprocessing */
-    bool preprocessing(const char_type * pattern, size_t length) {
+    bool preprocessing(const char_type * pattern, size_type length) {
         assert(pattern != nullptr);
         int * kmp_next = new int[length + 1];
         if (kmp_next != nullptr) {
@@ -66,8 +67,8 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_t text_len,
-               const char_type * pattern_in, size_t pattern_len) const {
+    int search(const char_type * text, size_type text_len,
+               const char_type * pattern_in, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern_in != nullptr);
 

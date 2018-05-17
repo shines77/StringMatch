@@ -24,6 +24,7 @@ class BoyerMooreImpl {
 public:
     typedef BoyerMooreImpl<CharTy>  this_type;
     typedef CharTy                  char_type;
+    typedef std::size_t             size_type;
 
 private:
     std::unique_ptr<int[]> bmGs_;
@@ -49,7 +50,7 @@ public:
 
 private:
     /* Preprocessing bad characters. */
-    static void preBmBc(const char * pattern, size_t length,
+    static void preBmBc(const char * pattern, size_type length,
                         int * bmBc, int bcLen) {
         assert(pattern != nullptr);
         assert(bmBc != nullptr);
@@ -64,7 +65,7 @@ private:
     }
 
     /* Preprocessing suffixes. */
-    static void suffixes(const char * pattern, size_t length, int * suffix) {
+    static void suffixes(const char * pattern, size_type length, int * suffix) {
         assert(pattern != nullptr);
         assert(suffix != nullptr);
 
@@ -97,7 +98,7 @@ private:
     }
 
     /* Preprocessing good suffixes. */
-    static bool preBmGs(const char * pattern, size_t length,
+    static bool preBmGs(const char * pattern, size_type length,
                         int * bmGs, int gsLen) {
         int i, j;
         int len = (int)length;
@@ -137,7 +138,7 @@ private:
 
 public:
     /* Preprocessing */
-    bool preprocessing(const char_type * pattern, size_t length) {
+    bool preprocessing(const char_type * pattern, size_type length) {
         bool success = false;
         assert(pattern != nullptr);
 
@@ -160,8 +161,8 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_t text_len,
-               const char_type * pattern_in, size_t pattern_len) const {
+    int search(const char_type * text, size_type text_len,
+               const char_type * pattern_in, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern_in != nullptr);
 

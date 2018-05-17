@@ -21,6 +21,9 @@
     <Filter Include="src\algorithm">
       <UniqueIdentifier>{b12b113c-f290-4137-9ba3-be22d7b2c380}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\jstd">
+      <UniqueIdentifier>{4934fa09-25d4-4661-88a7-185bfd5bdf14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\main\main.cpp">
@@ -39,27 +42,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\forward_iterator.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\standard_iterator.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\string_iterator.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\iterator.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\stdint.h">
-      <Filter>src\basic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\stdsize.h">
-      <Filter>src\basic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\inttypes.h">
-      <Filter>src\basic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\basic\msvc\inttypes.h">
       <Filter>src\basic\msvc</Filter>
@@ -87,6 +69,27 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\BoyerMoore.h">
       <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\forward_iterator.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\standard_iterator.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\iterator.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\string_iterator.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\basic\inttypes.h">
+      <Filter>src\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\basic\stdint.h">
+      <Filter>src\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\basic\stdsize.h">
+      <Filter>src\basic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

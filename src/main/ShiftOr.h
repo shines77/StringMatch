@@ -31,6 +31,11 @@ struct uchar_traits<char> {
     typedef unsigned char type;
 };
 
+template <>
+struct uchar_traits<short> {
+    typedef unsigned short type;
+};
+
 } // namespace detail
 
 template <typename CharTy, typename MaskTy = uint64_t>
@@ -39,15 +44,15 @@ public:
     typedef ShiftOrImpl<CharTy, MaskTy>         this_type;
     typedef CharTy                              char_type;
     typedef MaskTy                              mask_type;
+    typedef std::size_t                         size_type;
     typedef typename detail::uchar_traits<CharTy>::type
                                                 uchar_type;
 
     static const size_t kMaxAscii = 256;
 
 private:
-    //std::unique_ptr<mask_type[]> bitmap_;
-    mask_type bitmap_[kMaxAscii];
     mask_type limit_;
+    mask_type bitmap_[kMaxAscii];
     bool alive_;
 
 public:
@@ -60,18 +65,15 @@ public:
     static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
-        //return (this->bitmap() != nullptr);
         return this->alive_;
     }
 
     void destroy() {
-        //this->bitmap_.reset();
         this->alive_ = false;
     }
 
-#if 1
     /* Preprocessing */
-    bool preprocessing(const char_type * pattern, size_t length) {
+    bool preprocessing(const char_type * pattern, size_type length) {
         assert(pattern != nullptr);
 
         for (size_t i = 0; i < kMaxAscii; ++i)
@@ -88,36 +90,13 @@ public:
         this->limit_ = limit;
         return true;
     }
-#else
-    /* Preprocessing */
-    bool preprocessing(const char_type * pattern, size_t length) {
-        assert(pattern != nullptr);
-        mask_type limit = 0;
-        mask_type * bitmap = new mask_type[kMaxAscii];
-        if (bitmap != nullptr) {
-            for (size_t i = 0; i < kMaxAscii; ++i)
-                bitmap[i] = ~0;
-
-            mask_type mask = 1;
-            for (size_t i = 0; i < length; mask <<= 1, ++i) {
-                bitmap[(uchar_type)pattern[i]] &= ~mask;
-                limit |= mask;
-            }
-            limit = ~(limit >> 1);
-        }
-        this->bitmap_.reset(bitmap);
-        this->limit_ = limit;
-        return (bitmap != nullptr);
-    }
-#endif
 
     /* Searching */
-    int search(const char_type * text, size_t text_len,
-               const char_type * pattern, size_t pattern_len) const {
+    int search(const char_type * text, size_type text_len,
+               const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 
-        //mask_type * bitmap = this->bitmap_.get();
         const mask_type * bitmap = &this->bitmap_[0];
         mask_type limit = this->limit_;
 

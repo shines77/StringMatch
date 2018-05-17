@@ -25,6 +25,7 @@ class StdSearchImpl {
 public:
     typedef StdSearchImpl<CharTy>   this_type;
     typedef CharTy                  char_type;
+    typedef std::size_t             size_type;
 
 private:
     bool alive_;
@@ -45,13 +46,13 @@ public:
     }
 
     /* Preprocessing */
-    bool preprocessing(const char_type * pattern, size_t length) {
+    bool preprocessing(const char_type * pattern, size_type length) {
         return true;
     }
 
     /* Searching */
-    int search(const char_type * text, size_t text_len,
-               const char_type * pattern, size_t pattern_len) const {
+    int search(const char_type * text, size_type text_len,
+               const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 #if 1

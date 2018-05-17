@@ -8,10 +8,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "stdint.h"
-#if !defined(_MSC_VER) || (_MSC_VER >= 1800)
-#include <inttypes.h>
-#endif
+#include "basic/stdint.h"
+#include "basic/inttypes.h"
 
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
     #ifndef nullptr
@@ -28,7 +26,7 @@ namespace std {
 #endif // std::nullptr_t
 
 //
-// marco sm_countof(array)
+// macro sm_countof(array)
 //
 #if defined(_M_X64) || defined(_M_ARM) || defined(_M_ARM64)
     #define sm_unaligned __unaligned
