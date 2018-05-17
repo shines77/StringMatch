@@ -34,7 +34,8 @@ public:
         this->destroy();
     }
 
-    bool need_preprocessing() const { return true; }
+    static const char * name() { return "Kmp"; }
+    static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
         return (this->kmp_next() != nullptr);

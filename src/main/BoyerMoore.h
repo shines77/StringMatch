@@ -35,7 +35,8 @@ public:
         this->destroy();
     }
 
-    bool need_preprocessing() const { return true; }
+    static const char * name() { return "BoyerMoore"; }
+    static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
         return (this->bmGs() != nullptr && this->bmBc() != nullptr);

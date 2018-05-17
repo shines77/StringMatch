@@ -35,7 +35,9 @@ public:
         this->destroy();
     }
 
-    bool need_preprocessing() const { return false; }
+    static const char * name() { return "std::search()"; }
+    static bool need_preprocessing() { return false; }
+
     bool is_alive() const { return this->alive_; }
 
     void destroy() {

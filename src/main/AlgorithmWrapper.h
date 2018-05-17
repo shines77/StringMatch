@@ -59,10 +59,10 @@ struct Console {
     }
 };
 
-template <typename T>
+template <typename AlgorithmTy>
 struct AlgorithmWrapper {
 
-    typedef T                                   algorithm_type;
+    typedef AlgorithmTy                         algorithm_type;
 //  typedef typename algorithm_type::tuple_type tuple_type;
     typedef typename algorithm_type::char_type  char_type;
     typedef std::basic_string<char_type>        string_type;
@@ -297,8 +297,8 @@ struct AlgorithmWrapper {
         }
 
         // Matcher::find(text, length, pattern, pattern_len);
-        int find(const char_type * text, size_t length,
-                 const char_type * pattern, size_t pattern_len) const {
+        static int find(const char_type * text, size_t length,
+                        const char_type * pattern, size_t pattern_len) {
             Pattern _pattern(pattern, pattern_len);
             return _pattern.match(text, length);
         }
@@ -355,16 +355,25 @@ struct AlgorithmWrapper {
         }
     }; // class Matcher
 
-    // AlgorithmWrapper::find(matcher, pattern)
-    static int find(const Matcher & matcher, const Pattern & pattern) {
+    static const char * name() { return algorithm_type::name(); }
+    static bool need_preprocessing() { return algorithm_type::need_preprocessing(); }
+
+    // AlgorithmWrapper::match(matcher, pattern)
+    static int match(const Matcher & matcher, const Pattern & pattern) {
         return pattern.match(matcher.c_str(), matcher.size());
     }
 
-}; // struct AlgorithmWrapper<T>
+    static int match(const char_type * text, size_t length,
+                     const char_type * pattern, size_t pattern_len) {
+        return Matcher::find(text, length, pattern, pattern_len);
+    }
 
-template <typename T>
+}; // struct AlgorithmWrapper<AlgorithmTy>
+
+template <typename AlgorithmTy>
 inline
-int AlgorithmWrapper<T>::Pattern::match(const typename AlgorithmWrapper<T>::Matcher & matcher) const {
+int AlgorithmWrapper<AlgorithmTy>::Pattern::match(
+    const typename AlgorithmWrapper<AlgorithmTy>::Matcher & matcher) const {
     return this->match(matcher.c_str(), matcher.size());
 }
 

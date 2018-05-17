@@ -18,6 +18,9 @@
     <Filter Include="src\support">
       <UniqueIdentifier>{83179dc6-dd13-42ea-aefb-7d1b0c545eb1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\algorithm">
+      <UniqueIdentifier>{b12b113c-f290-4137-9ba3-be22d7b2c380}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\main\main.cpp">
@@ -25,12 +28,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\main\Kmp.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\BoyerMoore.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\main\StringRef.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -41,15 +38,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\StrStr.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\ShiftOr.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\StdSearch.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\forward_iterator.h">
@@ -84,6 +72,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\support\StopWatch.h">
       <Filter>src\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\Kmp.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\ShiftOr.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\StdSearch.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\StrStr.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\BoyerMoore.h">
+      <Filter>src\algorithm</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

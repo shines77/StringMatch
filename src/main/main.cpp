@@ -62,7 +62,7 @@ static const char * s_Patterns[] = {
     "between 150,000 and 300,000 people."
 };
 
-void StringMatch_examples()
+void StringMatch_usage_examples()
 {
     // Usage 1
     {
@@ -114,22 +114,22 @@ void StringMatch_examples()
         AnsiString::Kmp::Pattern pattern("example");
         AnsiString::Kmp::Matcher matcher("Here is a sample example.");
         if (pattern.has_compiled()) {
-            int pos = AnsiString::Kmp::find(matcher, pattern);
+            int pos = AnsiString::Kmp::match(matcher, pattern);
         }
     }
 }
 
 template <typename AlgorithmTy>
-void StringMatch_test()
+void StringMatch_unittest()
 {
     typedef typename AlgorithmTy::Pattern pattern_type;
 
     const char pattern_text_1[] = "sample";
     char pattern_text_2[] = "a sample";
 
-    printf("---------------------------------------------------------------------------------------\n");
-    printf("  Test: %s\n", typeid(AlgorithmTy).name());
-    printf("---------------------------------------------------------------------------------------\n\n");
+    printf("------------------------------------------------------\n");
+    printf("  UnitTest for: %s\n", AlgorithmTy::name());
+    printf("------------------------------------------------------\n\n");
 
     test::StopWatch sw;
     int sum, index_of;
@@ -178,9 +178,9 @@ void StringMatch_strstr_benchmark()
     int sum;
     static const size_t iters = kIterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
-    printf("-----------------------------------------------------------\n");
-    printf("  Benchmark: %s\n", "strstr()");
-    printf("-----------------------------------------------------------\n\n");
+    printf("------------------------------------------------------\n");
+    printf("  Benchmark: %s\n", "strstr() **");
+    printf("------------------------------------------------------\n\n");
 
     static const int kSearchTexts = sm_countof_i(s_SearchTexts);
     static const int kPatterns = sm_countof_i(s_Patterns);
@@ -213,7 +213,7 @@ void StringMatch_strstr_benchmark()
     }
     sw.stop();
 
-    printf("sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
+    printf("[include preprocessing: no ] sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
 }
 
 template <typename AlgorithmTy>
@@ -222,12 +222,13 @@ void StringMatch_benchmark()
     typedef typename AlgorithmTy::Pattern pattern_type;
 
     test::StopWatch sw;
-    int sum;
+    double matching_time, full_time;
+    int sum1, sum2;
     static const size_t iters = kIterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
-    printf("---------------------------------------------------------------------------------------\n");
-    printf("  Benchmark: %s\n", typeid(AlgorithmTy).name());
-    printf("---------------------------------------------------------------------------------------\n\n");
+    printf("------------------------------------------------------\n");
+    printf("  Benchmark for: %s\n", AlgorithmTy::name());
+    printf("------------------------------------------------------\n\n");
 
     static const int kSearchTexts = sm_countof_i(s_SearchTexts);
     static const int kPatterns = sm_countof_i(s_Patterns);
@@ -242,28 +243,65 @@ void StringMatch_benchmark()
         pattern[i].preprocessing(s_Patterns[i]);
     }
 
-    sum = 0;
+#if 0
+    if (AlgorithmTy::need_preprocessing())
+        printf("need preprocessing: yes\n\n");
+    else
+        printf("need preprocessing: no\n\n");
+#endif
+
+    sum1 = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
         for (int i = 0; i < kSearchTexts; ++i) {
             for (int j = 0; j < kPatterns; ++j) {
                 int index_of = pattern[j].match(texts[i].c_str());
-                sum += index_of;
+                sum1 += index_of;
             }
         }
     }
     sw.stop();
+    matching_time = sw.getElapsedMillisec();
 
-    printf("sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
+    printf("[include preprocessing: no ] sum: %-11d, time spent: %0.3f ms\n", sum1, matching_time);
+
+    if (AlgorithmTy::need_preprocessing()) {
+        sum2 = 0;
+        sw.start();
+        for (size_t loop = 0; loop < iters; ++loop) {
+            for (int i = 0; i < kSearchTexts; ++i) {
+                for (int j = 0; j < kPatterns; ++j) {
+                    int index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
+                                                      pattern[j].c_str(), pattern[j].size());
+                    sum2 += index_of;
+                }
+            }
+        }
+        sw.stop();
+        full_time = sw.getElapsedMillisec();
+
+        printf("[include preprocessing: yes] sum: %-11d, time spent: %0.3f ms\n", sum2, full_time);
+    }
+
+    printf("\n");
 }
 
 int main(int argc, char * argv[])
 {
-    StringMatch_examples();
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+    printf("Arch type: __amd64__\n\n");
+#else
+    printf("Arch type: __x86__\n\n");
+#endif
 
-    StringMatch_test<AnsiString::Kmp>();
-    StringMatch_test<AnsiString::BoyerMoore>();
-    StringMatch_test<AnsiString::ShiftOr>();
+    StringMatch_usage_examples();
+
+#if 0
+    StringMatch_unittest<AnsiString::Kmp>();
+    StringMatch_unittest<AnsiString::BoyerMoore>();
+    StringMatch_unittest<AnsiString::ShiftOr>();
+#endif
 
     StringMatch_strstr_benchmark();
 
@@ -272,13 +310,6 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
     StringMatch_benchmark<AnsiString::ShiftOr>();
-
-#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
-    printf("Arch type: __amd64__\n\n");
-#else
-    printf("Arch type: __x86__\n\n");
-#endif
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)) \
     && (defined(NDEBUG) || !defined(_DEBUG))

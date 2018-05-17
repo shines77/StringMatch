@@ -33,7 +33,9 @@ public:
         this->destroy();
     }
 
-    bool need_preprocessing() const { return false; }
+    static const char * name() { return "strstr()"; }
+    static bool need_preprocessing() { return false; }
+
     bool is_alive() const { return this->alive_; }
 
     void destroy() {

@@ -52,7 +52,8 @@ public:
         this->destroy();
     }
 
-    bool need_preprocessing() const { return true; }
+    static const char * name() { return "ShiftOr"; }
+    static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
         return (this->bitmap() != nullptr);
