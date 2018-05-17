@@ -85,7 +85,8 @@ public:
 
         if (pattern_len <= text_len) {
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
-|| defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+ || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
+ || defined(__amd64__) || defined(__x86_64__)
             register mask_type state1 = ~0;
             register mask_type state2 = ~0;
             size_t half_len = (text_len / 2);
@@ -124,7 +125,8 @@ public:
 };
 
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
+ || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
+ || defined(__amd64__) || defined(__x86_64__)
 namespace AnsiString {
     typedef AlgorithmWrapper< ShiftOrImpl<char, uint64_t> >    ShiftOr;
 } // namespace AnsiString

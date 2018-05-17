@@ -28,7 +28,9 @@ namespace std {
 //
 // macro sm_countof(array)
 //
-#if defined(_M_X64) || defined(_M_ARM) || defined(_M_ARM64)
+#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
+ || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
+ || defined(__amd64__) || defined(__x86_64__)
     #define sm_unaligned __unaligned
 #else
     #define sm_unaligned
@@ -41,7 +43,6 @@ namespace std {
         char(*sm_countof_helper(sm_unaligned CountOfType(&_Array)[SizeOfArray]))[SizeOfArray];
 
         #define sm_countof(_Array)      (sizeof(*sm_countof_helper(_Array)) + 0)
-        
     }
 #else
     #define sm_countof(_Array)      (sizeof(_Array) / sizeof(_Array[0]))
