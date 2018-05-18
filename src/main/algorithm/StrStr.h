@@ -54,9 +54,9 @@ public:
         assert(text != nullptr);
         assert(pattern_in != nullptr);
 #if 1
-        const char * substr = strstr(text, pattern_in);
-        if (substr != nullptr)
-            return (int)(substr - text);
+        const char * haystack = strstr(text, pattern_in);
+        if (haystack != nullptr)
+            return (int)(haystack - text);
         else
             return Status::NotFound;
 #else
@@ -64,9 +64,9 @@ public:
             register const char * target = text;
             register const char * pattern = pattern_in;
 
-            const char * substr = strstr(target, pattern);
-            if (substr != nullptr)
-                return (int)(substr - target);
+            const char * haystack = strstr(target, pattern);
+            if (haystack != nullptr)
+                return (int)(haystack - target);
             else
                 return Status::NotFound;
         }
