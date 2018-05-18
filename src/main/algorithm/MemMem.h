@@ -27,11 +27,11 @@
 
 namespace StringMatch {
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || 1
 
 #if 1
 static inline
-void * memmem(const void * haystack_start, size_t haystack_len,
+void * memmem2(const void * haystack_start, size_t haystack_len,
               const void * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
        the beginning of the string. */
@@ -153,7 +153,7 @@ public:
         assert(text != nullptr);
         assert(pattern_in != nullptr);
 #if 1
-        const char * haystack = (const char *)memmem((const void *)text, text_len,
+        const char * haystack = (const char *)memmem2((const void *)text, text_len,
                                                      (const void *)pattern_in, pattern_len);
         if (haystack != nullptr)
             return (int)(haystack - text);
