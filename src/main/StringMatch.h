@@ -6,25 +6,27 @@
 #pragma once
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "basic/stddef.h"
-#include "basic/stdint.h"
-#include "basic/inttypes.h"
 
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
     #ifndef nullptr
-    #define nullptr NULL
+    #define nullptr     ((void *)(NULL))
     #endif
 #endif
 
+// Define std::nullptr_t under msvc 2008
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
+#ifdef __cplusplus
 namespace std {
-    struct nullptr_t {
+    struct __nullptr {
         typedef void * type;
     };
+    typedef typename __nullptr::type nullptr_t;
 }
-#endif // std::nullptr_t
+
+using ::std::nullptr_t;
+#endif // __cplusplus
+#endif // _MSC_VER
 
 //
 // macro sm_countof(array)

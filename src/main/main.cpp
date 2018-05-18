@@ -14,11 +14,11 @@
 #include "StringMatch.h"
 #include "support/StopWatch.h"
 
-#include "StrStr.h"
-#include "StdSearch.h"
-#include "Kmp.h"
-#include "BoyerMoore.h"
-#include "ShiftOr.h"
+#include "algorithm/StrStr.h"
+#include "algorithm/StdSearch.h"
+#include "algorithm/Kmp.h"
+#include "algorithm/BoyerMoore.h"
+#include "algorithm/ShiftOr.h"
 
 using namespace StringMatch;
 

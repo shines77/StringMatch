@@ -19,7 +19,7 @@
 #include <utility>
 
 #include "StringMatch.h"
-#include "StringRef.h"
+#include "support/StringRef.h"
 
 namespace StringMatch {
 

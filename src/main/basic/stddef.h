@@ -6,6 +6,8 @@
 #pragma once
 #endif
 
+#include <stddef.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 //
@@ -91,6 +93,9 @@
 //
 // C++ compiler macro define
 // See: http://www.cnblogs.com/zyl910/archive/2012/08/02/printmacro.html
+//
+// LLVM Branch Weight Metadata
+// See: http://llvm.org/docs/BranchWeightMetadata.html
 //
 
 ////////////////////////////////////////////////////////////////////////////////

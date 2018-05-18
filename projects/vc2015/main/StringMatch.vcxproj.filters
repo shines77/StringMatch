@@ -31,13 +31,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\main\StringRef.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\main\StringMatch.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\Apply.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h">
@@ -55,33 +49,6 @@
     <ClInclude Include="..\..\..\src\main\support\StopWatch.h">
       <Filter>src\support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\main\Kmp.h">
-      <Filter>src\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\ShiftOr.h">
-      <Filter>src\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\StdSearch.h">
-      <Filter>src\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\StrStr.h">
-      <Filter>src\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\BoyerMoore.h">
-      <Filter>src\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\forward_iterator.h">
-      <Filter>src\jstd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\standard_iterator.h">
-      <Filter>src\jstd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\iterator.h">
-      <Filter>src\jstd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\main\string_iterator.h">
-      <Filter>src\jstd</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\main\basic\inttypes.h">
       <Filter>src\basic</Filter>
     </ClInclude>
@@ -93,6 +60,39 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\main\basic\stddef.h">
       <Filter>src\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\BoyerMoore.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\Kmp.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\MemMem.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\ShiftOr.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\StdSearch.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\StrStr.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\jstd\forward_iterator.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\jstd\iterator.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\jstd\standard_iterator.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\jstd\string_iterator.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\support\StringRef.h">
+      <Filter>src\support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

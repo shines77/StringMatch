@@ -14,8 +14,8 @@
 #include <assert.h>
 
 #include "StringMatch.h"
-#include "StringRef.h"
 #include "AlgorithmWrapper.h"
+#include "support/StringRef.h"
 
 namespace StringMatch {
 

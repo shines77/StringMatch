@@ -1,6 +1,6 @@
 
-#ifndef STRING_MATCH_STRSTR_H
-#define STRING_MATCH_STRSTR_H
+#ifndef STRING_MATCH_MEMMEM_H
+#define STRING_MATCH_MEMMEM_H
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -13,15 +13,15 @@
 #include <assert.h>
 
 #include "StringMatch.h"
-#include "StringRef.h"
 #include "AlgorithmWrapper.h"
+#include "support/StringRef.h"
 
 namespace StringMatch {
 
 template <typename CharTy>
-class StrStrImpl {
+class MemMemImpl {
 public:
-    typedef StrStrImpl<CharTy>  this_type;
+    typedef MemMemImpl<CharTy>  this_type;
     typedef CharTy              char_type;
     typedef std::size_t         size_type;
 
@@ -29,8 +29,8 @@ private:
     bool alive_;
 
 public:
-    StrStrImpl() : alive_(true) {}
-    ~StrStrImpl() {
+    MemMemImpl() : alive_(true) {}
+    ~MemMemImpl() {
         this->destroy();
     }
 
@@ -54,7 +54,7 @@ public:
         assert(text != nullptr);
         assert(pattern_in != nullptr);
 #if 1
-        const char * substr = strstr(text, pattern_in);
+        const char * substr = memmem(text, pattern_in);
         if (substr != nullptr)
             return (int)(substr - text);
         else
@@ -77,13 +77,13 @@ public:
 };
 
 namespace AnsiString {
-    typedef AlgorithmWrapper< StrStrImpl<char> >    StrStr;
+    typedef AlgorithmWrapper< MemMemImpl<char> >    MemMem;
 } // namespace AnsiString
 
 namespace UnicodeString {
-    typedef AlgorithmWrapper< StrStrImpl<wchar_t> > StrStr;
+    typedef AlgorithmWrapper< MemMemImpl<wchar_t> > MemMem;
 } // namespace UnicodeString
 
 } // namespace StringMatch
 
-#endif // STRING_MATCH_STRSTR_H
+#endif // STRING_MATCH_MEMMEM_H

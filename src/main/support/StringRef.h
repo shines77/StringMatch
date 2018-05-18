@@ -14,7 +14,7 @@
 #include <string>
 #include <type_traits>
 
-#include "string_iterator.h"
+#include "jstd/string_iterator.h"
 
 namespace StringMatch {
 
