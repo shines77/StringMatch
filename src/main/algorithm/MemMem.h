@@ -6,7 +6,9 @@
 #pragma once
 #endif
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE         /* See feature_test_macros(7) */
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -133,7 +135,7 @@ public:
         this->destroy();
     }
 
-    static const char * name() { return "memmem()"; }
+    static const char * name() { return "memmem2()"; }
     static bool need_preprocessing() { return false; }
 
     bool is_alive() const { return this->alive_; }
