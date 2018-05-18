@@ -6,16 +6,15 @@
 #pragma once
 #endif
 
-#include <string.h>
+#include "basic/stddef.h"
 #include "basic/stdint.h"
+#include <string.h>
 #include <cstdint>  // for std::intptr_t
 #include <cstddef>  // for std::ptrdiff_t
 #include <string>
 #include <type_traits>
 
 #include "string_iterator.h"
-#include "forward_iterator.h"
-#include "standard_iterator.h"
 
 namespace StringMatch {
 
@@ -190,14 +189,77 @@ public:
         this->set_data(src.data(), src.length());
     }
 
-    std::string toString() const {
-        return std::string(this->data_, this->length_);
+    string_type toString() const {
+        return string_type(this->data_, this->length_);
     }
 }; // class BasicStringRef<CharTy>
+
+template <typename CharType>
+class BasicStringRefHelper {
+public:
+    typedef CharType value_type;
+    typedef BasicStringRef<value_type> stringref_type;
+
+private:
+    stringref_type str_;
+    bool truncated_;
+    value_type save_char_;
+
+public:
+    BasicStringRefHelper()
+        : truncated_(false),
+          save_char_(static_cast<value_type>('\0')) {
+        (void)save_char_;
+    }
+    ~BasicStringRefHelper() { detach(); }
+
+    bool attach(const stringref_type & str) {
+        // If the string reference don't recover the truncated char,
+        // don't accept the new attach.
+        if (likely(!truncated_)) {
+            str_ = str;
+        }
+        return (!truncated_);
+    }
+
+    void detach() {
+        // If have be truncated, recover the saved terminator char first,
+        // and then clear the string reference.
+        if (unlikely(truncated_)) {
+            recover();
+            str_.clear();
+        }
+    }
+
+    void truncate() {
+        if (likely(!truncated_)) {
+            value_type * first = (value_type *)str_.data();
+            value_type * last = first + str_.size();
+            assert(last != nullptr);
+            save_char_ = *last;
+            *last = static_cast<value_type>('\0');
+            truncated_ = true;
+        }
+    }
+
+    void recover() {
+        if (likely(truncated_)) {
+            value_type * first = (value_type *)str_.data();
+            value_type * last = first + str_.size();
+            assert(last != nullptr);
+            *last = save_char_;
+            truncated_ = false;
+        }
+    }
+};
 
 typedef BasicStringRef<char>    StringRefA;
 typedef BasicStringRef<wchar_t> StringRefW;
 typedef BasicStringRef<char>    StringRef;
+
+typedef BasicStringRefHelper<char>      StringRefHelperA;
+typedef BasicStringRefHelper<wchar_t>   StringRefHelperW;
+typedef BasicStringRefHelper<char>      StringRefHelper;
 
 } // namespace StringMatch
 

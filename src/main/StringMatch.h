@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "basic/stddef.h"
 #include "basic/stdint.h"
 #include "basic/inttypes.h"
 
