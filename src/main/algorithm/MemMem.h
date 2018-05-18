@@ -102,7 +102,7 @@ void * memmem2(const void * haystack_start, size_t haystack_len,
 
             h++; n++;
 
-            size_t x = needle_len;
+            size_t x = needle_len - 1;
             for (; x; h++, n++) {
                 if (*h != *n)
                     break;
