@@ -15,6 +15,7 @@
 #include "support/StopWatch.h"
 
 #include "algorithm/StrStr.h"
+#include "algorithm/MemMem.h"
 #include "algorithm/StdSearch.h"
 #include "algorithm/Kmp.h"
 #include "algorithm/BoyerMoore.h"
@@ -298,6 +299,9 @@ int main(int argc, char * argv[])
 
     StringMatch_usage_examples();
 
+    StringMatch_unittest<AnsiString::StrStr>();
+    StringMatch_unittest<AnsiString::MemMem>();
+
 #if 0
     StringMatch_unittest<AnsiString::Kmp>();
     StringMatch_unittest<AnsiString::BoyerMoore>();
@@ -307,6 +311,7 @@ int main(int argc, char * argv[])
     StringMatch_strstr_benchmark();
 
     StringMatch_benchmark<AnsiString::StrStr>();
+    StringMatch_benchmark<AnsiString::MemMem>();
     StringMatch_benchmark<AnsiString::StdSearch>();
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
