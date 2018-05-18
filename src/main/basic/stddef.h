@@ -93,6 +93,8 @@
 // See: http://www.cnblogs.com/zyl910/archive/2012/08/02/printmacro.html
 //
 
+////////////////////////////////////////////////////////////////////////////////
+
 #if (defined(__GNUC__) && ((__GNUC__ == 2 && __GNUC_MINOR__ >= 96) || (__GNUC__ >= 3))) \
  || (defined(__clang__) && ((__clang_major__ == 2 && __clang_minor__ >= 1) || (__clang_major__ >= 3)))
 // Since gcc v2.96 or clang v2.1
