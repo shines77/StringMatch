@@ -45,8 +45,8 @@ void * memmem2(const void * haystack_start, size_t haystack_len,
             const unsigned char * haystack_end = haystack + haystack_len - needle_len;
             const unsigned char * needle_end = needle + needle_len;
             do {
-                register const unsigned char * h = haystack;
-                register const unsigned char * n = needle;
+                const unsigned char * h = haystack;
+                const unsigned char * n = needle;
                 while (*h != *n) {
                     h++;
                     if (h > haystack_end)
@@ -106,11 +106,10 @@ void * memmem2(const void * haystack_start, size_t haystack_len,
             for (; x; h++, n++) {
                 if (*h != *n)
                     break;
-
                 x--;
-                if (x == 0)
-                    return (void *)haystack;
             }
+            if (x == 0)
+                return (void *)haystack;
         }
     }
 
