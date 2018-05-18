@@ -31,7 +31,7 @@ namespace StringMatch {
 
 #if defined(_MSC_VER) || 1
 
-#if 1
+#if 0
 static inline
 void * memmem2(const void * haystack_start, size_t haystack_len,
               const void * needle_start, size_t needle_len) {
@@ -81,7 +81,7 @@ void * memmem2(const void * haystack_start, size_t haystack_len,
 // See: https://codereview.stackexchange.com/questions/182156/memmem-on-windows
 //
 static inline
-void * memmem(const void * haystack_start, size_t haystack_len,
+void * memmem2(const void * haystack_start, size_t haystack_len,
               const void * needle_start, size_t needle_len) {
     const unsigned char * haystack = (const unsigned char *)haystack_start;
     const unsigned char * needle = (const unsigned char *)needle_start;
@@ -93,20 +93,21 @@ void * memmem(const void * haystack_start, size_t haystack_len,
 
     /* Sanity check, otherwise the loop might search through the whole memory. */
     if (haystack_len >= needle_len) {
-        for (; --haystack_len >= needle_len; haystack++) {
+        for (; haystack_len >= needle_len; ++haystack, --haystack_len) {
             const unsigned char * n = needle;
             const unsigned char * h = haystack;
 
             if (*h != *n)
                 continue;
 
-            size_t x = needle_len;
-            for (; x >= 0; h++, n++) {
-                x--;
+            h++; n++;
 
+            size_t x = needle_len;
+            for (; x; h++, n++) {
                 if (*h != *n)
                     break;
 
+                x--;
                 if (x == 0)
                     return (void *)haystack;
             }
