@@ -299,10 +299,9 @@ int main(int argc, char * argv[])
 
     StringMatch_usage_examples();
 
+#if 0
     StringMatch_unittest<AnsiString::StrStr>();
     StringMatch_unittest<AnsiString::MemMem>();
-
-#if 0
     StringMatch_unittest<AnsiString::Kmp>();
     StringMatch_unittest<AnsiString::BoyerMoore>();
     StringMatch_unittest<AnsiString::ShiftOr>();
