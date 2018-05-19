@@ -35,7 +35,7 @@ namespace StringMatch {
 
 #if defined(_MSC_VER) || 1
 
-#if 1
+#if 0
 static inline
 void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                    const void * needle_start, size_t needle_len) {
@@ -92,25 +92,25 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
 
     /* The first occurrence of the empty string is deemed to occur at
        the beginning of the string. */
-    if (needle_len != 0) {
+    if (likely(needle_len != 0)) {
         /* Sanity check, otherwise the loop might search through the whole memory. */
-        if (haystack_len >= needle_len) {
+        if (likely(haystack_len >= needle_len)) {
             for (; haystack_len >= needle_len; ++haystack, --haystack_len) {
                 const unsigned char * h = haystack;
                 const unsigned char * n = needle;
 
-                if (*h != *n)
+                if (likely(*h != *n))
                     continue;
 
                 h++; n++;
 
                 size_t x = needle_len - 1;
                 for (; x; h++, n++) {
-                    if (*h != *n)
+                    if (likely(*h != *n))
                         break;
                     x--;
                 }
-                if (x == 0)
+                if (likely(x == 0))
                     return (void *)haystack;
             }
         }
