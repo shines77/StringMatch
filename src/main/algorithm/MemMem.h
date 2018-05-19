@@ -35,7 +35,7 @@ namespace StringMatch {
 
 #if defined(_MSC_VER) || 1
 
-#if 0
+#if 1
 static inline
 void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                    const void * needle_start, size_t needle_len) {
@@ -51,7 +51,7 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
             do {
                 const unsigned char * h = haystack;
                 const unsigned char * n = needle;
-                while (*h != *n) {
+                while (likely(*h != *n)) {
                     h++;
                     if (unlikely(h > haystack_end))
                         return nullptr;
@@ -64,7 +64,7 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                     n++;
                     if (unlikely(n >= needle_end))
                         return (void *)haystack;
-                } while (*h == *n);
+                } while (unlikely(*h == *n));
 
                 haystack++;
                 if (unlikely(haystack > haystack_end))
