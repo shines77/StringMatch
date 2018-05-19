@@ -54,7 +54,7 @@ public:
             kmp_next[0] = -1;
             kmp_next[1] = 0;
             for (size_t index = 1; index < length; ++index) {
-                if (pattern[index] == pattern[kmp_next[index - 1]]) {
+                if (unlikely(pattern[index] == pattern[kmp_next[index - 1]])) {
                     kmp_next[index + 1] = kmp_next[index] + 1;
                 }
                 else {
@@ -75,18 +75,18 @@ public:
         int * kmp_next = this->kmp_next_.get();
         assert(kmp_next != nullptr);
 
-        if (pattern_len <= text_len) {
+        if (likely(pattern_len <= text_len)) {
             register const char * target = text;
             register const char * pattern = pattern_in;
 
             const char * target_end = text + (text_len - pattern_len);
             const char * pattern_end = pattern + pattern_len;
             do {
-                if (*target != *pattern) {
+                if (likely(*target != *pattern)) {
                     int search_index = (int)(pattern - pattern_in);
-                    if (search_index == 0) {
+                    if (likely(search_index == 0)) {
                         target++;
-                        if (target > target_end) {
+                        if (unlikely(target > target_end)) {
                             // Not found
                             return Status::NotFound;
                         }
@@ -98,7 +98,7 @@ public:
                         assert(target_offset >= 1);
                         pattern = pattern_in + search_offset;
                         target = target + target_offset;
-                        if (target > target_end) {
+                        if (unlikely(target > target_end)) {
                             // Not found
                             return Status::NotFound;
                         }
@@ -107,7 +107,7 @@ public:
                 else {
                     target++;
                     pattern++;
-                    if (pattern >= pattern_end) {
+                    if (likely(pattern >= pattern_end)) {
                         // Has found
                         assert((target - text) >= (intptr_t)pattern_len);
                         int pos = (int)((target - text) - (intptr_t)pattern_len);

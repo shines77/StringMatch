@@ -60,7 +60,7 @@ public:
         StringRef sPattern(pattern, pattern_len);
         StringRef::iterator iter = std::search(sText.begin(), sText.end(),
                                                sPattern.begin(), sPattern.end());
-        if (iter != sText.end())
+        if (likely(iter != sText.end()))
             return (int)(iter - sText.begin());
         else
             return Status::NotFound;
@@ -69,7 +69,7 @@ public:
         std::string sPattern(pattern, pattern_len);
         std::string::iterator iter = std::search(sText.begin(), sText.end(),
                                                  sPattern.begin(), sPattern.end());
-        if (iter != sText.end())
+        if (likely(iter != sText.end()))
             return (int)(iter - sText.begin());
         else
             return Status::NotFound;

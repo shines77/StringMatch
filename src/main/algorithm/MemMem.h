@@ -7,7 +7,7 @@
 #endif
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE         /* See feature_test_macros(7) */
+#define _GNU_SOURCE     /* See feature_test_macros(7) */
 #endif
 
 #include <stdio.h>
@@ -110,7 +110,7 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                         break;
                     x--;
                 }
-                if (likely(x == 0))
+                if (unlikely(x == 0))
                     return (void *)haystack;
             }
         }
@@ -163,18 +163,18 @@ public:
 #if 1
         const char * haystack = (const char *)__memmem((const void *)text, text_len,
                                                        (const void *)pattern_in, pattern_len);
-        if (haystack != nullptr)
+        if (likely(haystack != nullptr))
             return (int)(haystack - text);
         else
             return Status::NotFound;
 #else
-        if (pattern_len <= text_len) {
+        if (likely(pattern_len <= text_len)) {
             register const char * target = text;
             register const char * pattern = pattern_in;
 
             const char * haystack = (const char *)__memmem((const void *)text, text_len,
                                                            (const void *)pattern_in, pattern_len);
-            if (haystack != nullptr)
+            if (likely(haystack != nullptr))
                 return (int)(haystack - target);
             else
                 return Status::NotFound;

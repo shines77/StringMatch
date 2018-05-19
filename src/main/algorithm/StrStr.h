@@ -55,12 +55,12 @@ public:
         assert(pattern_in != nullptr);
 #if 1
         const char * haystack = strstr(text, pattern_in);
-        if (haystack != nullptr)
+        if (likely(haystack != nullptr))
             return (int)(haystack - text);
         else
             return Status::NotFound;
 #else
-        if (pattern_len <= text_len) {
+        if (likely(pattern_len <= text_len)) {
             register const char * target = text;
             register const char * pattern = pattern_in;
 

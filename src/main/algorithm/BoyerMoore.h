@@ -86,7 +86,7 @@ public:
                 suffix[index] = suffix[index + offset];
             }
             else {
-                if (distance < 0) {
+                if (likely(distance < 0)) {
                     cursor = index;
                 }
                 offset = last - index;
@@ -105,7 +105,7 @@ public:
         int len = (int)length;
 
         std::unique_ptr<int[]> suffix(new int[len]);
-        if (suffix.get() != nullptr) {
+        if (likely(suffix.get() != nullptr)) {
             this_type::suffixes(pattern, length, suffix.get());
 
             assert(pattern != nullptr);
@@ -118,7 +118,7 @@ public:
             for (i = len - 1; i >= 0; --i) {
                 if (suffix[i] == i + 1) {
                     for (; j < (len - 1) - i; ++j) {
-                        if (bmGs[j] == len) {
+                        if (unlikely(bmGs[j] == len)) {
                             bmGs[j] = (len - 1) - i;
                         }
                     }
@@ -141,7 +141,7 @@ public:
 
         int gsLen = (int)length + 1;
         int * bmGs = new int[gsLen];
-        if (bmGs != nullptr) {
+        if (likely(bmGs != nullptr)) {
             /* Preprocessing good suffixes. */
             success = this_type::preBmGs(pattern, length, bmGs, gsLen);
         }
@@ -156,9 +156,9 @@ public:
 
     /* Searching */
     int search(const char_type * text, size_type text_len,
-               const char_type * pattern_in, size_type pattern_len) const {
+               const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
-        assert(pattern_in != nullptr);
+        assert(pattern != nullptr);
 
         int * bmGs = this->bmGs_.get();
         int * bmBc = (int *)&this->bmBc_[0];
@@ -166,28 +166,28 @@ public:
         assert(bmGs != nullptr);
         assert(bmBc != nullptr);
 
-        if (pattern_len <= text_len) {
-            const char * pattern_end = pattern_in;
-            const char * target_end = text + (text_len - pattern_len);
-            const int pattern_last = (int)pattern_len - 1;
+        if (likely(pattern_len <= text_len)) {
+            const char_type * pattern_first = pattern;
+            const char_type * target_last = text + (text_len - pattern_len);
+            const int pattern_step = (int)pattern_len - 1;
             int target_idx = 0;
             do {
-                register const char * target = text + target_idx + pattern_last;
-                register const char * pattern = pattern_in + pattern_last;
+                register const char_type * target = text + target_idx + pattern_step;
+                register const char_type * pattern_scan = pattern + pattern_step;
                 assert(target < (text + text_len));
 
-                while (pattern >= pattern_end) {
-                    if (*target != *pattern) {
+                while (likely(pattern_scan >= pattern_first)) {
+                    if (likely(*target != *pattern_scan)) {
                         break;
                     }
                     target--;
-                    pattern--;
+                    pattern_scan--;
                 }
 
-                if (pattern >= pattern_end) {
-                    int pattern_idx = (int)(pattern - pattern_in);
+                if (likely(pattern_scan >= pattern_first)) {
+                    int pattern_idx = (int)(pattern_scan - pattern);
                     target_idx += sm_max(bmGs[pattern_idx],
-                                         bmBc[(uchar_type)*target] - (pattern_last - pattern_idx));
+                                         bmBc[(uchar_type)*target] - (pattern_step - pattern_idx));
                 }
                 else {
                     assert(target_idx >= 0);
@@ -195,7 +195,7 @@ public:
                     // Has found
                     return target_idx;
                 }
-            } while (target_idx <= (int)(text_len - pattern_len));
+            } while (likely(target_idx <= (int)(text_len - pattern_len)));
         }
 
         return Status::NotFound;
