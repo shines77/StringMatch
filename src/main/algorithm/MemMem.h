@@ -33,7 +33,7 @@
 
 namespace StringMatch {
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || 1
 
 #if 1
 static inline
