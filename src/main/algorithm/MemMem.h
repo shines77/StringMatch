@@ -48,7 +48,7 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
             const unsigned char * needle = (const unsigned char *)needle_start;
             const unsigned char * haystack_end = haystack + haystack_len - needle_len;
             const unsigned char * needle_end = needle + needle_len;
-            do {
+            for (;;) {
                 const unsigned char * h = haystack;
                 const unsigned char * n = needle;
                 while (likely(*h != *n)) {
@@ -64,12 +64,12 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                     n++;
                     if (unlikely(n >= needle_end))
                         return (void *)haystack;
-                } while (likely(*h == *n));
+                } while (unlikely(*h == *n));
 
                 haystack++;
                 if (unlikely(haystack > haystack_end))
                     return nullptr;
-            } while (1);
+            }
         }
 
         return nullptr;
