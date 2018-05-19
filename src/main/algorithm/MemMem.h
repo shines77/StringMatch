@@ -21,6 +21,10 @@
 #include "AlgorithmWrapper.h"
 #include "support/StringRef.h"
 
+#if defined(_MSC_VER) || 1
+#define __memmem memmem_msvc
+#endif // _MSC_VER
+
 //
 // memmem()
 //
@@ -33,13 +37,13 @@ namespace StringMatch {
 
 #if 1
 static inline
-void * memmem(const void * haystack_start, size_t haystack_len,
-              const void * needle_start, size_t needle_len) {
+void * memmem_msvc(const void * haystack_start, size_t haystack_len,
+                   const void * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
        the beginning of the string. */
-    if (needle_len != 0) {
+    if (likely(needle_len != 0)) {
         /* Sanity check, otherwise the loop might search through the whole memory. */
-        if (haystack_len >= needle_len) {
+        if (likely(haystack_len >= needle_len)) {
             const unsigned char * haystack = (const unsigned char *)haystack_start;
             const unsigned char * needle = (const unsigned char *)needle_start;
             const unsigned char * haystack_end = haystack + haystack_len - needle_len;
@@ -49,7 +53,7 @@ void * memmem(const void * haystack_start, size_t haystack_len,
                 const unsigned char * n = needle;
                 while (*h != *n) {
                     h++;
-                    if (h > haystack_end)
+                    if (unlikely(h > haystack_end))
                         return nullptr;
                 }
 
@@ -58,12 +62,12 @@ void * memmem(const void * haystack_start, size_t haystack_len,
                 do {
                     h++;
                     n++;
-                    if (n >= needle_end)
+                    if (unlikely(n >= needle_end))
                         return (void *)haystack;
                 } while (*h == *n);
 
                 haystack++;
-                if (haystack > haystack_end)
+                if (unlikely(haystack > haystack_end))
                     return nullptr;
             } while (1);
         }
@@ -81,8 +85,8 @@ void * memmem(const void * haystack_start, size_t haystack_len,
 // See: https://codereview.stackexchange.com/questions/182156/memmem-on-windows
 //
 static inline
-void * memmem(const void * haystack_start, size_t haystack_len,
-              const void * needle_start, size_t needle_len) {
+void * memmem_msvc(const void * haystack_start, size_t haystack_len,
+                   const void * needle_start, size_t needle_len) {
     const unsigned char * haystack = (const unsigned char *)haystack_start;
     const unsigned char * needle = (const unsigned char *)needle_start;
 
@@ -157,8 +161,8 @@ public:
         assert(text != nullptr);
         assert(pattern_in != nullptr);
 #if 1
-        const char * haystack = (const char *)memmem((const void *)text, text_len,
-                                                     (const void *)pattern_in, pattern_len);
+        const char * haystack = (const char *)__memmem((const void *)text, text_len,
+                                                       (const void *)pattern_in, pattern_len);
         if (haystack != nullptr)
             return (int)(haystack - text);
         else
@@ -168,8 +172,8 @@ public:
             register const char * target = text;
             register const char * pattern = pattern_in;
 
-            const char * haystack = (const char *)memmem((const void *)text, text_len,
-                                                         (const void *)pattern_in, pattern_len);
+            const char * haystack = (const char *)__memmem((const void *)text, text_len,
+                                                           (const void *)pattern_in, pattern_len);
             if (haystack != nullptr)
                 return (int)(haystack - target);
             else

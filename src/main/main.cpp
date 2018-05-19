@@ -214,7 +214,8 @@ void StringMatch_strstr_benchmark()
     }
     sw.stop();
 
-    printf("[include preprocessing: no ] sum: %-11d, time spent: %0.3f ms\n\n", sum, sw.getElapsedMillisec());
+    printf("[include preprocessing: no ] sum: %-11d, time spent: %0.3f ms\n\n",
+           sum, sw.getElapsedMillisec());
 }
 
 template <typename AlgorithmTy>
