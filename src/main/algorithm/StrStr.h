@@ -14,7 +14,6 @@
 
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
-#include "support/StringRef.h"
 
 namespace StringMatch {
 
@@ -53,26 +52,11 @@ public:
                const char_type * pattern_in, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern_in != nullptr);
-#if 1
         const char * haystack = strstr(text, pattern_in);
         if (likely(haystack != nullptr))
             return (int)(haystack - text);
         else
             return Status::NotFound;
-#else
-        if (likely(pattern_len <= text_len)) {
-            register const char * target = text;
-            register const char * pattern = pattern_in;
-
-            const char * haystack = strstr(target, pattern);
-            if (haystack != nullptr)
-                return (int)(haystack - target);
-            else
-                return Status::NotFound;
-        }
-
-        return Status::NotFound;
-#endif
     }
 };
 

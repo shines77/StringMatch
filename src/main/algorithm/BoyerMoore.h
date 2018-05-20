@@ -15,7 +15,6 @@
 
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
-#include "support/StringRef.h"
 
 namespace StringMatch {
 

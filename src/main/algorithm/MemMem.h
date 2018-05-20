@@ -19,7 +19,6 @@
 
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
-#include "support/StringRef.h"
 
 #if defined(_MSC_VER) || 1
 #define __memmem memmem_msvc
@@ -157,31 +156,15 @@ public:
 
     /* Searching */
     int search(const char_type * text, size_type text_len,
-               const char_type * pattern_in, size_type pattern_len) const {
+               const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
-        assert(pattern_in != nullptr);
-#if 1
+        assert(pattern != nullptr);
         const char * haystack = (const char *)__memmem((const void *)text, text_len,
-                                                       (const void *)pattern_in, pattern_len);
+                                                       (const void *)pattern, pattern_len);
         if (likely(haystack != nullptr))
             return (int)(haystack - text);
         else
             return Status::NotFound;
-#else
-        if (likely(pattern_len <= text_len)) {
-            register const char * target = text;
-            register const char * pattern = pattern_in;
-
-            const char * haystack = (const char *)__memmem((const void *)text, text_len,
-                                                           (const void *)pattern_in, pattern_len);
-            if (likely(haystack != nullptr))
-                return (int)(haystack - target);
-            else
-                return Status::NotFound;
-        }
-
-        return Status::NotFound;
-#endif
     }
 };
 
