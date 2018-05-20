@@ -75,11 +75,11 @@ public:
         assert(kmp_next != nullptr);
 
         if (likely(pattern_len <= text_len)) {
-            register const char * target = text;
-            register const char * pattern = pattern_in;
+            register const char_type * target = text;
+            register const char_type * pattern = pattern_in;
 
-            const char * target_end = text + (text_len - pattern_len);
-            const char * pattern_end = pattern + pattern_len;
+            const char_type * target_end = text + (text_len - pattern_len);
+            const char_type * pattern_end = pattern + pattern_len;
             do {
                 if (likely(*target != *pattern)) {
                     int search_index = (int)(pattern - pattern_in);

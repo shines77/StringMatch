@@ -86,7 +86,7 @@ public:
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
  || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
  || defined(__amd64__) || defined(__x86_64__)
-  #if 1
+  #if 0
             register mask_type state = ~0;
             for (size_t i = 0; i < text_len; ++i) {
                 state = (state << 1) | bitmap[(uchar_type)text[i]];
@@ -101,10 +101,17 @@ public:
             }
             if (unlikely(state < limit))
                 return (int)(i + 1 - pattern_len);
-            for (; i < text_len; ++i) {
+            for (; (i + pattern_len) < text_len; ++i) {
                 state = (state << 1) | bitmap[(uchar_type)text[i]];
                 if (unlikely(state < limit))
                     return (int)(i + 1 - pattern_len);
+            }
+            if (unlikely(state != ~0)) {
+                for (; i < text_len; ++i) {
+                    state = (state << 1) | bitmap[(uchar_type)text[i]];
+                    if (unlikely(state < limit))
+                        return (int)(i + 1 - pattern_len);
+                }
             }
   #else
             register mask_type state1 = ~0;
