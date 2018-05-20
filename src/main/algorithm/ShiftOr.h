@@ -101,7 +101,7 @@ public:
             }
             if (unlikely(state < limit))
                 return (int)(i + 1 - pattern_len);
-            for (; (i + pattern_len) < text_len; ++i) {
+            for (; (i + pattern_len - 1) < text_len; ++i) {
                 state = (state << 1) | bitmap[(uchar_type)text[i]];
                 if (unlikely(state < limit))
                     return (int)(i + 1 - pattern_len);
