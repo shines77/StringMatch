@@ -14,6 +14,9 @@
 #include <algorithm>
 #include <assert.h>
 
+// If use StringRef in std::search() algorithm ?
+#define STD_SEARCH_USE_STRING_REF   1
+
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
 #include "support/StringRef.h"
@@ -55,7 +58,7 @@ public:
                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-#if 1
+#if STD_SEARCH_USE_STRING_REF
         StringRef sText(text, text_len);
         StringRef sPattern(pattern, pattern_len);
         StringRef::iterator iter = std::search(sText.begin(), sText.end(),

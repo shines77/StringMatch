@@ -166,25 +166,24 @@ public:
         assert(bmBc != nullptr);
 
         if (likely(pattern_len <= text_len)) {
-            const char_type * pattern_first = pattern;
             const char_type * target_last = text + (text_len - pattern_len);
             const int pattern_step = (int)pattern_len - 1;
             int target_idx = 0;
             do {
-                register const char_type * target = text + target_idx + pattern_step;
-                register const char_type * pattern_scan = pattern + pattern_step;
+                register const char_type * target = text + pattern_step + target_idx;
+                register const char_type * scan = pattern + pattern_step;
                 assert(target < (text + text_len));
 
-                while (likely(pattern_scan >= pattern_first)) {
-                    if (likely(*target != *pattern_scan)) {
+                while (likely(scan >= pattern)) {
+                    if (likely(*target != *scan)) {
                         break;
                     }
                     target--;
-                    pattern_scan--;
+                    scan--;
                 }
 
-                if (likely(pattern_scan >= pattern_first)) {
-                    int pattern_idx = (int)(pattern_scan - pattern);
+                if (likely(scan >= pattern)) {
+                    int pattern_idx = (int)(scan - pattern);
                     target_idx += sm_max(bmGs[pattern_idx],
                                          bmBc[(uchar_type)*target] - (pattern_step - pattern_idx));
                 }
