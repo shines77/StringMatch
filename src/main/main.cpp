@@ -67,6 +67,9 @@ static const char * s_Patterns[] = {
     "between 150,000 and 300,000 people."
 };
 
+static const size_t kSearchTexts = sm_countof_i(s_SearchTexts);
+static const size_t kPatterns = sm_countof_i(s_Patterns);
+
 void StringMatch_usage_examples()
 {
     // Usage 1
@@ -179,8 +182,6 @@ void StringMatch_unittest()
 
 void StringMatch_strstr_benchmark1()
 {
-    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
-    static const int kPatterns = sm_countof_i(s_Patterns);
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 
     test::StopWatch sw;
@@ -203,8 +204,8 @@ void StringMatch_strstr_benchmark1()
     sum = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < kSearchTexts; ++i) {
-            for (int j = 0; j < kPatterns; ++j) {
+        for (size_t i = 0; i < kSearchTexts; ++i) {
+            for (size_t j = 0; j < kPatterns; ++j) {
                 const char * substr = strstr(texts[i].c_str(), patterns[j].c_str());
                 if (substr != nullptr) {
                     int index_of = (int)(substr - texts[i].c_str());
@@ -224,8 +225,6 @@ void StringMatch_strstr_benchmark1()
 
 void StringMatch_strstr_benchmark()
 {
-    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
-    static const int kPatterns = sm_countof_i(s_Patterns);
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 
     test::StopWatch sw;
@@ -246,8 +245,8 @@ void StringMatch_strstr_benchmark()
     sum = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < kSearchTexts; ++i) {
-            for (int j = 0; j < kPatterns; ++j) {
+        for (size_t i = 0; i < kSearchTexts; ++i) {
+            for (size_t j = 0; j < kPatterns; ++j) {
                 const char * substr = strstr(texts[i].c_str(), patterns[j].c_str());
                 if (substr != nullptr) {
                     int index_of = (int)(substr - texts[i].c_str());
@@ -270,8 +269,6 @@ void StringMatch_benchmark1()
 {
     typedef typename AlgorithmTy::Pattern pattern_type;
 
-    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
-    static const int kPatterns = sm_countof_i(s_Patterns);
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 
     test::StopWatch sw;
@@ -302,8 +299,8 @@ void StringMatch_benchmark1()
     sum1 = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < kSearchTexts; ++i) {
-            for (int j = 0; j < kPatterns; ++j) {
+        for (size_t i = 0; i < kSearchTexts; ++i) {
+            for (size_t j = 0; j < kPatterns; ++j) {
                 int index_of = pattern[j].match(texts[i].c_str());
                 sum1 += index_of;
             }
@@ -318,8 +315,8 @@ void StringMatch_benchmark1()
         sum2 = 0;
         sw.start();
         for (size_t loop = 0; loop < iters; ++loop) {
-            for (int i = 0; i < kSearchTexts; ++i) {
-                for (int j = 0; j < kPatterns; ++j) {
+            for (size_t i = 0; i < kSearchTexts; ++i) {
+                for (size_t j = 0; j < kPatterns; ++j) {
                     int index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
                                                       pattern[j].c_str(), pattern[j].size());
                     sum2 += index_of;
@@ -340,8 +337,6 @@ void StringMatch_benchmark()
 {
     typedef typename AlgorithmTy::Pattern pattern_type;
 
-    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
-    static const int kPatterns = sm_countof_i(s_Patterns);
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 
     test::StopWatch sw;
@@ -363,8 +358,8 @@ void StringMatch_benchmark()
     sum1 = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
-        for (int i = 0; i < kSearchTexts; ++i) {
-            for (int j = 0; j < kPatterns; ++j) {
+        for (size_t i = 0; i < kSearchTexts; ++i) {
+            for (size_t j = 0; j < kPatterns; ++j) {
                 int index_of = pattern[j].match(texts[i].c_str());
                 sum1 += index_of;
             }
@@ -380,8 +375,8 @@ void StringMatch_benchmark()
         sum2 = 0;
         sw.start();
         for (size_t loop = 0; loop < iters; ++loop) {
-            for (int i = 0; i < kSearchTexts; ++i) {
-                for (int j = 0; j < kPatterns; ++j) {
+            for (size_t i = 0; i < kSearchTexts; ++i) {
+                for (size_t j = 0; j < kPatterns; ++j) {
                     int index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
                                                       pattern[j].c_str(), pattern[j].size());
                     sum2 += index_of;
