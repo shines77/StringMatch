@@ -173,18 +173,18 @@ void StringMatch_unittest()
     pattern2.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
 }
 
-void StringMatch_strstr_benchmark()
+void StringMatch_strstr_benchmark1()
 {
+    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
+    static const int kPatterns = sm_countof_i(s_Patterns);
+    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
+
     test::StopWatch sw;
     int sum;
-    static const size_t iters = kIterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
     printf("------------------------------------------------------\n");
     printf("  Benchmark: %s\n", "strstr() **");
     printf("------------------------------------------------------\n\n");
-
-    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
-    static const int kPatterns = sm_countof_i(s_Patterns);
 
     StringRef texts[kSearchTexts];
     for (int i = 0; i < kSearchTexts; ++i) {
@@ -214,26 +214,69 @@ void StringMatch_strstr_benchmark()
     }
     sw.stop();
 
-    printf("[include preprocessing: no ] sum: %-11d, time spent: %0.3f ms\n\n",
+    printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n\n",
+            sum, sw.getElapsedMillisec());
+}
+
+void StringMatch_strstr_benchmark()
+{
+    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
+    static const int kPatterns = sm_countof_i(s_Patterns);
+    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
+
+    test::StopWatch sw;
+    int sum;
+
+    printf("---------------------------------------------------------------------\n");
+
+    StringRef texts[kSearchTexts];
+    for (int i = 0; i < kSearchTexts; ++i) {
+        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
+    }
+
+    StringRef patterns[kPatterns];
+    for (int i = 0; i < kPatterns; ++i) {
+        patterns[i].set_data(s_Patterns[i], strlen(s_Patterns[i]));
+    }
+
+    sum = 0;
+    sw.start();
+    for (size_t loop = 0; loop < iters; ++loop) {
+        for (int i = 0; i < kSearchTexts; ++i) {
+            for (int j = 0; j < kPatterns; ++j) {
+                const char * substr = strstr(texts[i].c_str(), patterns[j].c_str());
+                if (substr != nullptr) {
+                    int index_of = (int)(substr - texts[i].c_str());
+                    sum += index_of;
+                }
+                else {
+                    sum += (int)Status::NotFound;
+                }
+            }
+        }
+    }
+    sw.stop();
+
+    printf(" strstr()** [Preprocessing: no ] sum: %d, time: %0.3f ms\n\n",
            sum, sw.getElapsedMillisec());
 }
 
 template <typename AlgorithmTy>
-void StringMatch_benchmark()
+void StringMatch_benchmark1()
 {
     typedef typename AlgorithmTy::Pattern pattern_type;
+
+    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
+    static const int kPatterns = sm_countof_i(s_Patterns);
+    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 
     test::StopWatch sw;
     double matching_time, full_time;
     int sum1, sum2;
-    static const size_t iters = kIterations / (sm_countof(s_SearchTexts) * sm_countof(s_Patterns));
 
-    printf("------------------------------------------------------\n");
+    printf("-----------------------------------------------------------\n");
     printf("  Benchmark for: %s\n", AlgorithmTy::name());
-    printf("------------------------------------------------------\n\n");
-
-    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
-    static const int kPatterns = sm_countof_i(s_Patterns);
+    printf("-----------------------------------------------------------\n\n");
 
     StringRef texts[kSearchTexts];
     for (int i = 0; i < kSearchTexts; ++i) {
@@ -265,7 +308,7 @@ void StringMatch_benchmark()
     sw.stop();
     matching_time = sw.getElapsedMillisec();
 
-    printf("[include preprocessing: no ] sum: %-11d, time spent: %0.3f ms\n", sum1, matching_time);
+    printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n", sum1, matching_time);
 
     if (AlgorithmTy::need_preprocessing()) {
         sum2 = 0;
@@ -282,7 +325,77 @@ void StringMatch_benchmark()
         sw.stop();
         full_time = sw.getElapsedMillisec();
 
-        printf("[include preprocessing: yes] sum: %-11d, time spent: %0.3f ms\n", sum2, full_time);
+        printf("[Preprocessing: yes] sum: %-11d, time: %0.3f ms\n", sum2, full_time);
+    }
+
+    printf("\n");
+}
+
+template <typename AlgorithmTy>
+void StringMatch_benchmark()
+{
+    typedef typename AlgorithmTy::Pattern pattern_type;
+
+    static const int kSearchTexts = sm_countof_i(s_SearchTexts);
+    static const int kPatterns = sm_countof_i(s_Patterns);
+    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
+
+    test::StopWatch sw;
+    double matching_time, full_time;
+    int sum1, sum2;
+
+    printf("---------------------------------------------------------------------\n");
+
+    StringRef texts[kSearchTexts];
+    for (int i = 0; i < kSearchTexts; ++i) {
+        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
+    }
+
+    pattern_type pattern[kPatterns];
+    for (int i = 0; i < kPatterns; ++i) {
+        pattern[i].preprocessing(s_Patterns[i]);
+    }
+
+#if 0
+    if (AlgorithmTy::need_preprocessing())
+        printf("need preprocessing: yes\n\n");
+    else
+        printf("need preprocessing: no\n\n");
+#endif
+
+    sum1 = 0;
+    sw.start();
+    for (size_t loop = 0; loop < iters; ++loop) {
+        for (int i = 0; i < kSearchTexts; ++i) {
+            for (int j = 0; j < kPatterns; ++j) {
+                int index_of = pattern[j].match(texts[i].c_str());
+                sum1 += index_of;
+            }
+        }
+    }
+    sw.stop();
+    matching_time = sw.getElapsedMillisec();
+
+    printf(" %s [Preprocessing: no ] sum: %d, time: %0.3f ms\n",
+            AlgorithmTy::name(), sum1, matching_time);
+
+    if (AlgorithmTy::need_preprocessing()) {
+        sum2 = 0;
+        sw.start();
+        for (size_t loop = 0; loop < iters; ++loop) {
+            for (int i = 0; i < kSearchTexts; ++i) {
+                for (int j = 0; j < kPatterns; ++j) {
+                    int index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
+                                                      pattern[j].c_str(), pattern[j].size());
+                    sum2 += index_of;
+                }
+            }
+        }
+        sw.stop();
+        full_time = sw.getElapsedMillisec();
+
+        printf(" %s [Preprocessing: yes] sum: %d, time: %0.3f ms\n",
+                AlgorithmTy::name(), sum2, full_time);
     }
 
     printf("\n");
