@@ -56,10 +56,14 @@ static const char * s_Patterns[] = {
     "people",
 
     "largely mangrove",
+    "largely Mangrove",
     "some dispute",
+    "some dicpute",
     "The population of Bakassi",
+    "The population of bakassi",
 
     "between 150,000",
+    "between 150,0000",
     "between 150,000 and 300,000 people."
 };
 
@@ -355,13 +359,6 @@ void StringMatch_benchmark()
     for (int i = 0; i < kPatterns; ++i) {
         pattern[i].preprocessing(s_Patterns[i]);
     }
-
-#if 0
-    if (AlgorithmTy::need_preprocessing())
-        printf("need preprocessing: yes\n\n");
-    else
-        printf("need preprocessing: no\n\n");
-#endif
 
     sum1 = 0;
     sw.start();
