@@ -92,7 +92,7 @@ const char_type * my_strstr(const char_type * text, const char_type * pattern) {
     else {
         return text;
     }
-#else=
+#else
     if (likely(*pattern != char_type('\0'))) {
         const char_type * scan_start = text;
         while (likely(*scan_start != char_type('\0'))) {
