@@ -94,5 +94,11 @@
     <ClInclude Include="..\..\..\src\main\support\StringRef.h">
       <Filter>src\support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\MyMemMem.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\MyStrStr.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

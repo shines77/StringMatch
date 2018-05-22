@@ -25,6 +25,8 @@
     <ClInclude Include="..\..\..\src\main\algorithm\BoyerMoore.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\Kmp.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\MemMem.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\MyMemMem.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\MyStrStr.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\ShiftOr.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\StdSearch.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\StrStr.h" />

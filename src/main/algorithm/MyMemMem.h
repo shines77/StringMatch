@@ -1,25 +1,16 @@
 
-#ifndef STRING_MATCH_MEMMEM_H
-#define STRING_MATCH_MEMMEM_H
+#ifndef STRING_MATCH_MY_MEMMEM_H
+#define STRING_MATCH_MY_MEMMEM_H
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE     /* See feature_test_macros(7) */
-#endif
-
 #include "basic/stdint.h"
-#include <string.h>     // for linux: memmem()
 #include <assert.h>
 
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
-
-#if defined(_MSC_VER)
-#define memmem  memmem_msvc
-#endif // _MSC_VER
 
 //
 // memmem()
@@ -29,24 +20,23 @@
 
 namespace StringMatch {
 
-#if defined(_MSC_VER)
-
 #if 1
+template <typename char_type>
 static inline
-void * memmem_msvc(const void * haystack_start, size_t haystack_len,
-                   const void * needle_start, size_t needle_len) {
+const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
+                            const char_type * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
        the beginning of the string. */
     if (likely(needle_len != 0)) {
         /* Sanity check, otherwise the loop might search through the whole memory. */
         if (likely(haystack_len >= needle_len)) {
-            const unsigned char * haystack = (const unsigned char *)haystack_start;
-            const unsigned char * needle = (const unsigned char *)needle_start;
-            const unsigned char * haystack_end = haystack + haystack_len - needle_len;
-            const unsigned char * needle_end = needle + needle_len;
+            const char_type * haystack = haystack_start;
+            const char_type * needle = needle_start;
+            const char_type * haystack_end = haystack + haystack_len - needle_len;
+            const char_type * needle_end = needle + needle_len;
             for (;;) {
-                const unsigned char * h = haystack;
-                const unsigned char * n = needle;
+                const char_type * h = haystack;
+                const char_type * n = needle;
                 while (likely(*h != *n)) {
                     h++;
                     if (unlikely(h > haystack_end))
@@ -59,7 +49,7 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                     h++;
                     n++;
                     if (unlikely(n >= needle_end))
-                        return (void *)haystack;
+                        return haystack;
                 } while (unlikely(*h == *n));
 
                 haystack++;
@@ -71,7 +61,7 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
         return nullptr;
     }
     else {
-        return (void *)haystack_start;
+        return haystack_start;
     }
 }
 #else
@@ -80,11 +70,12 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
 //
 // See: https://codereview.stackexchange.com/questions/182156/memmem-on-windows
 //
+template <typename char_type>
 static inline
-void * memmem_msvc(const void * haystack_start, size_t haystack_len,
-                   const void * needle_start, size_t needle_len) {
-    const unsigned char * haystack = (const unsigned char *)haystack_start;
-    const unsigned char * needle = (const unsigned char *)needle_start;
+const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
+                            const char_type * needle_start, size_t needle_len) {
+    const char_type * haystack = haystack_start;
+    const char_type * needle = needle_start;
 
     /* The first occurrence of the empty string is deemed to occur at
        the beginning of the string. */
@@ -92,8 +83,8 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
         /* Sanity check, otherwise the loop might search through the whole memory. */
         if (likely(haystack_len >= needle_len)) {
             for (; haystack_len >= needle_len; ++haystack, --haystack_len) {
-                const unsigned char * h = haystack;
-                const unsigned char * n = needle;
+                const char_type * h = haystack;
+                const char_type * n = needle;
 
                 if (likely(*h != *n))
                     continue;
@@ -107,37 +98,35 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                     x--;
                 }
                 if (unlikely(x == 0))
-                    return (void *)haystack;
+                    return haystack;
             }
         }
 
         return nullptr;
     }
     else {
-        return (void *)haystack_start;
+        return haystack_start;
     }
 }
 #endif
 
-#endif // _MSC_VER
-
 template <typename CharTy>
-class MemMemImpl {
+class MyMemMemImpl {
 public:
-    typedef MemMemImpl<CharTy>  this_type;
-    typedef CharTy              char_type;
-    typedef std::size_t         size_type;
+    typedef MyMemMemImpl<CharTy>    this_type;
+    typedef CharTy                  char_type;
+    typedef std::size_t             size_type;
 
 private:
     bool alive_;
 
 public:
-    MemMemImpl() : alive_(true) {}
-    ~MemMemImpl() {
+    MyMemMemImpl() : alive_(true) {}
+    ~MyMemMemImpl() {
         this->destroy();
     }
 
-    static const char * name() { return "memmem()"; }
+    static const char * name() { return "my_memmem()"; }
     static bool need_preprocessing() { return false; }
 
     bool is_alive() const { return this->alive_; }
@@ -157,9 +146,7 @@ public:
                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-        const char_type * haystack = (const char_type *)memmem(
-                                    (const void *)text, text_len * sizeof(char_type),
-                                    (const void *)pattern, pattern_len * sizeof(char_type));
+        const char_type * haystack = my_memmem(text, text_len, pattern, pattern_len);
         if (likely(haystack != nullptr))
             return (int)(haystack - text);
         else
@@ -168,13 +155,13 @@ public:
 };
 
 namespace AnsiString {
-    typedef AlgorithmWrapper< MemMemImpl<char> >    MemMem;
+    typedef AlgorithmWrapper< MyMemMemImpl<char> >    MyMemMem;
 } // namespace AnsiString
 
 namespace UnicodeString {
-    typedef AlgorithmWrapper< MemMemImpl<wchar_t> > MemMem;
+    typedef AlgorithmWrapper< MyMemMemImpl<wchar_t> > MyMemMem;
 } // namespace UnicodeString
 
 } // namespace StringMatch
 
-#endif // STRING_MATCH_MEMMEM_H
+#endif // STRING_MATCH_MY_MEMMEM_H

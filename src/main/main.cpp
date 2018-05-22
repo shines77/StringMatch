@@ -16,6 +16,8 @@
 
 #include "algorithm/StrStr.h"
 #include "algorithm/MemMem.h"
+#include "algorithm/MyStrStr.h"
+#include "algorithm/MyMemMem.h"
 #include "algorithm/StdSearch.h"
 #include "algorithm/Kmp.h"
 #include "algorithm/BoyerMoore.h"
@@ -417,6 +419,8 @@ int main(int argc, char * argv[])
 
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::MemMem>();
+    StringMatch_benchmark<AnsiString::MyStrStr>();
+    StringMatch_benchmark<AnsiString::MyMemMem>();
     StringMatch_benchmark<AnsiString::StdSearch>();
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();

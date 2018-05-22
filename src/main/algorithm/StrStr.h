@@ -6,10 +6,7 @@
 #pragma once
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "basic/stdint.h"
-#include <string>
 #include <assert.h>
 
 #include "StringMatch.h"
@@ -44,17 +41,22 @@ public:
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_type length) {
+        /* Don't need preprocessing. */
         return true;
     }
 
     /* Searching */
     int search(const char_type * text, size_type text_len,
-               const char_type * pattern_in, size_type pattern_len) const {
+               const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
-        assert(pattern_in != nullptr);
-        const char * haystack = strstr(text, pattern_in);
-        if (likely(haystack != nullptr))
-            return (int)(haystack - text);
+        assert(pattern != nullptr);
+#if !defined(_UNICODE)
+        const char_type * substr = strstr(text, pattern);
+#else
+        const char_type * substr = wcsstr(text, pattern);
+#endif
+        if (likely(substr != nullptr))
+            return (int)(substr - text);
         else
             return Status::NotFound;
     }

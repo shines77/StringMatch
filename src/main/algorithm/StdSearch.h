@@ -6,10 +6,7 @@
 #pragma once
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "basic/stdint.h"
-#include <string>
 #include <memory>
 #include <algorithm>
 #include <assert.h>
@@ -50,6 +47,7 @@ public:
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_type length) {
+        /* Don't need preprocessing. */
         return true;
     }
 

@@ -6,11 +6,7 @@
 #pragma once
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "basic/stdint.h"
-#include <string>
-#include <memory>
 #include <assert.h>
 
 #include "StringMatch.h"

@@ -6,10 +6,7 @@
 #pragma once
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "basic/stdint.h"
-#include <string>
 #include <memory>
 #include <assert.h>
 
@@ -67,22 +64,22 @@ public:
 
     /* Searching */
     int search(const char_type * text, size_type text_len,
-               const char_type * pattern_in, size_type pattern_len) const {
+               const char_type * pattern_start, size_type pattern_len) const {
         assert(text != nullptr);
-        assert(pattern_in != nullptr);
+        assert(pattern_start != nullptr);
 
         int * kmp_next = this->kmp_next_.get();
         assert(kmp_next != nullptr);
 
         if (likely(pattern_len <= text_len)) {
             register const char_type * target = text;
-            register const char_type * pattern = pattern_in;
+            register const char_type * pattern = pattern_start;
 
             const char_type * target_end = text + (text_len - pattern_len);
             const char_type * pattern_end = pattern + pattern_len;
             do {
                 if (likely(*target != *pattern)) {
-                    int search_index = (int)(pattern - pattern_in);
+                    int search_index = (int)(pattern - pattern_start);
                     if (likely(search_index == 0)) {
                         target++;
                         if (unlikely(target > target_end)) {
@@ -95,7 +92,7 @@ public:
                         int search_offset = kmp_next[search_index];
                         int target_offset = search_index - search_offset;
                         assert(target_offset >= 1);
-                        pattern = pattern_in + search_offset;
+                        pattern = pattern_start + search_offset;
                         target = target + target_offset;
                         if (unlikely(target > target_end)) {
                             // Not found
