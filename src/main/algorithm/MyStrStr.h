@@ -99,9 +99,7 @@ const char_type * my_strstr(const char_type * text, const char_type * pattern) {
             const char_type * cursor = pattern;
             while (likely(*scan_start != *cursor)) {
                 scan_start++;
-                if (likely(*scan_start != char_type('\0')))
-                    continue;
-                else
+                if (unlikely(*scan_start == char_type('\0')))
                     return nullptr;
             }
 
