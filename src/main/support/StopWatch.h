@@ -183,7 +183,7 @@ public:
 
     static time_stamp_t now() {
         __COMPILER_BARRIER();
-        time_stamp_t _now = impl_type::get_timestamp_now(impl_type::get_timepoint_now(), base_time_);
+        time_stamp_t _now = impl_type::get_timestamp_now(impl_type::get_timepoint_now(), this_type::base_time_);
         __COMPILER_BARRIER();
         return _now;
     }

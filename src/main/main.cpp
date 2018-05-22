@@ -192,12 +192,12 @@ void StringMatch_strstr_benchmark1()
     printf("------------------------------------------------------\n\n");
 
     StringRef texts[kSearchTexts];
-    for (int i = 0; i < kSearchTexts; ++i) {
+    for (size_t i = 0; i < kSearchTexts; ++i) {
         texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
     }
 
     StringRef patterns[kPatterns];
-    for (int i = 0; i < kPatterns; ++i) {
+    for (size_t i = 0; i < kPatterns; ++i) {
         patterns[i].set_data(s_Patterns[i], strlen(s_Patterns[i]));
     }
 
@@ -233,12 +233,12 @@ void StringMatch_strstr_benchmark()
     printf("---------------------------------------------------------------------\n");
 
     StringRef texts[kSearchTexts];
-    for (int i = 0; i < kSearchTexts; ++i) {
+    for (size_t i = 0; i < kSearchTexts; ++i) {
         texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
     }
 
     StringRef patterns[kPatterns];
-    for (int i = 0; i < kPatterns; ++i) {
+    for (size_t i = 0; i < kPatterns; ++i) {
         patterns[i].set_data(s_Patterns[i], strlen(s_Patterns[i]));
     }
 
@@ -280,12 +280,12 @@ void StringMatch_benchmark1()
     printf("-----------------------------------------------------------\n\n");
 
     StringRef texts[kSearchTexts];
-    for (int i = 0; i < kSearchTexts; ++i) {
+    for (size_t i = 0; i < kSearchTexts; ++i) {
         texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
     }
 
     pattern_type pattern[kPatterns];
-    for (int i = 0; i < kPatterns; ++i) {
+    for (size_t i = 0; i < kPatterns; ++i) {
         pattern[i].preprocessing(s_Patterns[i]);
     }
 
@@ -346,12 +346,12 @@ void StringMatch_benchmark()
     printf("---------------------------------------------------------------------\n");
 
     StringRef texts[kSearchTexts];
-    for (int i = 0; i < kSearchTexts; ++i) {
+    for (size_t i = 0; i < kSearchTexts; ++i) {
         texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
     }
 
     pattern_type pattern[kPatterns];
-    for (int i = 0; i < kPatterns; ++i) {
+    for (size_t i = 0; i < kPatterns; ++i) {
         pattern[i].preprocessing(s_Patterns[i]);
     }
 
