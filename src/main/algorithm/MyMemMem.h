@@ -34,7 +34,7 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
             const char_type * needle = needle_start;
             const char_type * haystack_end = haystack + haystack_len - needle_len;
             const char_type * needle_end = needle + needle_len;
-            while (likely(haystack <= haystack_end)) {
+            do {
                 const char_type * n = needle;
                 while (likely(*haystack != *n)) {
                     haystack++;
@@ -58,7 +58,7 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
                         return haystack;
 					}
                 } while (1);
-            }
+            } while (likely(haystack <= haystack_end));
         }
         return nullptr;
     }
