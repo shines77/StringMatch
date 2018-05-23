@@ -154,8 +154,8 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
         const char_type * haystack = (const char_type *)memmem(
-                                    (const void *)text, text_len * sizeof(char_type),
-                                    (const void *)pattern, pattern_len * sizeof(char_type));
+                                        (const void *)text, text_len * sizeof(char_type),
+                                        (const void *)pattern, pattern_len * sizeof(char_type));
         if (likely(haystack != nullptr))
             return (int)(haystack - text);
         else

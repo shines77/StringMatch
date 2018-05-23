@@ -100,5 +100,8 @@
     <ClInclude Include="..\..\..\src\main\algorithm\MyStrStr.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\MyMemMemBw.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

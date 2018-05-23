@@ -18,6 +18,7 @@
 #include "algorithm/MemMem.h"
 #include "algorithm/MyStrStr.h"
 #include "algorithm/MyMemMem.h"
+#include "algorithm/MyMemMemBw.h"
 #include "algorithm/StdSearch.h"
 #include "algorithm/Kmp.h"
 #include "algorithm/BoyerMoore.h"
@@ -303,7 +304,7 @@ void StringMatch_benchmark1()
     for (size_t loop = 0; loop < iters; ++loop) {
         for (size_t i = 0; i < kSearchTexts; ++i) {
             for (size_t j = 0; j < kPatterns; ++j) {
-                int index_of = pattern[j].match(texts[i].c_str());
+                int index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
                 sum1 += index_of;
             }
         }
@@ -362,7 +363,7 @@ void StringMatch_benchmark()
     for (size_t loop = 0; loop < iters; ++loop) {
         for (size_t i = 0; i < kSearchTexts; ++i) {
             for (size_t j = 0; j < kPatterns; ++j) {
-                int index_of = pattern[j].match(texts[i].c_str());
+                int index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
                 sum1 += index_of;
             }
         }
@@ -407,6 +408,9 @@ int main(int argc, char * argv[])
 
     StringMatch_usage_examples();
 
+    //StringMatch_unittest<AnsiString::MemMem>();
+    //StringMatch_unittest<AnsiString::MyMemMem>();
+
 #if 0
     StringMatch_unittest<AnsiString::StrStr>();
     StringMatch_unittest<AnsiString::MemMem>();
@@ -421,6 +425,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::MemMem>();
     StringMatch_benchmark<AnsiString::MyStrStr>();
     StringMatch_benchmark<AnsiString::MyMemMem>();
+    StringMatch_benchmark<AnsiString::MyMemMemBw>();
     StringMatch_benchmark<AnsiString::StdSearch>();
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();

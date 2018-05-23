@@ -32,8 +32,8 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
         if (likely(haystack_len >= needle_len)) {
             const char_type * haystack = haystack_start;
             const char_type * needle = needle_start;
-            const char_type * haystack_end = haystack + haystack_len - needle_len;
-            const char_type * needle_end = needle + needle_len;
+            const char_type * haystack_end = haystack_start + haystack_len - needle_len;
+            const char_type * needle_end = needle_start + needle_len;
             do {
 search_start:
                 const char_type * n = needle;
@@ -47,6 +47,7 @@ search_start:
 
 				const char_type * h = haystack;
                 do {
+                    assert(h <= haystack_end);
                     h++;
                     n++;
                     if (likely(n < needle_end)) {
@@ -82,8 +83,8 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
         if (likely(haystack_len >= needle_len)) {
             const char_type * haystack = haystack_start;
             const char_type * needle = needle_start;
-            const char_type * haystack_end = haystack + haystack_len - needle_len;
-            const char_type * needle_end = needle + needle_len;
+            const char_type * haystack_end = haystack_start + haystack_len - needle_len;
+            const char_type * needle_end = needle_start + needle_len;
             for (;;) {
                 const char_type * h = haystack;
                 const char_type * n = needle;
@@ -96,6 +97,7 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
                 haystack = h;
 
                 do {
+                    assert(h <= haystack_end);
                     h++;
                     n++;
                     if (unlikely(n >= needle_end))
