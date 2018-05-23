@@ -35,6 +35,7 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
             const char_type * haystack_end = haystack + haystack_len - needle_len;
             const char_type * needle_end = needle + needle_len;
             do {
+search_start:
                 const char_type * n = needle;
                 while (likely(*haystack != *n)) {
                     haystack++;
@@ -51,14 +52,17 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
                     if (likely(n < needle_end)) {
 						if (likely(*h != *n)) {
 							haystack++;
-							break;
+							if (likely(haystack <= haystack_end))
+								goto search_start;
+							else
+								return nullptr;
 						}
 					}
 					else {
                         return haystack;
 					}
                 } while (1);
-            } while (likely(haystack <= haystack_end));
+            } while (1);
         }
         return nullptr;
     }
