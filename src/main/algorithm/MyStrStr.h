@@ -22,79 +22,6 @@ const char_type * my_strstr(const char_type * text, const char_type * pattern) {
 #if 0
     if (likely(*pattern != char_type('\0'))) {
         const char_type * scan_start = text;
-        do {
-            const char_type * scan = scan_start;
-            const char_type * cursor = pattern;
-            bool is_match = true;
-            while (unlikely((*scan != char_type('\0')) && (*scan == *cursor))) {
-                if (is_match) {
-                    scan_start = scan;
-                    is_match = false;
-                }
-                scan++;
-                cursor++;
-            }
-
-            if (likely(*cursor != char_type('\0'))) {
-                if (likely(*scan != char_type('\0'))) {
-                    scan_start++;
-                    if (likely(scan_start != char_type('\0')))
-                        continue;
-                    else
-                        return nullptr;
-                }
-                else {
-                    return nullptr;
-                }
-            }
-            else {
-                return scan_start;
-            }
-        } while (1);
-    }
-    else {
-        return text;
-    }
-#elif 0
-    if (likely(*pattern != char_type('\0'))) {
-        const char_type * scan_start = text;
-        do {
-            const char_type * scan = scan_start;
-            const char_type * cursor = pattern;
-            bool is_match = true;
-            do {
-                if (likely(*scan != char_type('\0'))) {
-                    if (likely(*scan != *cursor)) {
-                        scan++;
-                        cursor = pattern;
-                        is_match = true;
-                    }
-                    else {
-                        if (is_match) {
-                            scan_start = scan;
-                            is_match = false;
-                        }
-                        scan++;
-                        cursor++;
-                        if (likely(*cursor == char_type('\0')))
-                            return scan_start;
-                    }
-                }
-                else {
-                    if (likely(*scan != *cursor))
-                        return nullptr;
-                    else
-                        return scan_start;
-                }
-            } while (1);
-        } while (1);
-    }
-    else {
-        return text;
-    }
-#elif 1
-    if (likely(*pattern != char_type('\0'))) {
-        const char_type * scan_start = text;
         while (likely(*scan_start != char_type('\0'))) {
             const char_type * scan = scan_start;
             const char_type * cursor = pattern;
@@ -110,6 +37,42 @@ const char_type * my_strstr(const char_type * text, const char_type * pattern) {
             }
 
             scan_start++;
+        }
+        return nullptr;
+    }
+    else {
+        return text;
+    }
+#elif 1
+    if (likely(*pattern != char_type('\0'))) {
+        const char_type * scan_start = text;
+        while (likely(*scan_start != char_type('\0'))) {
+            const char_type * cursor = pattern;
+            while (likely(*scan_start != *cursor)) {
+                scan_start++;
+                if (unlikely(*scan_start == char_type('\0')))
+                    return nullptr;
+            }
+
+            const char_type * scan = scan_start;
+            do {
+                cursor++;
+                scan++;
+                if (likely(*cursor != char_type('\0'))) {
+                    if (likely(*scan != char_type('\0'))) {
+                        if (likely(*scan != *cursor)) {
+                            scan_start++;
+                            break;
+                        }
+                    }
+                    else {
+                        return nullptr;
+                    }
+                }
+                else {
+                    return scan_start;
+                }
+            } while (1);
         }
         return nullptr;
     }
@@ -146,8 +109,7 @@ const char_type * my_strstr(const char_type * text, const char_type * pattern) {
                     return scan_start;
                 }
             } while (1);
-        };
-        
+        }
         return nullptr;
     }
     else {
