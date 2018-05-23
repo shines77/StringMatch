@@ -17,7 +17,7 @@
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || 1
 #define memmem  memmem_msvc
 #endif // _MSC_VER
 
@@ -28,8 +28,6 @@
 //
 
 namespace StringMatch {
-
-#if defined(_MSC_VER)
 
 #if 1
 static inline
@@ -118,8 +116,6 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
     }
 }
 #endif
-
-#endif // _MSC_VER
 
 template <typename CharTy>
 class MemMemImpl {
