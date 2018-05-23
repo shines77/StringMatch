@@ -34,6 +34,52 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
             const char_type * needle = needle_start;
             const char_type * haystack_end = haystack + haystack_len - needle_len;
             const char_type * needle_end = needle + needle_len;
+            while (likely(haystack <= haystack_end)) {
+                const char_type * n = needle;
+                while (likely(*haystack != *n)) {
+                    haystack++;
+                    if (likely(haystack <= haystack_end))
+						continue;
+					else
+                        return nullptr;
+                }
+
+				const char_type * h = haystack;
+                do {
+                    h++;
+                    n++;
+                    if (likely(n < needle_end)) {
+						if (likely(*h != *n)) {
+							haystack++;
+							break;
+						}
+					}
+					else {
+                        return haystack;
+					}
+                } while (1);
+            }
+        }
+        return nullptr;
+    }
+    else {
+        return haystack_start;
+    }
+}
+#elif 1
+template <typename char_type>
+static inline
+const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
+                            const char_type * needle_start, size_t needle_len) {
+    /* The first occurrence of the empty string is deemed to occur at
+       the beginning of the string. */
+    if (likely(needle_len != 0)) {
+        /* Sanity check, otherwise the loop might search through the whole memory. */
+        if (likely(haystack_len >= needle_len)) {
+            const char_type * haystack = haystack_start;
+            const char_type * needle = needle_start;
+            const char_type * haystack_end = haystack + haystack_len - needle_len;
+            const char_type * needle_end = needle + needle_len;
             for (;;) {
                 const char_type * h = haystack;
                 const char_type * n = needle;
