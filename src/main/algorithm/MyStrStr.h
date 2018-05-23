@@ -19,7 +19,7 @@ static inline
 const char_type * my_strstr_glibc(const char_type * phaystack, const char_type * pneedle)
 {
     typedef unsigned unsigned_type;
-    typedef detail::uchar_traits<char_type>::type uchar_type;
+    typedef typename detail::uchar_traits<char_type>::type uchar_type;
 
     const uchar_type * needle;
     const uchar_type * rneedle;
