@@ -20,7 +20,7 @@
 
 namespace StringMatch {
 
-#if 1
+#if 0
 template <typename char_type>
 static inline
 const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
