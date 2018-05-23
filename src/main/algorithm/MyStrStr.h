@@ -16,6 +16,99 @@ namespace StringMatch {
 
 template <typename char_type>
 static inline
+const char_type * my_strstr_glibc(const char_type * phaystack, const char_type * pneedle)
+{
+    typedef unsigned unsigned_type;
+    typedef detail::uchar_traits<char_type>::type uchar_type;
+
+    const uchar_type * needle;
+    const uchar_type * rneedle;
+    const uchar_type * haystack = (uchar_type *)phaystack;
+    unsigned_type b;
+
+    if ((b = *(needle = (const uchar_type *)pneedle))) {
+        unsigned_type c;
+        /* possible ANSI violation */
+        haystack--;
+
+        {
+            unsigned_type a;
+            do {
+                if (!(a = *++haystack))
+                    goto ret0;
+            } while (a != b);
+        }
+
+        if (!(c = *++needle))
+            goto found_needle;
+
+        ++needle;
+        goto jin;
+
+        for (;;) {
+            {
+                unsigned_type a;
+                if (0)
+jin:
+                {
+                    if ((a = *++haystack) == c)
+                        goto crest;
+                }
+                else {
+                    a = *++haystack;
+                }
+
+                do {
+                    for (; a != b; a = *++haystack) {
+                        if (!a)
+                            goto ret0;
+
+                        if ((a = *++haystack) == b)
+                            break;
+
+                        if (!a)
+                            goto ret0;
+                    }
+                } while ((a = *++haystack) != c);
+            }
+
+crest:
+            {
+                unsigned_type a;
+                {
+                    const uchar_type *rhaystack;
+                    if (*(rhaystack = haystack-- + 1) == (a = *(rneedle = needle))) {
+                        do {
+                            if (!a)
+                                goto found_needle;
+
+                            if (*++rhaystack != (a = *++needle))
+                                break;
+
+                            if (!a)
+                                goto found_needle;
+                        } while (*++rhaystack == (a = *++needle));
+                    }
+
+                    /* took the register-poor approach */
+                    needle = rneedle;
+                }
+
+                if (!a)
+                    break;
+            }
+        }
+    }
+
+found_needle:
+    return (const char_type *)haystack;
+
+ret0:
+    return 0;
+}
+
+template <typename char_type>
+static inline
 const char_type * my_strstr(const char_type * text, const char_type * pattern) {
     assert(text != nullptr);
     assert(pattern != nullptr);
@@ -154,7 +247,7 @@ public:
                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-        const char_type * substr = my_strstr(text, pattern);
+        const char_type * substr = my_strstr_glibc(text, pattern);
         if (likely(substr != nullptr))
             return (int)(substr - text);
         else
