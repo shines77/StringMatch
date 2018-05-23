@@ -92,6 +92,30 @@ const char_type * my_strstr(const char_type * text, const char_type * pattern) {
     else {
         return text;
     }
+#elif 1
+    if (likely(*pattern != char_type('\0'))) {
+        const char_type * scan_start = text;
+        while (likely(*scan_start != char_type('\0'))) {
+            const char_type * scan = scan_start;
+            const char_type * cursor = pattern;
+            while (unlikely((*scan != char_type('\0'))
+                && (*cursor != char_type('\0'))
+                && (*scan == *cursor))) {
+                scan++;
+                cursor++;
+            };
+
+            if (unlikely((*cursor == char_type('\0')))) {
+                return scan_start;
+            }
+
+            scan_start++;
+        }
+        return nullptr;
+    }
+    else {
+        return text;
+    }
 #else
     if (likely(*pattern != char_type('\0'))) {
         const char_type * scan_start = text;
@@ -122,7 +146,7 @@ const char_type * my_strstr(const char_type * text, const char_type * pattern) {
                     return scan_start;
                 }
             } while (1);
-        }
+        };
         
         return nullptr;
     }
