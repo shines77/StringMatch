@@ -50,6 +50,10 @@
   #define __is_identifier(x)    1       // Compatibility with non-clang compilers.
 #endif
 
+#ifndef __attribute__
+  #define __attribute__(x)
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 
 #if __has_feature(cxx_rvalue_references)
