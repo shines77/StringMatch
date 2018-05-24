@@ -50,8 +50,10 @@
   #define __is_identifier(x)    1       // Compatibility with non-clang compilers.
 #endif
 
+#if defined(_MSC_VER)
 #ifndef __attribute__
   #define __attribute__(x)
+#endif
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
