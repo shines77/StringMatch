@@ -75,7 +75,7 @@
 
 namespace StringMatch {
 
-#if 0
+#if 1
 
 template <typename char_type>
 static inline
