@@ -22,7 +22,7 @@ namespace StringMatch {
 
 #if 1
 template <typename char_type>
-static inline
+static
 const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
                             const char_type * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
@@ -73,7 +73,7 @@ search_start:
 }
 #elif 1
 template <typename char_type>
-static inline
+static
 const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
                             const char_type * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
@@ -123,7 +123,7 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
 // See: https://codereview.stackexchange.com/questions/182156/memmem-on-windows
 //
 template <typename char_type>
-static inline
+static
 const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
                             const char_type * needle_start, size_t needle_len) {
     const char_type * haystack = haystack_start;

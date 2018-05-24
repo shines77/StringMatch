@@ -21,7 +21,7 @@
 namespace StringMatch {
 
 template <typename char_type>
-static inline
+static
 const char_type * my_memmem_bw(const char_type * haystack, size_t haystack_len,
                                const char_type * needle, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at

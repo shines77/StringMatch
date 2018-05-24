@@ -30,7 +30,7 @@
 namespace StringMatch {
 
 #if 1
-static inline
+static
 void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                    const void * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
@@ -78,7 +78,7 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
 //
 // See: https://codereview.stackexchange.com/questions/182156/memmem-on-windows
 //
-static inline
+static
 void * memmem_msvc(const void * haystack_start, size_t haystack_len,
                    const void * needle_start, size_t needle_len) {
     const unsigned char * haystack = (const unsigned char *)haystack_start;

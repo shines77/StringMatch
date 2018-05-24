@@ -77,9 +77,13 @@ namespace StringMatch {
 
 #if 1
 
+//
+// See: https://blog.csdn.net/dog250/article/details/5302948
+//
+
 template <typename char_type>
-static inline
-const char_type * my_strstr_glibc(const char_type * phaystack, const char_type * pneedle)
+static
+const char_type * strstr_glibc_old(const char_type * phaystack, const char_type * pneedle)
 {
     typedef unsigned unsigned_type;
     typedef typename detail::uchar_traits<char_type>::type uchar_type;
@@ -145,7 +149,8 @@ crest:
                 unsigned_type rcursor;
                 {
                     const uchar_type * rhaystack;
-                    if (*(rhaystack = (haystack--) + 1) == (rcursor = *(rneedle = needle))) {
+                    if (*(rhaystack = (haystack--) + 1)
+                        == (rcursor = *(rneedle = needle))) {
                         do {
                             if (rcursor == char_type('\0'))
                                 goto found_needle;
@@ -166,7 +171,7 @@ crest:
                     break;
             } // crest: end
         } // for(;;)
-    } // if ()
+    } // if
 
 found_needle:
     return (const char_type *)haystack;
@@ -202,7 +207,7 @@ ret_0:
    periodicity.  */
 
 template <typename char_type>
-static inline
+static
 size_t
 critical_factorization(const char_type * pneedle, size_t needle_len, size_t * period)
 {
@@ -310,7 +315,7 @@ critical_factorization(const char_type * pneedle, size_t needle_len, size_t * pe
    HAYSTACK_LEN - NEEDLE_LEN comparisons occur in searching.  */
 
 template <typename char_type>
-static inline
+static
 const char_type *
 two_way_short_needle(const char_type * haystack, size_t haystack_len,
                      const char_type * needle, size_t needle_len)
@@ -471,7 +476,7 @@ ret0: // __attribute__((unused))
    sublinear performance is not possible.  */
 
 template <typename char_type>
-static inline
+static
 const char_type *
 two_way_long_needle(const char_type * haystack, size_t haystack_len,
                     const char_type * needle, size_t needle_len)
@@ -605,7 +610,7 @@ two_way_long_needle(const char_type * haystack, size_t haystack_len,
 }
 
 template <typename char_type>
-static inline
+static
 const char_type * strstr_glibc(const char_type * haystack_start, const char_type * needle_start)
 {
     const char_type * haystack = haystack_start;
@@ -631,7 +636,7 @@ const char_type * strstr_glibc(const char_type * haystack_start, const char_type
        linear coefficient than the Two-Way algorithm.  */
     needle_len = needle - needle_start;
     haystack = strchr(haystack_start + 1, *needle_start);
-    if (!haystack || unlikely(needle_len == 1))
+    if (haystack == char_type('\0') || unlikely(needle_len == 1))
         return (const char_type *)haystack;
 
     needle -= needle_len;
@@ -653,7 +658,7 @@ const char_type * strstr_glibc(const char_type * haystack_start, const char_type
 }
 
 template <typename char_type>
-static inline
+static
 const char_type * my_strstr(const char_type * text, const char_type * pattern) {
     assert(text != nullptr);
     assert(pattern != nullptr);
