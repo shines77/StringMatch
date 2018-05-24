@@ -38,7 +38,8 @@
 */
 
 #ifndef CANON_ELEMENT
-# define CANON_ELEMENT(c)   (unsigned char)(c)
+//# define CANON_ELEMENT(c)   (unsigned char)(c)
+# define CANON_ELEMENT(c)   (c)
 #endif
 #ifndef CMP_FUNC
 # define CMP_FUNC   memcmp
@@ -396,7 +397,7 @@ two_way_short_needle(const char_type * haystack, size_t haystack_len,
             uchar_type haystack_char;
             const uchar_type * pneedle;
 
-            /* TODO: The first-character loop can be sped up by adapting
+            /* TODO: The first-character loop can be speed up by adapting
                longword-at-a-time implementation of memchr/strchr.  */
             if (needle_suffix
                 != (haystack_char = CANON_ELEMENT(*phaystack++))) {
