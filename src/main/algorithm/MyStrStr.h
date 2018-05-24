@@ -8,12 +8,17 @@
 
 #include "basic/stddef.h"
 #include "basic/stdint.h"
+#include <limits.h>
 #include <assert.h>
 
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
 
 #include <emmintrin.h>
+
+#ifndef CHAR_BIT
+# define CHAR_BIT    8
+#endif
 
 #if CHAR_BIT < 10
 # define LONG_NEEDLE_THRESHOLD  32U
@@ -807,6 +812,7 @@ namespace UnicodeString {
 
 #undef LONG_NEEDLE_THRESHOLD
 
+#undef CHAR_BIT
 #undef AVAILABLE
 #undef CANON_ELEMENT
 #undef CMP_FUNC
