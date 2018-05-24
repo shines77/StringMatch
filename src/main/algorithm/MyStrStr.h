@@ -119,11 +119,21 @@ ret_0:
 # define LONG_NEEDLE_THRESHOLD  SIZE_MAX
 #endif
 
+/*
+  For case-insensitivity, you may optionally define:
+     CMP_FUNC(p1, p2, l)     A macro that returns 0 if the first L
+			     characters of P1 and P2 are equal.
+     CANON_ELEMENT(c)        A macro that canonicalizes an element right after
+			     it has been fetched from one of the two strings.
+			     The argument is an 'unsigned char'; the result
+			     must be an 'unsigned char' as well.
+*/
+
 #ifndef CANON_ELEMENT
 # define CANON_ELEMENT(c)   (unsigned char)(c)
 #endif
 #ifndef CMP_FUNC
-# define CMP_FUNC           memcmp
+# define CMP_FUNC   memcmp
 #endif
 
 /*
@@ -137,19 +147,22 @@ ret_0:
 			     to compute the end of H up front.
 */
 #ifndef AVAILABLE
-#define AVAILABLE(h, h_l, j, n_l)   ((((j) + (n_l)) <= (h_l)) && (h[j] != '\0'))
+//#define AVAILABLE(h, h_l, j, n_l)   ((((j) + (n_l)) <= (h_l)) && (h[j] != '\0'))
+#define AVAILABLE(h, h_l, j, n_l)			                \
+        (!memchr((h) + (h_l), '\0', (j) + (n_l) - (h_l))	\
+                  && ((h_l) = (j) + (n_l)))
 #endif
 
 /* Check for end-of-line in strstr and strcasestr routines.
    We piggy-back matching procedure for detecting EOL where possible,
    and use AVAILABLE macro otherwise.  */
 #ifndef CHECK_EOL
-# define CHECK_EOL (0)
+# define CHECK_EOL (1)
 #endif
 
 /* Return nullptr if argument is '\0'.  */
 #ifndef RET0_IF_0
-# define RET0_IF_0(arg)  if (arg == char_type('\0')) goto ret0;
+# define RET0_IF_0(arg)  if (arg == char_type('\0')) goto ret0
 #endif
 
 /* Perform a critical factorization of NEEDLE, of length NEEDLE_LEN.
@@ -322,17 +335,19 @@ two_way_short_needle(const char_type * haystack, size_t haystack_len,
                 ++i;
             }
             if (needle_len <= i) {
-              /* Scan for matches in left half.  */
+                /* Scan for matches in left half.  */
                 i = suffix - 1;
                 pneedle = (const uchar_type *)&needle[i];
                 phaystack = (const uchar_type *)&haystack[i + j];
                 while (memory < i + 1 && (CANON_ELEMENT(*pneedle--)
-                       == CANON_ELEMENT(*phaystack--)))
+                       == CANON_ELEMENT(*phaystack--))) {
                     --i;
-                if (i + 1 < memory + 1)
+                }
+                if (i + 1 < memory + 1) {
                     return (const char_type *)(haystack + j);
-                      /* No match, so remember how many repetitions of period
-                     on the right half were scanned.  */
+                    /* No match, so remember how many repetitions of period
+                       on the right half were scanned.  */
+                }
                 j += period;
                 memory = needle_len - period;
             }
@@ -352,8 +367,9 @@ two_way_short_needle(const char_type * haystack, size_t haystack_len,
         /* We start matching from the SUFFIX'th element, so make sure we
            don't hit '\0' before that.  */
         if (haystack_len < suffix + 1
-            && !AVAILABLE(haystack, haystack_len, 0, suffix + 1))
+            && !AVAILABLE(haystack, haystack_len, 0, suffix + 1)) {
             return nullptr;
+        }
 #endif
 
         /* The two halves of needle are distinct; no extra memory is
@@ -364,8 +380,7 @@ two_way_short_needle(const char_type * haystack, size_t haystack_len,
 #if !CHECK_EOL
             && AVAILABLE(haystack, haystack_len, j, needle_len)
 #endif
-            )
-        {
+            ) {
             uchar_type haystack_char;
             const uchar_type * pneedle;
 
@@ -382,7 +397,7 @@ two_way_short_needle(const char_type * haystack, size_t haystack_len,
 
 #if CHECK_EOL
             /* Calculate J if it wasn't kept up-to-date in the first-character loop.  */
-            j = phaystack - &haystack[suffix] - 1;
+            j = phaystack - (const uchar_type * )&haystack[suffix] - 1;
 #endif
 
             /* Scan for matches in right half.  */
@@ -466,7 +481,7 @@ two_way_long_needle(const char_type * haystack, size_t haystack_len,
        shift_table[c] is the distance from the last occurrence of c to
        the end of NEEDLE, or NEEDLE_LEN if c is absent from the NEEDLE.
        shift_table[NEEDLE[NEEDLE_LEN - 1]] contains the only 0.  */
-    for (i = 0; i < 1U << CHAR_BIT; i++)
+    for (i = 0; i < (1U << CHAR_BIT); i++)
         shift_table[i] = needle_len;
     for (i = 0; i < needle_len; i++)
         shift_table[CANON_ELEMENT(needle[i])] = needle_len - i - 1;
@@ -488,9 +503,9 @@ two_way_long_needle(const char_type * haystack, size_t haystack_len,
             shift = shift_table[CANON_ELEMENT(haystack[j + needle_len - 1])];
             if (0 < shift) {
                 if (memory && shift < period) {
-                  /* Since needle is periodic, but the last period has
-                     a byte out of place, there can be no match until
-                     after the mismatch.  */
+                    /* Since needle is periodic, but the last period has
+                       a byte out of place, there can be no match until
+                       after the mismatch.  */
                     shift = needle_len - period;
                 }
                 memory = 0;
