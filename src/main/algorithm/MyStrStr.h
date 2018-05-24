@@ -13,7 +13,64 @@
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
 
+#include <emmintrin.h>
+
+#if CHAR_BIT < 10
+# define LONG_NEEDLE_THRESHOLD  32U
+#else
+# define LONG_NEEDLE_THRESHOLD  SIZE_MAX
+#endif
+
+/*
+  For case-insensitivity, you may optionally define:
+
+     CMP_FUNC(p1, p2, l)     A macro that returns 0 if the first L
+			     characters of P1 and P2 are equal.
+     CANON_ELEMENT(c)        A macro that canonicalizes an element right after
+			     it has been fetched from one of the two strings.
+			     The argument is an 'unsigned char'; the result
+			     must be an 'unsigned char' as well.
+*/
+
+#ifndef CANON_ELEMENT
+# define CANON_ELEMENT(c)   (unsigned char)(c)
+#endif
+#ifndef CMP_FUNC
+# define CMP_FUNC   memcmp
+#endif
+
+/*
+     AVAILABLE(h, h_l, j, n_l)
+			     A macro that returns nonzero if there are
+			     at least N_L bytes left starting at H[J].
+			     H is 'unsigned char *', H_L, J, and N_L
+			     are 'size_t'; H_L is an lvalue.  For
+			     NUL-terminated searches, H_L can be
+			     modified each iteration to avoid having
+			     to compute the end of H up front.
+*/
+#ifndef AVAILABLE
+//#define AVAILABLE(h, h_l, j, n_l)   ((((j) + (n_l)) <= (h_l)) && (h[j] != '\0'))
+#define AVAILABLE(h, h_l, j, n_l)			                \
+        (!memchr((h) + (h_l), '\0', (j) + (n_l) - (h_l))	\
+                  && ((h_l) = (j) + (n_l)))
+#endif
+
+/* Check for end-of-line in strstr and strcasestr routines.
+   We piggy-back matching procedure for detecting EOL where possible,
+   and use AVAILABLE macro otherwise.  */
+#ifndef CHECK_EOL
+# define CHECK_EOL (1)
+#endif
+
+/* Return nullptr if argument is '\0'.  */
+#ifndef RET0_IF_0
+# define RET0_IF_0(arg)  if (arg == char_type('\0')) goto ret0
+#endif
+
 namespace StringMatch {
+
+#if 0
 
 template <typename char_type>
 static inline
@@ -113,56 +170,6 @@ ret_0:
     return 0;
 }
 
-#if CHAR_BIT < 10
-# define LONG_NEEDLE_THRESHOLD  32U
-#else
-# define LONG_NEEDLE_THRESHOLD  SIZE_MAX
-#endif
-
-/*
-  For case-insensitivity, you may optionally define:
-     CMP_FUNC(p1, p2, l)     A macro that returns 0 if the first L
-			     characters of P1 and P2 are equal.
-     CANON_ELEMENT(c)        A macro that canonicalizes an element right after
-			     it has been fetched from one of the two strings.
-			     The argument is an 'unsigned char'; the result
-			     must be an 'unsigned char' as well.
-*/
-
-#ifndef CANON_ELEMENT
-# define CANON_ELEMENT(c)   (unsigned char)(c)
-#endif
-#ifndef CMP_FUNC
-# define CMP_FUNC   memcmp
-#endif
-
-/*
-     AVAILABLE(h, h_l, j, n_l)
-			     A macro that returns nonzero if there are
-			     at least N_L bytes left starting at H[J].
-			     H is 'unsigned char *', H_L, J, and N_L
-			     are 'size_t'; H_L is an lvalue.  For
-			     NUL-terminated searches, H_L can be
-			     modified each iteration to avoid having
-			     to compute the end of H up front.
-*/
-#ifndef AVAILABLE
-//#define AVAILABLE(h, h_l, j, n_l)   ((((j) + (n_l)) <= (h_l)) && (h[j] != '\0'))
-#define AVAILABLE(h, h_l, j, n_l)			                \
-        (!memchr((h) + (h_l), '\0', (j) + (n_l) - (h_l))	\
-                  && ((h_l) = (j) + (n_l)))
-#endif
-
-/* Check for end-of-line in strstr and strcasestr routines.
-   We piggy-back matching procedure for detecting EOL where possible,
-   and use AVAILABLE macro otherwise.  */
-#ifndef CHECK_EOL
-# define CHECK_EOL (1)
-#endif
-
-/* Return nullptr if argument is '\0'.  */
-#ifndef RET0_IF_0
-# define RET0_IF_0(arg)  if (arg == char_type('\0')) goto ret0
 #endif
 
 /* Perform a critical factorization of NEEDLE, of length NEEDLE_LEN.
@@ -797,5 +804,13 @@ namespace UnicodeString {
 } // namespace UnicodeString
 
 } // namespace StringMatch
+
+#undef LONG_NEEDLE_THRESHOLD
+
+#undef AVAILABLE
+#undef CANON_ELEMENT
+#undef CMP_FUNC
+#undef RET0_IF_0
+#undef CHECK_EOL
 
 #endif // STRING_MATCH_MY_STRSTR_H
