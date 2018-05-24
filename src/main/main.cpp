@@ -17,6 +17,7 @@
 #include "algorithm/StrStr.h"
 #include "algorithm/MemMem.h"
 #include "algorithm/MyStrStr.h"
+#include "algorithm/GlibcStrStr.h"
 #include "algorithm/MyMemMem.h"
 #include "algorithm/MyMemMemBw.h"
 #include "algorithm/StdSearch.h"
@@ -424,6 +425,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::MemMem>();
     StringMatch_benchmark<AnsiString::MyStrStr>();
+    StringMatch_benchmark<AnsiString::GlibcStrStr>();
     StringMatch_benchmark<AnsiString::MyMemMem>();
     StringMatch_benchmark<AnsiString::MyMemMemBw>();
     StringMatch_benchmark<AnsiString::StdSearch>();
