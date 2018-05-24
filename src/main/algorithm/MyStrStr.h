@@ -38,8 +38,7 @@
 */
 
 #ifndef CANON_ELEMENT
-//# define CANON_ELEMENT(c)   (unsigned char)(c)
-# define CANON_ELEMENT(c)   (c)
+# define CANON_ELEMENT(c)   (uchar_type)(c)
 #endif
 #ifndef CMP_FUNC
 # define CMP_FUNC   memcmp
@@ -119,7 +118,7 @@ jin:
                         ++haystack;
                         if ((scan = *haystack) == cursor2)
                             goto crest;
-                    } // Label: jin
+                    } // jin: end
                 }
                 else {
                     ++haystack;
@@ -165,7 +164,7 @@ crest:
 
                 if (rcursor == char_type('\0'))
                     break;
-            } // Label: crest
+            } // crest: end
         } // for(;;)
     } // if ()
 
