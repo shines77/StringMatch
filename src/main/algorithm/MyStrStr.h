@@ -453,7 +453,7 @@ two_way_short_needle(const char_type * haystack, size_t haystack_len,
         }
     }
 
-ret0: __attribute__((unused))
+ret0: // __attribute__((unused))
     return nullptr;
 }
 
