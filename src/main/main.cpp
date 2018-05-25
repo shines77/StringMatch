@@ -420,12 +420,12 @@ int main(int argc, char * argv[])
     StringMatch_unittest<AnsiString::ShiftOr>();
 #endif
 
-    StringMatch_strstr_benchmark();
+    //StringMatch_strstr_benchmark();
 
     StringMatch_benchmark<AnsiString::StrStr>();
-    StringMatch_benchmark<AnsiString::MemMem>();
-    StringMatch_benchmark<AnsiString::MyStrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStr>();
+    StringMatch_benchmark<AnsiString::MyStrStr>();
+    StringMatch_benchmark<AnsiString::MemMem>();
     StringMatch_benchmark<AnsiString::MyMemMem>();
     StringMatch_benchmark<AnsiString::MyMemMemBw>();
     StringMatch_benchmark<AnsiString::StdSearch>();

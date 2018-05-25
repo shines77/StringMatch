@@ -563,7 +563,7 @@ public:
         this->destroy();
     }
 
-    static const char * name() { return "glibc_strstr()"; }
+    static const char * name() { return "strstr()-glibc"; }
     static bool need_preprocessing() { return false; }
 
     bool is_alive() const { return this->alive_; }
