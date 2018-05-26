@@ -53,7 +53,7 @@ class BasicStringRef {
 public:
     typedef CharTy          value_type;
     typedef std::size_t     size_type;
-    typedef std::intptr_t   difference_type;
+    typedef std::ptrdiff_t  difference_type;
     typedef CharTy *        pointer;
     typedef const CharTy *  const_pointer;
     typedef CharTy &        reference;
