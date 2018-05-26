@@ -68,8 +68,8 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_type text_len,
-               const char_type * pattern, size_type pattern_len) const {
+    Long search(const char_type * text, size_type text_len,
+                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 
@@ -87,7 +87,7 @@ public:
             for (size_t i = 0; i < text_len; ++i) {
                 state = (state << 1) | bitmap[(uchar_type)text[i]];
                 if (unlikely(state < limit))
-                    return (int)(i + 1 - pattern_len);
+                    return (Long)(i + 1 - pattern_len);
             }
   #elif 1
             register mask_type state = ~0;
@@ -106,7 +106,7 @@ public:
                 for (; i < text_len; ++i) {
                     state = (state << 1) | bitmap[(uchar_type)text[i]];
                     if (unlikely(state < limit))
-                        return (int)(i + 1 - pattern_len);
+                        return (Long)(i + 1 - pattern_len);
                 }
             }
   #else
@@ -118,20 +118,20 @@ public:
                 state1 = (state1 << 1) | bitmap[(uchar_type)text[i]];
                 state2 = (state2 << 1) | bitmap[(uchar_type)text[half_len + i]];
                 if (unlikely(state1 < limit))
-                    return (int)(i + 1 - pattern_len);
+                    return (Long)(i + 1 - pattern_len);
                 if (unlikely(state2 < limit))
-                    return (int)(i + half_len + 1 - pattern_len);
+                    return (Long)(i + half_len + 1 - pattern_len);
             }
             size_t j;
             for (j = 0; j < pattern_len - 1; ++j) {
                 state1 = (state1 << 1) | bitmap[(uchar_type)text[i + j]];
                 if (unlikely(state1 < limit))
-                    return (int)(i + j + 1 - pattern_len);
+                    return (Long)(i + j + 1 - pattern_len);
             }
             if ((text_len & 2) != 0) {
                 state2 = (state2 << 1) | bitmap[(uchar_type)text[half_len + i]];
                 if (unlikely(state2 < limit))
-                    return (int)(i + half_len + 1 - pattern_len);
+                    return (Long)(i + half_len + 1 - pattern_len);
             }
   #endif
 #else
@@ -139,7 +139,7 @@ public:
             for (size_t i = 0; i < text_len; ++i) {
                 state = (state << 1) | bitmap[(uchar_type)text[i]];
                 if (unlikely(state < limit))
-                    return (int)(i + 1 - pattern_len);
+                    return (Long)(i + 1 - pattern_len);
             }
 #endif // _WIN64 || __amd64__
         }

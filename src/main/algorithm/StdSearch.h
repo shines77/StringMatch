@@ -52,8 +52,8 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_type text_len,
-               const char_type * pattern, size_type pattern_len) const {
+    Long search(const char_type * text, size_type text_len,
+                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 #if STD_SEARCH_USE_STRING_REF
@@ -62,7 +62,7 @@ public:
         StringRef::iterator iter = std::search(sText.begin(), sText.end(),
                                                sPattern.begin(), sPattern.end());
         if (likely(iter != sText.end()))
-            return (int)(iter - sText.begin());
+            return (Long)(iter - sText.begin());
         else
             return Status::NotFound;
 #else

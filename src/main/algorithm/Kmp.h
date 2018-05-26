@@ -63,8 +63,8 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_type text_len,
-               const char_type * pattern_start, size_type pattern_len) const {
+    Long search(const char_type * text, size_type text_len,
+                const char_type * pattern_start, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern_start != nullptr);
 
@@ -106,7 +106,7 @@ public:
                     if (likely(pattern >= pattern_end)) {
                         // Has found
                         assert((target - text) >= (intptr_t)pattern_len);
-                        int pos = (int)((target - text) - (intptr_t)pattern_len);
+                        Long pos = (Long)((target - text) - (intptr_t)pattern_len);
                         assert(pos >= 0);
                         return pos;
                     }

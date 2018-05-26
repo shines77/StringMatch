@@ -259,13 +259,13 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_type text_len,
-               const char_type * pattern, size_type pattern_len) const {
+    Long search(const char_type * text, size_type text_len,
+                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
         const char_type * substr = my_strstr(text, pattern);
         if (likely(substr != nullptr))
-            return (int)(substr - text);
+            return (Long)(substr - text);
         else
             return Status::NotFound;
     }

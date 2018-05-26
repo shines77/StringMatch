@@ -7,6 +7,14 @@
 #endif
 
 #include "basic/stddef.h"
+#include "basic/stdint.h"
+
+#ifdef Long
+#undef Long
+#endif
+
+// Define portable long type
+typedef ptrdiff_t Long;
 
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
     #ifndef nullptr

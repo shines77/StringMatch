@@ -80,7 +80,7 @@ void StringMatch_usage_examples()
     {
         AnsiString::Kmp::Pattern pattern("example");
         if (pattern.has_compiled()) {
-            int pos = pattern.match("Here is a sample example.");
+            Long pos = pattern.match("Here is a sample example.");
         }
     }
 
@@ -89,7 +89,7 @@ void StringMatch_usage_examples()
         AnsiString::Kmp::Pattern pattern;
         bool compiled = pattern.preprocessing("example");
         if (compiled) {
-            int pos = pattern.match("Here is a sample example.");
+            Long pos = pattern.match("Here is a sample example.");
         }
     }
 
@@ -98,7 +98,7 @@ void StringMatch_usage_examples()
         AnsiString::Kmp::Pattern pattern("example");
         AnsiString::Kmp::Matcher matcher("Here is a sample example.");
         if (pattern.has_compiled()) {
-            int pos = matcher.find(pattern);
+            Long pos = matcher.find(pattern);
         }
     }
 
@@ -108,7 +108,7 @@ void StringMatch_usage_examples()
         AnsiString::Kmp::Matcher matcher;
         matcher.set_text("Here is a sample example.");
         if (pattern.has_compiled()) {
-            int pos = matcher.find(pattern);
+            Long pos = matcher.find(pattern);
         }
     }
 
@@ -117,7 +117,7 @@ void StringMatch_usage_examples()
         AnsiString::Kmp::Pattern pattern("example");
         AnsiString::Kmp::Matcher matcher;
         if (pattern.has_compiled()) {
-            int pos = matcher.find("Here is a sample example.", pattern);
+            Long pos = matcher.find("Here is a sample example.", pattern);
         }
     }
 
@@ -126,7 +126,7 @@ void StringMatch_usage_examples()
         AnsiString::Kmp::Pattern pattern("example");
         AnsiString::Kmp::Matcher matcher("Here is a sample example.");
         if (pattern.has_compiled()) {
-            int pos = AnsiString::Kmp::match(matcher, pattern);
+            Long pos = AnsiString::Kmp::match(matcher, pattern);
         }
     }
 }
@@ -144,7 +144,7 @@ void StringMatch_unittest()
     printf("------------------------------------------------------\n\n");
 
     test::StopWatch sw;
-    int sum, index_of;
+    Long sum, index_of;
 
     // pattern: "example"
     pattern_type pattern;
@@ -181,7 +181,8 @@ void StringMatch_unittest()
         sum += index_of;
     }
     sw.stop();
-    pattern2.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
+    pattern2.print_result("Here is a sample example.",
+        (int)index_of, (int)sum, sw.getElapsedMillisec());
 }
 
 void StringMatch_strstr_benchmark1()
@@ -189,7 +190,7 @@ void StringMatch_strstr_benchmark1()
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 
     test::StopWatch sw;
-    int sum;
+    Long sum;
 
     printf("------------------------------------------------------\n");
     printf("  Benchmark: %s\n", "strstr() **");
@@ -212,7 +213,7 @@ void StringMatch_strstr_benchmark1()
             for (size_t j = 0; j < kPatterns; ++j) {
                 const char * substr = strstr(texts[i].c_str(), patterns[j].c_str());
                 if (substr != nullptr) {
-                    int index_of = (int)(substr - texts[i].c_str());
+                    Long index_of = (Long)(substr - texts[i].c_str());
                     sum += index_of;
                 }
                 else {
@@ -224,7 +225,7 @@ void StringMatch_strstr_benchmark1()
     sw.stop();
 
     printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n\n",
-            sum, sw.getElapsedMillisec());
+            (int)sum, sw.getElapsedMillisec());
 }
 
 void StringMatch_strstr_benchmark()
@@ -232,7 +233,7 @@ void StringMatch_strstr_benchmark()
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 
     test::StopWatch sw;
-    int sum;
+    Long sum;
 
     printf("---------------------------------------------------------------------\n");
 
@@ -265,7 +266,7 @@ void StringMatch_strstr_benchmark()
     sw.stop();
 
     printf(" strstr()** [Preprocessing: no ] sum: %d, time: %0.3f ms\n\n",
-           sum, sw.getElapsedMillisec());
+           (int)sum, sw.getElapsedMillisec());
 }
 
 template <typename AlgorithmTy>
@@ -277,7 +278,7 @@ void StringMatch_benchmark1()
 
     test::StopWatch sw;
     double matching_time, full_time;
-    int sum1, sum2;
+    Long sum1, sum2;
 
     printf("-----------------------------------------------------------\n");
     printf("  Benchmark for: %s\n", AlgorithmTy::name());
@@ -305,7 +306,7 @@ void StringMatch_benchmark1()
     for (size_t loop = 0; loop < iters; ++loop) {
         for (size_t i = 0; i < kSearchTexts; ++i) {
             for (size_t j = 0; j < kPatterns; ++j) {
-                int index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
+                Long index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
                 sum1 += index_of;
             }
         }
@@ -313,7 +314,7 @@ void StringMatch_benchmark1()
     sw.stop();
     matching_time = sw.getElapsedMillisec();
 
-    printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n", sum1, matching_time);
+    printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n", (int)sum1, matching_time);
 
     if (AlgorithmTy::need_preprocessing()) {
         sum2 = 0;
@@ -321,8 +322,8 @@ void StringMatch_benchmark1()
         for (size_t loop = 0; loop < iters; ++loop) {
             for (size_t i = 0; i < kSearchTexts; ++i) {
                 for (size_t j = 0; j < kPatterns; ++j) {
-                    int index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
-                                                      pattern[j].c_str(), pattern[j].size());
+                    Long index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
+                                                       pattern[j].c_str(), pattern[j].size());
                     sum2 += index_of;
                 }
             }
@@ -330,7 +331,7 @@ void StringMatch_benchmark1()
         sw.stop();
         full_time = sw.getElapsedMillisec();
 
-        printf("[Preprocessing: yes] sum: %-11d, time: %0.3f ms\n", sum2, full_time);
+        printf("[Preprocessing: yes] sum: %-11d, time: %0.3f ms\n", (int)sum2, full_time);
     }
 
     printf("\n");
@@ -345,7 +346,7 @@ void StringMatch_benchmark()
 
     test::StopWatch sw;
     double matching_time, full_time;
-    int sum1, sum2;
+    Long sum1, sum2;
 
     printf("---------------------------------------------------------------------\n");
 
@@ -364,7 +365,7 @@ void StringMatch_benchmark()
     for (size_t loop = 0; loop < iters; ++loop) {
         for (size_t i = 0; i < kSearchTexts; ++i) {
             for (size_t j = 0; j < kPatterns; ++j) {
-                int index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
+                Long index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
                 sum1 += index_of;
             }
         }
@@ -373,7 +374,7 @@ void StringMatch_benchmark()
     matching_time = sw.getElapsedMillisec();
 
     printf(" %s [Preprocessing: no ] sum: %d, time: %0.3f ms\n",
-            AlgorithmTy::name(), sum1, matching_time);
+            AlgorithmTy::name(), (int)sum1, matching_time);
 
     if (AlgorithmTy::need_preprocessing()) {
         sum2 = 0;
@@ -381,8 +382,8 @@ void StringMatch_benchmark()
         for (size_t loop = 0; loop < iters; ++loop) {
             for (size_t i = 0; i < kSearchTexts; ++i) {
                 for (size_t j = 0; j < kPatterns; ++j) {
-                    int index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
-                                                      pattern[j].c_str(), pattern[j].size());
+                    Long index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
+                                                       pattern[j].c_str(), pattern[j].size());
                     sum2 += index_of;
                 }
             }
@@ -391,7 +392,7 @@ void StringMatch_benchmark()
         full_time = sw.getElapsedMillisec();
 
         printf(" %s [Preprocessing: yes] sum: %d, time: %0.3f ms\n",
-                AlgorithmTy::name(), sum2, full_time);
+                AlgorithmTy::name(), (int)sum2, full_time);
     }
 
     printf("\n");

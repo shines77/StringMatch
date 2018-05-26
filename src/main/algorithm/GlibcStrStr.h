@@ -501,7 +501,8 @@ two_way_long_needle(const char_type * haystack, size_t haystack_len,
 
 template <typename char_type>
 static
-const char_type * strstr_glibc(const char_type * haystack_start, const char_type * needle_start)
+const char_type * strstr_glibc(const char_type * haystack_start,
+                               const char_type * needle_start)
 {
     const char_type * haystack = haystack_start;
     const char_type * needle = needle_start;
@@ -579,13 +580,13 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_type text_len,
-               const char_type * pattern, size_type pattern_len) const {
+    Long search(const char_type * text, size_type text_len,
+                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
         const char_type * substr = strstr_glibc(text, pattern);
         if (likely(substr != nullptr))
-            return (int)(substr - text);
+            return (Long)(substr - text);
         else
             return Status::NotFound;
     }

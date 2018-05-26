@@ -102,13 +102,13 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_type text_len,
-               const char_type * pattern, size_type pattern_len) const {
+    Long search(const char_type * text, size_type text_len,
+                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
         const char_type * haystack = my_memmem_bw(text, text_len, pattern, pattern_len);
         if (likely(haystack != nullptr))
-            return (int)(haystack - text);
+            return (Long)(haystack - text);
         else
             return Status::NotFound;
     }

@@ -151,8 +151,8 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_type text_len,
-               const char_type * pattern, size_type pattern_len) const {
+    Long search(const char_type * text, size_type text_len,
+                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 
@@ -164,8 +164,8 @@ public:
 
         if (likely(pattern_len <= text_len)) {
             const char_type * target_last = text + (text_len - pattern_len);
-            const int pattern_step = (int)pattern_len - 1;
-            int target_idx = 0;
+            const Long pattern_step = (Long)pattern_len - 1;
+            Long target_idx = 0;
             do {
                 register const char_type * target = text + pattern_step + target_idx;
                 register const char_type * scan = pattern + pattern_step;
@@ -180,17 +180,17 @@ public:
                 }
 
                 if (likely(scan >= pattern)) {
-                    int pattern_idx = (int)(scan - pattern);
+                    Long pattern_idx = scan - pattern;
                     target_idx += sm_max(bmGs[pattern_idx],
                                          bmBc[(uchar_type)*target] - (pattern_step - pattern_idx));
                 }
                 else {
                     assert(target_idx >= 0);
-                    assert(target_idx < (int)text_len);
+                    assert(target_idx < (Long)text_len);
                     // Has found
                     return target_idx;
                 }
-            } while (likely(target_idx <= (int)(text_len - pattern_len)));
+            } while (likely(target_idx <= (Long)(text_len - pattern_len)));
         }
 
         return Status::NotFound;

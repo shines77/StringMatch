@@ -46,8 +46,8 @@ public:
     }
 
     /* Searching */
-    int search(const char_type * text, size_type text_len,
-               const char_type * pattern, size_type pattern_len) const {
+    Long search(const char_type * text, size_type text_len,
+                   const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 #if !defined(_UNICODE)
@@ -56,7 +56,7 @@ public:
         const char_type * substr = wcsstr(text, pattern);
 #endif
         if (likely(substr != nullptr))
-            return (int)(substr - text);
+            return (Long)(substr - text);
         else
             return Status::NotFound;
     }
