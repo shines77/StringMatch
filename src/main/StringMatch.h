@@ -9,13 +9,6 @@
 #include "basic/stddef.h"
 #include "basic/stdint.h"
 
-#ifdef Long
-#undef Long
-#endif
-
-// Define portable long type
-typedef ptrdiff_t Long;
-
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
     #ifndef nullptr
     #define nullptr     ((void *)(NULL))
@@ -73,7 +66,14 @@ using ::std::nullptr_t;
 #define sm_max(a, b)    (((a) >= (b)) ? (a) : (b))
 #endif // sm_max
 
+#ifdef Long
+#undef Long
+#endif
+
 namespace StringMatch {
+
+// Define portable long type
+typedef ptrdiff_t Long;
 
 struct Status {
     enum MatchStatus {
