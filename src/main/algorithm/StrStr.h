@@ -47,7 +47,7 @@ public:
 
     /* Searching */
     Long search(const char_type * text, size_type text_len,
-                   const char_type * pattern, size_type pattern_len) const {
+                const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 #if !defined(_UNICODE)
