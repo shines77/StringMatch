@@ -71,7 +71,7 @@ public:
         std::string::iterator iter = std::search(sText.begin(), sText.end(),
                                                  sPattern.begin(), sPattern.end());
         if (likely(iter != sText.end()))
-            return (int)(iter - sText.begin());
+            return (Long)(iter - sText.begin());
         else
             return Status::NotFound;
 #endif

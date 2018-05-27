@@ -23,8 +23,9 @@ namespace StringMatch {
 #if 1
 template <typename char_type>
 static
-const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
-                            const char_type * needle_start, size_t needle_len) {
+SM_NOINLINE_DECLARE(const char_type *)
+my_memmem(const char_type * haystack_start, size_t haystack_len,
+          const char_type * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
        the beginning of the string. */
     if (likely(needle_len != 0)) {
@@ -74,8 +75,9 @@ search_start:
 #elif 1
 template <typename char_type>
 static
-const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
-                            const char_type * needle_start, size_t needle_len) {
+SM_NOINLINE_DECLARE(const char_type *)
+my_memmem(const char_type * haystack_start, size_t haystack_len,
+          const char_type * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
        the beginning of the string. */
     if (likely(needle_len != 0)) {
@@ -124,8 +126,9 @@ const char_type * my_memmem(const char_type * haystack_start, size_t haystack_le
 //
 template <typename char_type>
 static
-const char_type * my_memmem(const char_type * haystack_start, size_t haystack_len,
-                            const char_type * needle_start, size_t needle_len) {
+SM_NOINLINE_DECLARE(const char_type *)
+my_memmem(const char_type * haystack_start, size_t haystack_len,
+          const char_type * needle_start, size_t needle_len) {
     const char_type * haystack = haystack_start;
     const char_type * needle = needle_start;
 

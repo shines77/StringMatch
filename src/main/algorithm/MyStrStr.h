@@ -24,7 +24,8 @@ namespace StringMatch {
 
 template <typename char_type>
 static
-const char_type * strstr_glibc_old(const char_type * phaystack, const char_type * pneedle)
+SM_NOINLINE_DECLARE(const char_type *)
+strstr_glibc_old(const char_type * phaystack, const char_type * pneedle)
 {
     typedef unsigned unsigned_type;
     typedef typename detail::uchar_traits<char_type>::type uchar_type;
@@ -125,7 +126,8 @@ ret_0:
 
 template <typename char_type>
 static
-const char_type * my_strstr(const char_type * text, const char_type * pattern) {
+SM_NOINLINE_DECLARE(const char_type *)
+my_strstr(const char_type * text, const char_type * pattern) {
     assert(text != nullptr);
     assert(pattern != nullptr);
 #if 0

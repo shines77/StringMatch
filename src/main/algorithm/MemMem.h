@@ -31,8 +31,9 @@ namespace StringMatch {
 
 #if 1
 static
-void * memmem_msvc(const void * haystack_start, size_t haystack_len,
-                   const void * needle_start, size_t needle_len) {
+SM_NOINLINE_DECLARE(void *)
+memmem_msvc(const void * haystack_start, size_t haystack_len,
+            const void * needle_start, size_t needle_len) {
     /* The first occurrence of the empty string is deemed to occur at
        the beginning of the string. */
     if (likely(needle_len != 0)) {
@@ -79,8 +80,9 @@ void * memmem_msvc(const void * haystack_start, size_t haystack_len,
 // See: https://codereview.stackexchange.com/questions/182156/memmem-on-windows
 //
 static
-void * memmem_msvc(const void * haystack_start, size_t haystack_len,
-                   const void * needle_start, size_t needle_len) {
+SM_NOINLINE_DECLARE(void *)
+memmem_msvc(const void * haystack_start, size_t haystack_len,
+            const void * needle_start, size_t needle_len) {
     const unsigned char * haystack = (const unsigned char *)haystack_start;
     const unsigned char * needle = (const unsigned char *)needle_start;
 
@@ -154,8 +156,8 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
         const char_type * haystack = (const char_type *)memmem(
-                                        (const void *)text, text_len * sizeof(char_type),
-                                        (const void *)pattern, pattern_len * sizeof(char_type));
+                                     (const void *)text, text_len * sizeof(char_type),
+                                     (const void *)pattern, pattern_len * sizeof(char_type));
         if (likely(haystack != nullptr))
             return (Long)(haystack - text);
         else

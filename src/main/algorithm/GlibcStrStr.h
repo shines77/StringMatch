@@ -501,8 +501,9 @@ two_way_long_needle(const char_type * haystack, size_t haystack_len,
 
 template <typename char_type>
 static
-const char_type * strstr_glibc(const char_type * haystack_start,
-                               const char_type * needle_start)
+SM_NOINLINE_DECLARE(const char_type *)
+strstr_glibc(const char_type * haystack_start,
+             const char_type * needle_start)
 {
     const char_type * haystack = haystack_start;
     const char_type * needle = needle_start;

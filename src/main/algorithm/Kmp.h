@@ -63,8 +63,9 @@ public:
     }
 
     /* Searching */
-    Long search(const char_type * text, size_type text_len,
-                const char_type * pattern_start, size_type pattern_len) const {
+    SM_NOINLINE_DECLARE(Long)
+    search(const char_type * text, size_type text_len,
+           const char_type * pattern_start, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern_start != nullptr);
 

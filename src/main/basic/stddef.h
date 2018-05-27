@@ -140,6 +140,54 @@
 #endif
 #endif // ALIGNED(n)
 
+// Declare for inline, forceinline, noinline
+
+#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
+
+#define SM_DECLARE(type)                type
+#define SM_DECLARE_DATA(type)           type
+
+#ifdef __cplusplus
+#define SM_INLINE_DECLARE(type)         inline type
+#else
+#define SM_INLINE_DECLARE(type)         __inline type
+#endif // __cplusplus
+
+#define SM_FORCEINLINE_DECLARE(type)    __forceinline type
+#define SM_NOINLINE_DECLARE(type)       __declspec(noinline) type
+
+#define SM_RESTRICT(type)               __restrict type
+
+#elif defined(__GNUC__) || defined(__clang__) || defined(__linux__)
+
+#define SM_DECLARE(type)                type
+#define SM_DECLARE_DATA(type)           type
+
+#ifdef __cplusplus
+#define SM_INLINE_DECLARE(type)         inline type
+#else
+#define SM_INLINE_DECLARE(type)         __inline__ type
+#endif // __cplusplus
+
+#define SM_FORCEINLINE_DECLARE(type)    type __attribute__((__always_inline__))
+#define SM_NOINLINE_DECLARE(type)       type __attribute__ ((noinline))
+
+#define SM_RESTRICT(type)               __restrict type
+
+#else
+
+#define SM_DECLARE(type)                type
+#define SM_DECLARE_DATA(type)           type
+
+#define SM_INLINE_DECLARE(type)         inline type
+
+#define SM_FORCEINLINE_DECLARE(type)    inline type
+#define SM_NOINLINE_DECLARE(type)       type
+
+#define SM_RESTRICT(type)               __restrict type
+
+#endif // SM_INLINE
+
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // !JIMI_BASIC_STDDEF_H
