@@ -23,6 +23,7 @@
 #include "algorithm/StdSearch.h"
 #include "algorithm/Kmp.h"
 #include "algorithm/BoyerMoore.h"
+#include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
 
 using namespace StringMatch;
@@ -432,6 +433,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::StdSearch>();
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
+    StringMatch_benchmark<AnsiString::ShiftAnd>();
     StringMatch_benchmark<AnsiString::ShiftOr>();
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__))

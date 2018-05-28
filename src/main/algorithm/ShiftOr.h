@@ -74,8 +74,8 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
 
-        const mask_type * bitmap = &this->bitmap_[0];
         mask_type limit = this->limit_;
+        const mask_type * bitmap = &this->bitmap_[0];
 
         assert(bitmap != nullptr);
 

@@ -48,7 +48,7 @@ search_start:
 
 				const char_type * h = haystack;
                 do {
-                    assert(h <= haystack_end);
+                    assert(h <= (haystack_start + haystack_len));
                     h++;
                     n++;
                     if (likely(n < needle_end)) {
@@ -99,7 +99,7 @@ my_memmem(const char_type * haystack_start, size_t haystack_len,
                 haystack = h;
 
                 do {
-                    assert(h <= haystack_end);
+                    assert(h <= (haystack_start + haystack_len));
                     h++;
                     n++;
                     if (unlikely(n >= needle_end))
