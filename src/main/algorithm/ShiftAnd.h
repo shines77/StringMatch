@@ -28,8 +28,8 @@ public:
 
 private:
     mask_type mask_;
-    mask_type bitmap_[kMaxAscii];
     bool alive_;
+    mask_type bitmap_[kMaxAscii];
 
 public:
     ShiftAndImpl() : mask_(0), alive_(true) {}

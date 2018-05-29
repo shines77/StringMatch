@@ -24,6 +24,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\main\algorithm\BoyerMoore.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\GlibcStrStr.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\GlibcStrStrOld.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\Kmp.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\MemMem.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\MyMemMem.h" />

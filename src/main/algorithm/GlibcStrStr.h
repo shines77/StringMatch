@@ -565,7 +565,7 @@ public:
         this->destroy();
     }
 
-    static const char * name() { return "strstr()-glibc"; }
+    static const char * name() { return "strstr() glibc"; }
     static bool need_preprocessing() { return false; }
 
     bool is_alive() const { return this->alive_; }
@@ -576,7 +576,7 @@ public:
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_type length) {
-        /* Don't need preprocessing. */
+        /* Don't need to do preprocessing. */
         return true;
     }
 

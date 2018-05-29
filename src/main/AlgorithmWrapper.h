@@ -115,6 +115,10 @@ struct AlgorithmWrapper {
             : pattern_(pattern), compiled_(false) {
             this->compiled_ = this->preprocessing(pattern);
         }
+        Pattern(const Pattern & src)
+            : pattern_(src.pattern_), algorithm_(src.algorithm_),
+              compiled_(src.compiled_) {
+        }
         ~Pattern() {
             this->destroy();
         }
@@ -268,6 +272,9 @@ struct AlgorithmWrapper {
         }
         Matcher(const stringref_type & text)
             : text_(text) {
+        }
+        Matcher(const Matcher & src)
+            : text_(src.text_) {
         }
         ~Matcher() {
             this->text_.reset();

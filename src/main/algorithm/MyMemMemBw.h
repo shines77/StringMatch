@@ -98,7 +98,7 @@ public:
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_type length) {
-        /* Don't need preprocessing. */
+        /* Don't need to do preprocessing. */
         return true;
     }
 

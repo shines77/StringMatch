@@ -17,19 +17,19 @@ namespace StringMatch {
 template <typename CharTy, typename MaskTy = uint64_t>
 class ShiftOrImpl {
 public:
-    typedef ShiftOrImpl<CharTy, MaskTy>         this_type;
-    typedef CharTy                              char_type;
-    typedef MaskTy                              mask_type;
-    typedef std::size_t                         size_type;
+    typedef ShiftOrImpl<CharTy, MaskTy>     this_type;
+    typedef CharTy                          char_type;
+    typedef MaskTy                          mask_type;
+    typedef std::size_t                     size_type;
     typedef typename detail::uchar_traits<CharTy>::type
-                                                uchar_type;
+                                            uchar_type;
 
     static const size_t kMaxAscii = 256;
 
 private:
     mask_type limit_;
-    mask_type bitmap_[kMaxAscii];
     bool alive_;
+    mask_type bitmap_[kMaxAscii];
 
 public:
     ShiftOrImpl() : limit_(0), alive_(true) {}
