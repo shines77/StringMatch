@@ -418,9 +418,9 @@ int main(int argc, char * argv[])
 
     StringMatch_usage_examples();
 
-    StringMatch_unittest<AnsiString::MemMem>();
+    //StringMatch_unittest<AnsiString::MemMem>();
     //StringMatch_unittest<AnsiString::MyMemMem>();
-    StringMatch_unittest<AnsiString::SSEStrStr>();
+    //StringMatch_unittest<AnsiString::SSEStrStr>();
 
 #if 0
     StringMatch_unittest<AnsiString::StrStr>();

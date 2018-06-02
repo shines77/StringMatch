@@ -132,6 +132,7 @@ sse42_strstr(const char_type * text, const char_type * pattern,
              typename std::enable_if<detail::is_char8<char_type>::value, char_type>::type * = nullptr) {
     assert(text != nullptr);
     assert(pattern != nullptr);
+    static const int kMaxSize = 16;
     static const int mode_ordered = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED
                                   | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
@@ -160,26 +161,26 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     _mm_store_si128((__m128i *)mask_128i, __mask);
     if (mask_128i[0] != 0 || mask_128i[1] != 0) {
         // The length of pattern is less than 16.
-        text -= 16;
+        text -= kMaxSize;
         do {
             do {
-                text += 16;
+                text += kMaxSize;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                null = _mm_cmpestri(__zero, 16, __text, 16, mode_each);
-            } while (offset >= 16 && null >= 16);
+                null = _mm_cmpestri(__zero, kMaxSize, __text, kMaxSize, mode_each);
+            } while (offset >= kMaxSize && null >= kMaxSize);
 
-            if (likely(offset >= 16)) {
+            if (likely(offset >= kMaxSize)) {
                 break;
             }
             else {
-                assert(offset >= 0 && offset < 16);
+                assert(offset >= 0 && offset < kMaxSize);
                 text += offset;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                if (likely(offset >= 16)) {
-                    if (likely(null >= 16)) {
-                        //text += 16;
+                if (likely(offset >= kMaxSize)) {
+                    if (likely(null >= kMaxSize)) {
+                        //text += kMaxSize;
                         continue;
                     }
                     else {
@@ -204,49 +205,49 @@ sse42_strstr(const char_type * text, const char_type * pattern,
             pattern_len = 0;
 
             do {
-                patt += 16;
+                patt += kMaxSize;
                 __patt = _mm_loadu_si128((const __m128i *)patt);
-                null = _mm_cmpestri(__zero, 16, __patt, 16, mode_each);
-                pattern_len += 16;
-            } while (null >= 16);
+                null = _mm_cmpestri(__zero, kMaxSize, __patt, kMaxSize, mode_each);
+                pattern_len += kMaxSize;
+            } while (null >= kMaxSize);
 
-            assert(null >= 0 && null < 16);
+            assert(null >= 0 && null < kMaxSize);
             pattern_len += null;
         }
 
-        text -= 16;
+        text -= kMaxSize;
         do {
 STRSTR_MAIN_LOOP:
             do {
-                text += 16;
+                text += kMaxSize;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, mode_ordered);
                 null = _mm_cmpestri(__zero, 16, __text, 16, mode_each);
-            } while (offset >= 16 && null >= 16);
+            } while (offset >= kMaxSize && null >= kMaxSize);
 
-            if (likely(offset >= 16)) {
+            if (likely(offset >= kMaxSize)) {
                 break;
             }
             else {
                 assert(offset >= 0 && offset < 16);
                 text += offset;
-                if (likely(null >= 16)) {
+                if (likely(null >= kMaxSize)) {
                     int rest_len = pattern_len;
                     const char_type * patt = pattern;
                     do {
                         __text = _mm_loadu_si128((const __m128i *)text);
                         offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                        if (likely(offset >= 16)) {
-                            //text += 16;
+                        if (likely(offset >= kMaxSize)) {
+                            //text += kMaxSize;
                             goto STRSTR_MAIN_LOOP;
                         }
                         else {
                             if (likely(offset == 0)) {
                                 // Scan the next part pattern
-                                text += 16;
-                                rest_len -= 16;
+                                text += kMaxSize;
+                                rest_len -= kMaxSize;
                                 if (likely(rest_len > 0)) {
-                                    patt += 16;
+                                    patt += kMaxSize;
                                     __pattern = _mm_loadu_si128((const __m128i *)patt);
                                 }
                                 else {
@@ -269,7 +270,7 @@ STRSTR_MAIN_LOOP:
                 else {
                     __text = _mm_loadu_si128((const __m128i *)text);
                     offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                    if (likely(offset >= 16)) {
+                    if (likely(offset >= kMaxSize)) {
                         break;
                     }
                     else {
@@ -291,6 +292,7 @@ sse42_strstr(const char_type * text, const char_type * pattern,
              typename std::enable_if<detail::is_wchar<char_type>::value, char_type>::type * = nullptr) {
     assert(text != nullptr);
     assert(pattern != nullptr);
+    static const int kMaxSize = 8;
     static const int mode_ordered = _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ORDERED
                                   | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
@@ -319,26 +321,26 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     _mm_store_si128((__m128i *)mask_128i, __mask);
     if (mask_128i[0] != 0 || mask_128i[1] != 0) {
         // The length of pattern is less than 16.
-        text -= 8;
+        text -= kMaxSize;
         do {
             do {
-                text += 8;
+                text += kMaxSize;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                null = _mm_cmpestri(__zero, 8, __text, 8, mode_each);
-            } while (offset >= 8 && null >= 8);
+                null = _mm_cmpestri(__zero, kMaxSize, __text, kMaxSize, mode_each);
+            } while (offset >= kMaxSize && null >= kMaxSize);
 
-            if (likely(offset >= 8)) {
+            if (likely(offset >= kMaxSize)) {
                 break;
             }
             else {
-                assert(offset >= 0 && offset < 8);
+                assert(offset >= 0 && offset < kMaxSize);
                 text += offset;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                if (likely(offset >= 8)) {
-                    if (likely(null >= 8)) {
-                        //text += 8;
+                if (likely(offset >= kMaxSize)) {
+                    if (likely(null >= kMaxSize)) {
+                        //text += kMaxSize;
                         continue;
                     }
                     else {
@@ -363,49 +365,49 @@ sse42_strstr(const char_type * text, const char_type * pattern,
             pattern_len = 0;
 
             do {
-                patt += 8;
+                patt += kMaxSize;
                 __patt = _mm_loadu_si128((const __m128i *)patt);
-                null = _mm_cmpestri(__zero, 8, __patt, 8, mode_each);
-                pattern_len += 8;
-            } while (null >= 8);
+                null = _mm_cmpestri(__zero, kMaxSize, __patt, kMaxSize, mode_each);
+                pattern_len += kMaxSize;
+            } while (null >= kMaxSize);
 
-            assert(null >= 0 && null < 8);
+            assert(null >= 0 && null < kMaxSize);
             pattern_len += null;
         }
 
-        text -= 16;
+        text -= kMaxSize;
         do {
 STRSTR_MAIN_LOOP:
             do {
-                text += 8;
+                text += kMaxSize;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                null = _mm_cmpestri(__zero, 8, __text, 8, mode_each);
-            } while (offset >= 8 && null >= 8);
+                null = _mm_cmpestri(__zero, kMaxSize, __text, kMaxSize, mode_each);
+            } while (offset >= kMaxSize && null >= kMaxSize);
 
-            if (likely(offset >= 8)) {
+            if (likely(offset >= kMaxSize)) {
                 break;
             }
             else {
-                assert(offset >= 0 && offset < 8);
+                assert(offset >= 0 && offset < kMaxSize);
                 text += offset;
-                if (likely(null >= 8)) {
+                if (likely(null >= kMaxSize)) {
                     int rest_len = pattern_len;
                     const char_type * patt = pattern;
                     do {
                         __text = _mm_loadu_si128((const __m128i *)text);
                         offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                        if (likely(offset >= 8)) {
-                            //text += 8;
+                        if (likely(offset >= kMaxSize)) {
+                            //text += kMaxSize;
                             goto STRSTR_MAIN_LOOP;
                         }
                         else {
                             if (likely(offset == 0)) {
                                 // Scan the next part pattern
-                                text += 8;
-                                rest_len -= 8;
+                                text += kMaxSize;
+                                rest_len -= kMaxSize;
                                 if (likely(rest_len > 0)) {
-                                    patt += 8;
+                                    patt += kMaxSize;
                                     __pattern = _mm_loadu_si128((const __m128i *)patt);
                                 }
                                 else {
@@ -428,7 +430,7 @@ STRSTR_MAIN_LOOP:
                 else {
                     __text = _mm_loadu_si128((const __m128i *)text);
                     offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                    if (likely(offset >= 8)) {
+                    if (likely(offset >= kMaxSize)) {
                         break;
                     }
                     else {
@@ -459,7 +461,7 @@ public:
         this->destroy();
     }
 
-    static const char * name() { return "sse_strstr()"; }
+    static const char * name() { return "sse42_strstr()"; }
     static bool need_preprocessing() { return false; }
 
     bool is_alive() const { return this->alive_; }
