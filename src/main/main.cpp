@@ -160,7 +160,8 @@ void StringMatch_unittest()
         sum += index_of;
     }
     sw.stop();
-    pattern.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
+    pattern.print_result("Here is a sample example.",
+                         (int)index_of, (int)sum, sw.getElapsedMillisec());
 
     // pattern1: "sample"
     pattern_type pattern1(pattern_text_1);
@@ -172,7 +173,8 @@ void StringMatch_unittest()
         sum += index_of;
     }
     sw.stop();
-    pattern1.print_result("Here is a sample example.", index_of, sum, sw.getElapsedMillisec());
+    pattern1.print_result("Here is a sample example.",
+                          (int)index_of, (int)sum, sw.getElapsedMillisec());
 
     // pattern2: "a sample"
     pattern_type pattern2(pattern_text_2);
@@ -185,7 +187,7 @@ void StringMatch_unittest()
     }
     sw.stop();
     pattern2.print_result("Here is a sample example.",
-        (int)index_of, (int)sum, sw.getElapsedMillisec());
+                          (int)index_of, (int)sum, sw.getElapsedMillisec());
 }
 
 void StringMatch_strstr_benchmark1()
@@ -345,6 +347,7 @@ void StringMatch_benchmark()
 {
     typedef typename AlgorithmTy::Pattern pattern_type;
 
+    //static const size_t iters = 1;
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 
     test::StopWatch sw;
@@ -369,6 +372,7 @@ void StringMatch_benchmark()
         for (size_t i = 0; i < kSearchTexts; ++i) {
             for (size_t j = 0; j < kPatterns; ++j) {
                 Long index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
+                // printf("index_of = %d\n", (int)index_of);
                 sum1 += index_of;
             }
         }
@@ -377,7 +381,7 @@ void StringMatch_benchmark()
     matching_time = sw.getElapsedMillisec();
 
     printf(" %s [Preprocessing: no ] sum: %d, time: %0.3f ms\n",
-            AlgorithmTy::name(), (int)sum1, matching_time);
+           AlgorithmTy::name(), (int)sum1, matching_time);
 
     if (AlgorithmTy::need_preprocessing()) {
         sum2 = 0;
@@ -387,6 +391,7 @@ void StringMatch_benchmark()
                 for (size_t j = 0; j < kPatterns; ++j) {
                     Long index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
                                                        pattern[j].c_str(), pattern[j].size());
+                    // printf("index_of = %d\n", (int)index_of);
                     sum2 += index_of;
                 }
             }
@@ -395,7 +400,7 @@ void StringMatch_benchmark()
         full_time = sw.getElapsedMillisec();
 
         printf(" %s [Preprocessing: yes] sum: %d, time: %0.3f ms\n",
-                AlgorithmTy::name(), (int)sum2, full_time);
+               AlgorithmTy::name(), (int)sum2, full_time);
     }
 
     printf("\n");
@@ -413,8 +418,9 @@ int main(int argc, char * argv[])
 
     StringMatch_usage_examples();
 
-    //StringMatch_unittest<AnsiString::MemMem>();
+    StringMatch_unittest<AnsiString::MemMem>();
     //StringMatch_unittest<AnsiString::MyMemMem>();
+    StringMatch_unittest<AnsiString::SSEStrStr>();
 
 #if 0
     StringMatch_unittest<AnsiString::StrStr>();
@@ -426,6 +432,10 @@ int main(int argc, char * argv[])
 
     //StringMatch_strstr_benchmark();
 
+    //StringMatch_benchmark<AnsiString::StrStr>();
+    //StringMatch_benchmark<AnsiString::SSEStrStr>();
+
+#if 1
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStrOld>();
@@ -439,6 +449,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::BoyerMoore>();
     StringMatch_benchmark<AnsiString::ShiftAnd>();
     StringMatch_benchmark<AnsiString::ShiftOr>();
+#endif
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__))
     ::system("pause");

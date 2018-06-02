@@ -164,7 +164,10 @@ sse42_strstr(const char_type * text, const char_type * pattern,
                 null = _mm_cmpestri(__zero, 16, __text, 16, mode_each);
             } while (offset >= 16 && null >= 16);
 
-            if (likely(offset < 16)) {
+            if (likely(offset >= 16)) {
+                break;
+            }
+            else {
                 assert(offset >= 0 && offset < 16);
                 text += offset;
                 __text = _mm_loadu_si128((const __m128i *)text);
@@ -183,15 +186,32 @@ sse42_strstr(const char_type * text, const char_type * pattern,
                     return (text + offset);
                 }
             }
-            else {
-                break;
-            }
         } while (1);
     }
     else {
         // The length of pattern is more than or equal 16.
+
+        // Get the length of pattern
+        int pattern_len;
+        {
+            __m128i __patt;
+            const char_type * patt = pattern;
+            pattern_len = 0;
+
+            do {
+                patt += 16;
+                pattern_len += 16;
+                __patt = _mm_loadu_si128((const __m128i *)patt);
+                null = _mm_cmpestri(__zero, 16, __patt, 16, mode_each);
+            } while (null >= 16);
+
+            assert(null >= 0 && null < 16);
+            pattern_len += null;
+        }
+
         text -= 16;
         do {
+STRSTR_MAIN_LOOP:
             do {
                 text += 16;
                 __text = _mm_loadu_si128((const __m128i *)text);
@@ -199,20 +219,47 @@ sse42_strstr(const char_type * text, const char_type * pattern,
                 null = _mm_cmpestri(__zero, 16, __text, 16, mode_each);
             } while (offset >= 16 && null >= 16);
 
-            if (likely(offset < 16)) {
+            if (likely(offset >= 16)) {
+                break;
+            }
+            else {
                 assert(offset >= 0 && offset < 16);
                 text += offset;
                 if (likely(null >= 16)) {
-                    __text = _mm_loadu_si128((const __m128i *)text);
-                    offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                    if (likely(offset >= 16)) {
-                        //text += 16;
-                        continue;
-                    }
-                    else {
-                        // Has found
-                        return (text + offset);
-                    }
+                    int rest_len = pattern_len;
+                    const char_type * patt = pattern;
+                    do {
+                        __text = _mm_loadu_si128((const __m128i *)text);
+                        offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                        if (likely(offset >= 16)) {
+                            //text += 16;
+                            goto STRSTR_MAIN_LOOP;
+                        }
+                        else {
+                            if (offset == 0) {
+                                // Scan the next part pattern
+                                text += 16;
+                                rest_len -= 16;
+                                if (rest_len > 0) {
+                                    patt += 16;
+                                    __pattern = _mm_loadu_si128((const __m128i *)patt);
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                            else {
+                                // Reset the pattern
+                                patt = pattern;
+                                __pattern = _mm_loadu_si128((const __m128i *)patt);
+                                text += offset;
+                                rest_len = pattern_len;
+                            }
+                        }
+                    } while (1);
+
+                    assert(rest_len <= 0);
+                    return (text - pattern_len + rest_len);
                 }
                 else {
                     __text = _mm_loadu_si128((const __m128i *)text);
@@ -225,9 +272,6 @@ sse42_strstr(const char_type * text, const char_type * pattern,
                         return (text + offset);
                     }
                 }
-            }
-            else {
-                break;
             }
         } while (1);
     }
