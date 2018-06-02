@@ -25,6 +25,7 @@
 #include "basic/stdint.h"
 #include <limits.h>
 #include <assert.h>
+#include <intrin.h>
 #include <nmmintrin.h>  // For SSE 4.2
 #include <type_traits>
 
@@ -43,6 +44,7 @@ namespace StringMatch {
 
 // Do nothing!! in MSVC or Intel C++ Compiler,
 // _BitScanReverse() defined in <intrin.h>
+#pragma intrinsic(_BitScanReverse)
 
 #elif defined(__MINGW32__) || defined(__has_builtin_clz) || (__GNUC__ >= 4)
 SM_INLINE_DECLARE(unsigned char)
@@ -90,6 +92,7 @@ _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 
 // Do nothing!! in MSVC or Intel C++ Compiler,
 // _BitScanReverse64() defined in <intrin.h>
+#pragma intrinsic(_BitScanReverse64)
 
 #elif (defined(_M_X64) || defined(_M_AMD64) || defined(_M_IA64) \
     || defined(_M_ARM) || defined(_M_ARM64) \
