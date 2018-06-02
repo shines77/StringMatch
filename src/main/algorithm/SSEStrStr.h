@@ -28,6 +28,10 @@
 #include <nmmintrin.h>  // For SSE 4.2
 #include <type_traits>
 
+#ifndef __cplusplus
+#include <stdalign.h>   // C11 defines _Alignas().  This header defines alignas()
+#endif
+
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
 
@@ -142,7 +146,7 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     static const int mode_any = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY
                               | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
-    alignas(16) uint64_t mask_128i[2];
+    //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
     int offset, null;
 #if !defined(NDEBUG)
@@ -158,7 +162,8 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
     //offset = _mm_movemask_epi8(__mask);
     
-    _mm_store_si128((__m128i *)mask_128i, __mask);
+    //_mm_store_si128((__m128i *)mask_128i, __mask);
+    uint64_t * mask_128i = (uint64_t *)&__mask;
     if (mask_128i[0] != 0 || mask_128i[1] != 0) {
         // The length of pattern is less than 16.
         text -= kMaxSize;
@@ -302,7 +307,7 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     static const int mode_any = _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY
                               | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
-    alignas(16) uint64_t mask_128i[2];
+    //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
     int offset, null;
 #if !defined(NDEBUG)
@@ -318,7 +323,8 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
     //offset = _mm_movemask_epi8(__mask);
 
-    _mm_store_si128((__m128i *)mask_128i, __mask);
+    //_mm_store_si128((__m128i *)mask_128i, __mask);
+    uint64_t * mask_128i = (uint64_t *)&__mask;
     if (mask_128i[0] != 0 || mask_128i[1] != 0) {
         // The length of pattern is less than 16.
         text -= kMaxSize;
