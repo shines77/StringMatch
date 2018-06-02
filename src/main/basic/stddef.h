@@ -188,6 +188,15 @@
 
 #endif // SM_INLINE
 
+
+#ifndef __SM_CDECL
+#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
+#define __SM_CDECL      __cdecl
+#else
+#define __SM_CDECL      __attribute__((__cdecl__))
+#endif
+#endif // __SM_CDECL
+
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif // !JIMI_BASIC_STDDEF_H
