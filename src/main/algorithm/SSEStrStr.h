@@ -25,7 +25,6 @@
 #include "basic/stdint.h"
 #include <limits.h>
 #include <assert.h>
-#include <intrin.h>
 #include <nmmintrin.h>  // For SSE 4.2
 #include <type_traits>
 
