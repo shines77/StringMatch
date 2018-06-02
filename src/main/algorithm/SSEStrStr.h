@@ -127,7 +127,7 @@ template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
 sse42_strstr(const char_type * text, const char_type * pattern,
-           typename std::enable_if<detail::is_char8<char_type>::value, char_type>::type * = nullptr) {
+             typename std::enable_if<detail::is_char8<char_type>::value, char_type>::type * = nullptr) {
     assert(text != nullptr);
     assert(pattern != nullptr);
     static const int mode_ordered = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED
@@ -136,9 +136,14 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     static const int mode_each = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_EACH
                                | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
+    static const int mode_any = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY
+                              | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+
     __m128i __text, __pattern, __zero, __mask;
-    int offset, pos;
-    pos = 0;
+    int offset, null;
+#if !defined(NDEBUG)
+    __zero = { 0 };
+#endif
     __zero = _mm_xor_si128(__zero, __zero);
 
     // Check the length of pattern is less than 16?
@@ -147,32 +152,84 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     // pmovmskb     edx,  xmm1
     __pattern = _mm_loadu_si128((const __m128i *)pattern);
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
-    offset = _mm_movemask_epi8(__mask);
+    //offset = _mm_movemask_epi8(__mask);
     if (__mask.m128i_u64[0] != 0 || __mask.m128i_u64[1] != 0) {
         // The length of pattern is less than 16.
+        text -= 16;
         do {
             do {
+                text += 16;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                text += 16;
-            } while (offset >= 16);
+                null = _mm_cmpestri(__zero, 16, __text, 16, mode_each);
+            } while (offset >= 16 && null >= 16);
 
-            assert(offset >= 0 && offset < 16);
-            text += offset;
-            __text = _mm_loadu_si128((const __m128i *)text);
-            offset = _mm_cmpistri(__pattern, __text, mode_each);
-            if (offset != 0) {
-                text++;
-                continue;
+            if (likely(offset < 16)) {
+                assert(offset >= 0 && offset < 16);
+                text += offset;
+                __text = _mm_loadu_si128((const __m128i *)text);
+                offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                if (likely(offset >= 16)) {
+                    if (likely(null >= 16)) {
+                        //text += 16;
+                        continue;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    // Has found
+                    return (text + offset);
+                }
             }
             else {
-                // Has found
-                return text;
+                break;
             }
         } while (1);
     }
     else {
-        //
+        // The length of pattern is more than or equal 16.
+        text -= 16;
+        do {
+            do {
+                text += 16;
+                __text = _mm_loadu_si128((const __m128i *)text);
+                offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                null = _mm_cmpestri(__zero, 16, __text, 16, mode_each);
+            } while (offset >= 16 && null >= 16);
+
+            if (likely(offset < 16)) {
+                assert(offset >= 0 && offset < 16);
+                text += offset;
+                if (likely(null >= 16)) {
+                    __text = _mm_loadu_si128((const __m128i *)text);
+                    offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                    if (likely(offset >= 16)) {
+                        //text += 16;
+                        continue;
+                    }
+                    else {
+                        // Has found
+                        return (text + offset);
+                    }
+                }
+                else {
+                    __text = _mm_loadu_si128((const __m128i *)text);
+                    offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                    if (likely(offset >= 16)) {
+                        break;
+                    }
+                    else {
+                        // Has found
+                        return (text + offset);
+                    }
+                }
+            }
+            else {
+                break;
+            }
+        } while (1);
     }
 
     return nullptr;
