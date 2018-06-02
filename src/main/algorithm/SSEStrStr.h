@@ -205,9 +205,9 @@ sse42_strstr(const char_type * text, const char_type * pattern,
 
             do {
                 patt += 16;
-                pattern_len += 16;
                 __patt = _mm_loadu_si128((const __m128i *)patt);
                 null = _mm_cmpestri(__zero, 16, __patt, 16, mode_each);
+                pattern_len += 16;
             } while (null >= 16);
 
             assert(null >= 0 && null < 16);
@@ -241,11 +241,11 @@ STRSTR_MAIN_LOOP:
                             goto STRSTR_MAIN_LOOP;
                         }
                         else {
-                            if (offset == 0) {
+                            if (likely(offset == 0)) {
                                 // Scan the next part pattern
                                 text += 16;
                                 rest_len -= 16;
-                                if (rest_len > 0) {
+                                if (likely(rest_len > 0)) {
                                     patt += 16;
                                     __pattern = _mm_loadu_si128((const __m128i *)patt);
                                 }
@@ -364,9 +364,9 @@ sse42_strstr(const char_type * text, const char_type * pattern,
 
             do {
                 patt += 8;
-                pattern_len += 8;
                 __patt = _mm_loadu_si128((const __m128i *)patt);
                 null = _mm_cmpestri(__zero, 8, __patt, 8, mode_each);
+                pattern_len += 8;
             } while (null >= 8);
 
             assert(null >= 0 && null < 8);
@@ -400,11 +400,11 @@ STRSTR_MAIN_LOOP:
                             goto STRSTR_MAIN_LOOP;
                         }
                         else {
-                            if (offset == 0) {
+                            if (likely(offset == 0)) {
                                 // Scan the next part pattern
                                 text += 8;
                                 rest_len -= 8;
-                                if (rest_len > 0) {
+                                if (likely(rest_len > 0)) {
                                     patt += 8;
                                     __pattern = _mm_loadu_si128((const __m128i *)patt);
                                 }
