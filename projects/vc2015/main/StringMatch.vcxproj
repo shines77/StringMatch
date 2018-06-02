@@ -32,6 +32,7 @@
     <ClInclude Include="..\..\..\src\main\algorithm\MyStrStr.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\ShiftAnd.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\ShiftOr.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStr.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\StdSearch.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\StrStr.h" />
     <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h" />

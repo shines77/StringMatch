@@ -112,5 +112,8 @@
     <ClInclude Include="..\..\..\src\main\algorithm\GlibcStrStrOld.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStr.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
