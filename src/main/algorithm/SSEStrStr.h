@@ -499,10 +499,6 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
     int p_has_null;
     int t_has_null;
 
-    //if (detail::strlen(text) < detail::strlen(pattern)) {
-    //    return nullptr;
-    //}
-
     __m128i __text;
     __m128i __pattern;
 
@@ -510,7 +506,7 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
     __pattern = _mm_loadu_si128((__m128i *)p);
     p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
 
-    if (p_has_null != 0) {
+    if (likely(p_has_null != 0)) {
         /* strlen(pattern) < 16 */
         do {
             __text = _mm_loadu_si128((__m128i *)t);
@@ -519,13 +515,13 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
             matched = _mm_cmpistrc(__pattern, __text, mode_ordered);
             t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
 
-            if ((offset == 0) & matched)
+            if (unlikely((offset == 0) & matched))
                 break;
 
             t += offset;
         } while (t_has_null == 0);
 
-        if (matched != 0) {
+        if (likely(matched != 0)) {
             return (t);
         }
 
@@ -541,7 +537,7 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
             t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
             p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
 
-            if (offset != 0) {
+            if (likely(offset != 0)) {
                 /* suffix or not match (offset = 16)*/
                 t += offset;
             }
@@ -560,16 +556,16 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
                     t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
                     p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
 
-                    if (offset != 0)
+                    if (likely(offset != 0))
                         break;
                 } while (p_has_null == 0 && t_has_null == 0);
 
-                if (offset == 0) {
-                    return (t);
-                }
-                else {
+                if (likely(offset != 0)) {
                     t += 1;
                     t_has_null = 0;
+                }
+                else {
+                    return (t);
                 }
             }
         } while (t_has_null == 0);
