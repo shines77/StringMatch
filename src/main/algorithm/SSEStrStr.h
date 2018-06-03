@@ -453,30 +453,30 @@ STRSTR_MAIN_LOOP:
 
 /***********************************************************
 
-  Author��lqeh
-  Link��https://www.jianshu.com/p/d718c1ea5f22
-  From��www.jianshu.com
+  Author: lqeh
+  Link: https://www.jianshu.com/p/d718c1ea5f22
+  From: www.jianshu.com
 
 ***********************************************************/
 
-   /* unit test:
-    * src = "00000000001234561234123456789abcdefghi", dest = "1234567"; ret = 20
-    * src = "00000000001234561234123456789abcdefghi", dest = "123456789abcdefg";  ret = 20
-    * src = "00000000001234561234123456789abcdefghi", dest = "1234"; ret = 10
-    * src = "00000000001234561234123456789abcdefghi", dest = "00000000"; ret = 0
-    * src = "00000000001234561234123456789abcdefghi", dest = "0000000000123456"; ret = 0
-    * src = "00000000001234561234123456789abcdefghi", dest = "000000000012345612"; ret = 0
-    * src = "00000000001234561234123456789abcdefghi", dest = "1000000000012345612"; ret = -1
-    * src = "00000000001234561234123456789abcdefghi", dest = "fghi"; ret = 34
-    * src = "00000000001234561234123456789abcdefghi", dest = "fghia"; ret = -1
-    * src = "00000000001234561234123456789abcdefghi", dest = "3456789abcdefghi"; ret = 22
-    * src = "00000000001234561234123456789abcdefghi", dest = "23456789abcdefghi"; ret = 21
-    * src = "00000000001234561234123456789abcdefghi", dest = "3456789abcdefghiq"; ret = -1
-    * src = "aaaabbbbaaaabbbbaaaabbbbacc", dest = "aaaabbbbaaaabbbbacc"; ret = 8
-    * src = "aaaabbbbaaaabbbbaaaabbbbacc", dest = "aaaabbbbaaaabbbbccc"; ret = -1
-    * src = "012345678", dest = "234"; ret = 2
-    * src = "012345678", dest = "2346"; ret = -1  
-    */  
+/* unit test:
+ * src = "00000000001234561234123456789abcdefghi", dest = "1234567"; ret = 20
+ * src = "00000000001234561234123456789abcdefghi", dest = "123456789abcdefg";  ret = 20
+ * src = "00000000001234561234123456789abcdefghi", dest = "1234"; ret = 10
+ * src = "00000000001234561234123456789abcdefghi", dest = "00000000"; ret = 0
+ * src = "00000000001234561234123456789abcdefghi", dest = "0000000000123456"; ret = 0
+ * src = "00000000001234561234123456789abcdefghi", dest = "000000000012345612"; ret = 0
+ * src = "00000000001234561234123456789abcdefghi", dest = "1000000000012345612"; ret = -1
+ * src = "00000000001234561234123456789abcdefghi", dest = "fghi"; ret = 34
+ * src = "00000000001234561234123456789abcdefghi", dest = "fghia"; ret = -1
+ * src = "00000000001234561234123456789abcdefghi", dest = "3456789abcdefghi"; ret = 22
+ * src = "00000000001234561234123456789abcdefghi", dest = "23456789abcdefghi"; ret = 21
+ * src = "00000000001234561234123456789abcdefghi", dest = "3456789abcdefghiq"; ret = -1
+ * src = "aaaabbbbaaaabbbbaaaabbbbacc", dest = "aaaabbbbaaaabbbbacc"; ret = 8
+ * src = "aaaabbbbaaaabbbbaaaabbbbacc", dest = "aaaabbbbaaaabbbbccc"; ret = -1
+ * src = "012345678", dest = "234"; ret = 2
+ * src = "012345678", dest = "2346"; ret = -1  
+ */  
 
 template <typename char_type>
 static
