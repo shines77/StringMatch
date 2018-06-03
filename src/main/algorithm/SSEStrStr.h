@@ -451,6 +451,133 @@ STRSTR_MAIN_LOOP:
     return nullptr;
 }
 
+/***********************************************************
+
+  Author��lqeh
+  Link��https://www.jianshu.com/p/d718c1ea5f22
+  From��www.jianshu.com
+
+***********************************************************/
+
+   /* unit test:
+    * src = "00000000001234561234123456789abcdefghi", dest = "1234567"; ret = 20
+    * src = "00000000001234561234123456789abcdefghi", dest = "123456789abcdefg";  ret = 20
+    * src = "00000000001234561234123456789abcdefghi", dest = "1234"; ret = 10
+    * src = "00000000001234561234123456789abcdefghi", dest = "00000000"; ret = 0
+    * src = "00000000001234561234123456789abcdefghi", dest = "0000000000123456"; ret = 0
+    * src = "00000000001234561234123456789abcdefghi", dest = "000000000012345612"; ret = 0
+    * src = "00000000001234561234123456789abcdefghi", dest = "1000000000012345612"; ret = -1
+    * src = "00000000001234561234123456789abcdefghi", dest = "fghi"; ret = 34
+    * src = "00000000001234561234123456789abcdefghi", dest = "fghia"; ret = -1
+    * src = "00000000001234561234123456789abcdefghi", dest = "3456789abcdefghi"; ret = 22
+    * src = "00000000001234561234123456789abcdefghi", dest = "23456789abcdefghi"; ret = 21
+    * src = "00000000001234561234123456789abcdefghi", dest = "3456789abcdefghiq"; ret = -1
+    * src = "aaaabbbbaaaabbbbaaaabbbbacc", dest = "aaaabbbbaaaabbbbacc"; ret = 8
+    * src = "aaaabbbbaaaabbbbaaaabbbbacc", dest = "aaaabbbbaaaabbbbccc"; ret = -1
+    * src = "012345678", dest = "234"; ret = 2
+    * src = "012345678", dest = "2346"; ret = -1  
+    */  
+
+template <typename char_type>
+static
+SM_NOINLINE_DECLARE(const char_type *)
+sse42_strstr_v2(const char_type * text, const char_type * pattern) {
+    assert(text != nullptr);
+    assert(pattern != nullptr);
+
+    static const int mode_ordered = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED
+                                  | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+
+    const char_type * t = text;
+    const char_type * p = pattern;
+
+    const char_type * t_16;
+    const char_type * p_16;
+
+    int offset;
+    int matched;
+    int p_has_null;
+    int t_has_null;
+
+    //if (detail::strlen(text) < detail::strlen(pattern)) {
+    //    return nullptr;
+    //}
+
+    __m128i __text;
+    __m128i __pattern;
+
+    __text = _mm_loadu_si128((__m128i *)t);
+    __pattern = _mm_loadu_si128((__m128i *)p);
+    p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
+
+    if (p_has_null != 0) {
+        /* strlen(pattern) < 16 */
+        do {
+            __text = _mm_loadu_si128((__m128i *)t);
+
+            offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+            matched = _mm_cmpistrc(__pattern, __text, mode_ordered);
+            t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+
+            if ((offset == 0) & matched)
+                break;
+
+            t += offset;
+        } while (t_has_null == 0);
+
+        if (matched != 0) {
+            return (t);
+        }
+
+        return nullptr;
+    }
+    else {
+        /* strlen(pattern) >= 16 */
+        do {
+            __text = _mm_loadu_si128((__m128i *)t);
+            __pattern = _mm_loadu_si128((__m128i *)p);
+
+            offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+            t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+            p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
+
+            if (offset != 0) {
+                /* suffix or not match (offset = 16)*/
+                t += offset;
+            }
+            else {
+                /* Part matched */
+                t_16 = t;
+                p_16 = p;
+                do {
+                    t_16 += 16;
+                    p_16 += 16;
+
+                    __text = _mm_loadu_si128((__m128i *)t_16);
+                    __pattern = _mm_loadu_si128((__m128i *)p_16);
+
+                    offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                    t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+                    p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
+
+                    if (offset != 0)
+                        break;
+                } while (p_has_null == 0 && t_has_null == 0);
+
+                if (offset == 0) {
+                    return (t);
+                }
+                else {
+                    t += 1;
+                    t_has_null = 0;
+                }
+            }
+        } while (t_has_null == 0);
+
+        return nullptr;
+    }
+}
+
 template <typename CharTy>
 class SSEStrStrImpl {
 public:
@@ -487,7 +614,7 @@ public:
                 const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-        const char_type * substr = sse42_strstr(text, pattern);
+        const char_type * substr = sse42_strstr_v2(text, pattern);
         if (likely(substr != nullptr))
             return (Long)(substr - text);
         else
