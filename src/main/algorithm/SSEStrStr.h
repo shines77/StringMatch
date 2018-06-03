@@ -522,7 +522,7 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
         } while (t_has_null == 0);
 
         if (likely(matched != 0)) {
-            return (t);
+            return t;
         }
 
         return nullptr;
@@ -561,11 +561,11 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
                 } while (p_has_null == 0 && t_has_null == 0);
 
                 if (likely(offset != 0)) {
-                    t += 1;
+                    t += offset;
                     t_has_null = 0;
                 }
                 else {
-                    return (t);
+                    return t;
                 }
             }
         } while (t_has_null == 0);
