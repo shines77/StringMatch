@@ -538,11 +538,11 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
             p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
 
             if (likely(offset != 0)) {
-                /* suffix or not match (offset = 16)*/
+                /* Suffix or not match (offset = 16) */
                 t += offset;
             }
             else {
-                /* Part matched */
+                /* Part pattern matched */
                 t_16 = t;
                 p_16 = p;
                 do {
