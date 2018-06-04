@@ -95,7 +95,11 @@ _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 
 // Do nothing!! in MSVC or Intel C++ Compiler,
 // _BitScanReverse64() defined in <intrin.h>
+#if defined(_M_X64) || defined(_M_AMD64) || defined(_M_IA64) \
+    || defined(_M_ARM) || defined(_M_ARM64) \
+    || defined(__amd64__) || defined(__x86_64__)
 #pragma intrinsic(_BitScanReverse64)
+#endif
 
 #elif (defined(_M_X64) || defined(_M_AMD64) || defined(_M_IA64) \
     || defined(_M_ARM) || defined(_M_ARM64) \
@@ -149,7 +153,9 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
     int offset, null;
-#if !defined(NDEBUG)
+#if defined(NDEBUG)
+    (void)(__zero);
+#else
     __zero = { 0 };
 #endif
     __zero = _mm_xor_si128(__zero, __zero);
@@ -310,7 +316,10 @@ sse42_strstr(const char_type * text, const char_type * pattern,
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
     int offset, null;
-#if !defined(NDEBUG)
+
+#if defined(NDEBUG)
+    (void)(__zero);
+#else
     __zero = { 0 };
 #endif
     __zero = _mm_xor_si128(__zero, __zero);
@@ -495,7 +504,6 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
     const char_type * p_16;
 
     int offset;
-    int matched;
     int p_has_null;
     int t_has_null;
 
@@ -508,6 +516,24 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
 
     if (likely(p_has_null != 0)) {
         /* strlen(pattern) < 16 */
+#if 1
+        do {
+            __text = _mm_loadu_si128((__m128i *)t);
+
+            offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+            t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+
+            if (likely(offset != 0)) {
+                t += offset;
+            }
+            else {
+                return t;
+            }
+        } while ((t_has_null == 0) || (t_has_null == 1 && offset != 16));
+
+        return nullptr;
+#else
+        int matched;
         do {
             __text = _mm_loadu_si128((__m128i *)t);
 
@@ -515,10 +541,12 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
             matched = _mm_cmpistrc(__pattern, __text, mode_ordered);
             t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
 
-            if (unlikely((offset == 0) & matched))
+            if (likely((matched == 0) || (offset != 0))) {
+                t += offset;
+            }
+            else {
                 break;
-
-            t += offset;
+            }            
         } while (t_has_null == 0);
 
         if (likely(matched != 0)) {
@@ -526,6 +554,7 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
         }
 
         return nullptr;
+#endif
     }
     else {
         /* strlen(pattern) >= 16 */
@@ -535,40 +564,62 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
 
             offset = _mm_cmpistri(__pattern, __text, mode_ordered);
             t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+#if !defined(NDEBUG)
             p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
-
-            if (likely(offset != 0)) {
-                /* Suffix or not match (offset = 16) */
-                t += offset;
-            }
-            else {
-                /* Part pattern matched */
-                t_16 = t;
-                p_16 = p;
-                do {
-                    t_16 += 16;
-                    p_16 += 16;
-
-                    __text = _mm_loadu_si128((__m128i *)t_16);
-                    __pattern = _mm_loadu_si128((__m128i *)p_16);
-
-                    offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                    t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
-                    p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
-
-                    if (likely(offset != 0))
-                        break;
-                } while (p_has_null == 0 && t_has_null == 0);
-
+            assert(p_has_null == 0);
+#endif
+            if (likely(t_has_null == 0)) {
                 if (likely(offset != 0)) {
+                    /* It's suffix (offset > 0 and offset < 16)
+                       or not match (offset = 16) */
                     t += offset;
-                    t_has_null = 0;
                 }
                 else {
-                    return t;
+                    /* Part of pattern or full pattern matched (offset = 0) */
+                    t_16 = t;
+                    p_16 = p;
+                    do {
+                        t_16 += 16;
+                        p_16 += 16;
+
+                        __text = _mm_loadu_si128((__m128i *)t_16);
+                        __pattern = _mm_loadu_si128((__m128i *)p_16);
+
+                        offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                        t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+                        if (likely(offset != 0))
+                            break;
+
+                        p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
+                    } while (t_has_null == 0 && p_has_null == 0);
+
+                    if (likely(offset != 0)) {
+                        t += offset;
+                        if (likely(t_has_null != 0))
+                            break;
+                    }
+                    else {
+                        return t;
+                    }
                 }
             }
-        } while (t_has_null == 0);
+            else {
+#if 0
+                if (likely(offset == 16)) {
+                    break;
+                }
+                else if (likely(offset != 0)) {
+                    /* It's suffix (offset > 0 and offset < 16)
+                       or not match (offset = 16) */
+                    t += offset;
+
+                    if (t_has_null != 0)
+                        break;
+                }
+#endif
+                break;
+            }
+        } while (1);
 
         return nullptr;
     }
@@ -610,7 +661,7 @@ public:
                 const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-        const char_type * substr = sse42_strstr(text, pattern);
+        const char_type * substr = sse42_strstr_v2(text, pattern);
         if (likely(substr != nullptr))
             return (Long)(substr - text);
         else
