@@ -95,8 +95,7 @@ public:
     }
 
     /* Preprocessing good suffixes. */
-    static bool preBmGs(const char * pattern, size_type length,
-                        int * bmGs, int gsLen) {
+    static bool preBmGs(const char * pattern, size_type length, int * bmGs) {
         int i, j;
         int len = (int)length;
 
@@ -131,15 +130,14 @@ public:
     }
 
     /* Preprocessing */
-    bool preprocessing(const char_type * pattern, size_type length) {
+    bool preprocessing(const char_type * pattern, size_type length) SM_NOEXCEPT {
         bool success = false;
         assert(pattern != nullptr);
 
-        int gsLen = (int)length + 1;
-        int * bmGs = new int[gsLen];
+        int * bmGs = new int[length + 1];
         if (likely(bmGs != nullptr)) {
             /* Preprocessing good suffixes. */
-            success = this_type::preBmGs(pattern, length, bmGs, gsLen);
+            success = this_type::preBmGs(pattern, length, bmGs);
         }
         this->bmGs_.reset(bmGs);
 
@@ -168,27 +166,26 @@ public:
             const Long pattern_step = (Long)pattern_len - 1;
             Long target_idx = 0;
             do {
-                register const char_type * target = text + pattern_step + target_idx;
-                register const char_type * scan = pattern + pattern_step;
-                assert(target < (text + text_len));
+                register const char_type * scan = text + pattern_step + target_idx;
+                register const char_type * cursor = pattern + pattern_step;
+                assert(scan < (text + text_len));
 
-                while (likely(scan >= pattern)) {
-                    if (likely(*target != *scan)) {
+                while (likely(cursor >= pattern)) {
+                    if (likely(*scan != *cursor)) {
                         break;
                     }
-                    target--;
                     scan--;
+                    cursor--;
                 }
 
-                if (likely(scan >= pattern)) {
-                    Long pattern_idx = scan - pattern;
+                if (likely(cursor >= pattern)) {
+                    Long pattern_idx = cursor - pattern;
                     target_idx += sm_max(bmGs[pattern_idx],
-                                         bmBc[(uchar_type)*target] - (pattern_step - pattern_idx));
+                                         bmBc[(uchar_type)*scan] - (pattern_step - pattern_idx));
                 }
                 else {
-                    assert(target_idx >= 0);
-                    assert(target_idx < (Long)text_len);
                     // Has found
+                    assert(target_idx >= 0 && target_idx < (Long)text_len);
                     return target_idx;
                 }
             } while (likely(target_idx <= (Long)(text_len - pattern_len)));

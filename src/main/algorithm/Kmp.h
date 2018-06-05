@@ -49,7 +49,7 @@ public:
         if (kmp_next != nullptr) {
             kmp_next[0] = -1;
             kmp_next[1] = 0;
-            for (size_t index = 1; index < length; ++index) {
+            for (size_type index = 1; index < length; ++index) {
                 if (likely(pattern[index] != pattern[kmp_next[index - 1]])) {
                     kmp_next[index + 1] = 0;
                 }
