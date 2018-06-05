@@ -172,11 +172,11 @@ sse42_strstr(const char_type * text, const char_type * pattern) {
     __zero = { 0 };
 #endif
     // Check the length of pattern is less than 16?
+    __pattern = _mm_loadu_si128((const __m128i *)pattern);
+
     // pxor         xmm0, xmm0
     // pcmpeqb      xmm1, xmm0
     // pmovmskb     edx,  xmm1
-    __pattern = _mm_loadu_si128((const __m128i *)pattern);
-
     __zero = _mm_xor_si128(__zero, __zero);
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
     //offset = _mm_movemask_epi8(__mask);
@@ -309,6 +309,171 @@ STRSTR_MAIN_LOOP:
     return nullptr;
 }
 
+template <typename char_type>
+static
+SM_NOINLINE_DECLARE(const char_type *)
+sse42_strstr_v1(const char_type * text, const char_type * pattern) {
+    assert(text != nullptr);
+    assert(pattern != nullptr);
+    static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
+    static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
+    static const int mode_ordered = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ORDERED
+                                  | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+
+    static const int mode_each = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
+                               | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+
+    static const int mode_any = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ANY
+                              | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+
+    //alignas(16) uint64_t mask_128i[2];
+    __m128i __text, __pattern, __zero, __mask;
+    int offset, null;
+    int t_has_null;
+
+#if defined(NDEBUG)
+    (void)(__zero);
+#else
+    __zero = { 0 };
+#endif
+    // Check the length of pattern is less than 16?
+    __pattern = _mm_loadu_si128((const __m128i *)pattern);
+
+    // pxor         xmm0, xmm0
+    // pcmpeqb      xmm1, xmm0
+    // pmovmskb     edx,  xmm1
+    __zero = _mm_xor_si128(__zero, __zero);
+    __mask = _mm_cmpeq_epi8(__pattern, __zero);
+    //offset = _mm_movemask_epi8(__mask);
+    
+    //_mm_store_si128((__m128i *)mask_128i, __mask);
+    uint64_t * mask_128i = (uint64_t *)&__mask;
+    if (mask_128i[0] != 0 || mask_128i[1] != 0) {
+        // The length of pattern is less than 16.
+        text -= kMaxSize;
+        do {
+            do {
+                text += kMaxSize;
+                __text = _mm_loadu_si128((const __m128i *)text);
+                offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+            } while (offset >= kMaxSize && t_has_null == 0);
+
+            if (likely(offset >= kMaxSize)) {
+                break;
+            }
+            else {
+                assert(offset >= 0 && offset < kMaxSize);
+                text += offset;
+                __text = _mm_loadu_si128((const __m128i *)text);
+                offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                if (likely(offset >= kMaxSize)) {
+                    if (likely(t_has_null == 0)) {
+                        //text += kMaxSize;
+                        continue;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    // Has found
+                    return (text + offset);
+                }
+            }
+        } while (1);
+    }
+    else {
+        // The length of pattern is more than or equal 16.
+
+        // Get the length of pattern
+        int pattern_len;
+        {
+            __m128i __patt;
+            const char_type * patt = pattern;
+            pattern_len = 0;
+
+            do {
+                patt += kMaxSize;
+                __patt = _mm_loadu_si128((const __m128i *)patt);
+                null = _mm_cmpestri(__zero, kMaxSize, __patt, kMaxSize, mode_each);
+                pattern_len += kMaxSize;
+            } while (null >= kMaxSize);
+
+            assert(null >= 0 && null < kMaxSize);
+            pattern_len += null;
+        }
+
+        text -= kMaxSize;
+        do {
+STRSTR_MAIN_LOOP:
+            do {
+                text += kMaxSize;
+                __text = _mm_loadu_si128((const __m128i *)text);
+                offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+            } while (offset >= kMaxSize && t_has_null == 0);
+
+            if (likely(offset >= kMaxSize)) {
+                break;
+            }
+            else {
+                assert(offset >= 0 && offset < 16);
+                text += offset;
+                if (likely(t_has_null == 0)) {
+                    int rest_len = pattern_len;
+                    const char_type * patt = pattern;
+                    do {
+                        __text = _mm_loadu_si128((const __m128i *)text);
+                        offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                        if (likely(offset >= kMaxSize)) {
+                            //text += kMaxSize;
+                            goto STRSTR_MAIN_LOOP;
+                        }
+                        else {
+                            if (likely(offset == 0)) {
+                                // Scan the next part pattern
+                                text += kMaxSize;
+                                rest_len -= kMaxSize;
+                                if (likely(rest_len > 0)) {
+                                    patt += kMaxSize;
+                                    __pattern = _mm_loadu_si128((const __m128i *)patt);
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                            else {
+                                // Reset the pattern
+                                patt = pattern;
+                                __pattern = _mm_loadu_si128((const __m128i *)patt);
+                                text += offset;
+                                rest_len = pattern_len;
+                            }
+                        }
+                    } while (1);
+
+                    assert(rest_len <= 0);
+                    return (text - pattern_len + rest_len);
+                }
+                else {
+                    __text = _mm_loadu_si128((const __m128i *)text);
+                    offset = _mm_cmpistri(__pattern, __text, mode_ordered);
+                    if (likely(offset >= kMaxSize)) {
+                        break;
+                    }
+                    else {
+                        // Has found
+                        return (text + offset);
+                    }
+                }
+            }
+        } while (1);
+    }
+
+    return nullptr;
+}
+
 template <typename CharTy>
 class SSEStrStrImpl {
 public:
@@ -345,7 +510,7 @@ public:
                 const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-        const char_type * substr = sse42_strstr(text, pattern);
+        const char_type * substr = sse42_strstr_v1(text, pattern);
         if (likely(substr != nullptr))
             return (Long)(substr - text);
         else

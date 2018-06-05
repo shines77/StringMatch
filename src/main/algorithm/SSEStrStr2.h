@@ -84,8 +84,8 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
     const char_type * p_16;
 
     int offset;
-    int p_has_null;
     int t_has_null;
+    int p_has_null;
 
     __m128i __text, __pattern;
     __m128i __zero, __mask;
@@ -95,10 +95,15 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
 #else
     __zero = { 0 };
 #endif
+    // Check the length of pattern is less than 16?
+
     //__text = _mm_loadu_si128((__m128i *)t);
     __pattern = _mm_loadu_si128((__m128i *)p);
     //p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
 
+    // pxor         xmm0, xmm0
+    // pcmpeqb      xmm1, xmm0
+    // pmovmskb     edx,  xmm1
     __zero = _mm_xor_si128(__zero, __zero);
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
 
