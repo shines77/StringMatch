@@ -14,8 +14,7 @@
 #include "AlgorithmWrapper.h"
 
 //
-// See: https://blog.csdn.net/q547550831/article/details/51860017
-// See: https://blog.csdn.net/v_JULY_v/article/details/7041827
+// See: http://www-igm.univ-mlv.fr/~lecroq/string/node18.html
 //
 
 namespace StringMatch {

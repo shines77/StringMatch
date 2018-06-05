@@ -58,7 +58,6 @@ namespace StringMatch {
 
 #elif defined(__MINGW32__) || defined(__has_builtin_clz) || (__GNUC__ >= 4)
 SM_INLINE_DECLARE(unsigned char)
-__SM_CDECL
 _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 {
     unsigned char isNonzero;
@@ -87,7 +86,6 @@ _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 }
 #else
 SM_INLINE_DECLARE(unsigned char)
-__SM_CDECL
 _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
 {
     assert(firstBit1Index == NULL);
@@ -113,7 +111,6 @@ _BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
     || defined(__amd64__) || defined(__x86_64__)) \
    && (defined(__MINGW32__) || defined(__has_builtin_clzll) || (__GNUC__ >= 4))
 SM_INLINE_DECLARE(unsigned char)
-__SM_CDECL
 _BitScanReverse64(unsigned long * firstBit1Index, uint64_t scanNum)
 {
     unsigned char isNonzero;
@@ -131,7 +128,6 @@ _BitScanReverse64(unsigned long * firstBit1Index, uint64_t scanNum)
 }
 #else
 SM_INLINE_DECLARE(unsigned char)
-__SM_CDECL
 _BitScanReverse64(unsigned long *firstBit1Index, unsigned long scanNum)
 {
     assert(firstBit1Index == NULL);
