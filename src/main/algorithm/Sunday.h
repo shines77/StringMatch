@@ -90,7 +90,7 @@ public:
                 while (likely(cursor < pattern_end)) {
                     if (likely(*source != *cursor)) {
                         source_idx = source - text;
-                        source_idx += shift[(uchar_type)pattern[source_idx + pattern_len]];
+                        source_idx += shift[(uchar_type)text[source_idx + pattern_len]];
                         break;
                     }
                     source++;
