@@ -25,6 +25,7 @@
 #include "algorithm/MyMemMemBw.h"
 #include "algorithm/StdSearch.h"
 #include "algorithm/Kmp.h"
+#include "algorithm/Kmp2.h"
 #include "algorithm/BoyerMoore.h"
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
@@ -463,6 +464,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::MyMemMemBw>();
     StringMatch_benchmark<AnsiString::StdSearch>();
     StringMatch_benchmark<AnsiString::Kmp>();
+    StringMatch_benchmark<AnsiString::Kmp2>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
     StringMatch_benchmark<AnsiString::ShiftAnd>();
     StringMatch_benchmark<AnsiString::ShiftOr>();

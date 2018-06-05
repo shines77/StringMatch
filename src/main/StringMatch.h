@@ -66,6 +66,16 @@ using ::std::nullptr_t;
 #define sm_max(a, b)    (((a) >= (b)) ? (a) : (b))
 #endif // sm_max
 
+#if defined(_MSC_VER)
+#  if _MSC_VER >= 1600
+#    define SM_NOEXCEPT     _NOEXCEPT
+#  else
+#    define SM_NOEXCEPT
+#  endif
+#else
+#  define SM_NOEXCEPT       noexcept
+#endif
+
 #ifdef Long
 #undef Long
 #endif

@@ -43,18 +43,18 @@ public:
     }
 
     /* Preprocessing */
-    bool preprocessing(const char_type * pattern, size_type length) {
+    bool preprocessing(const char_type * pattern, size_type length) SM_NOEXCEPT {
         assert(pattern != nullptr);
         int * kmp_next = new int[length + 1];
         if (kmp_next != nullptr) {
             kmp_next[0] = -1;
             kmp_next[1] = 0;
             for (size_t index = 1; index < length; ++index) {
-                if (unlikely(pattern[index] == pattern[kmp_next[index - 1]])) {
-                    kmp_next[index + 1] = kmp_next[index] + 1;
+                if (likely(pattern[index] != pattern[kmp_next[index - 1]])) {
+                    kmp_next[index + 1] = 0;
                 }
                 else {
-                    kmp_next[index + 1] = 0;
+                    kmp_next[index + 1] = kmp_next[index] + 1;
                 }
             }
         }
@@ -80,8 +80,8 @@ public:
             const char_type * pattern_end = pattern + pattern_len;
             do {
                 if (likely(*text != *pattern)) {
-                    int pattern_idx = (int)(pattern - pattern_start);
-                    if (likely(pattern_idx == 0)) {
+                    int matched_chars = (int)(pattern - pattern_start);
+                    if (likely(matched_chars == 0)) {
                         text++;
                         if (likely(text <= text_end)) {
                             // continue
@@ -92,11 +92,11 @@ public:
                         }
                     }
                     else {
-                        assert(pattern_idx >= 1);
-                        int pattern_offset = kmp_next[pattern_idx];
-                        int text_offset = pattern_idx - pattern_offset;
+                        assert(matched_chars >= 1);
+                        int partial_matched = kmp_next[matched_chars];
+                        int text_offset = matched_chars - partial_matched;
                         assert(text_offset >= 1);
-                        pattern = pattern_start + pattern_offset;
+                        pattern = pattern_start + partial_matched;
                         text = text + text_offset;
                         if (unlikely(text > text_end)) {
                             // Not found
@@ -109,9 +109,9 @@ public:
                     pattern++;
                     if (likely(pattern >= pattern_end)) {
                         // Has found
-                        Long pos = (Long)((text - text_start) - (intptr_t)pattern_len);
-                        assert(pos >= 0);
-                        return pos;
+                        Long index_of = (Long)((text - text_start) - (intptr_t)pattern_len);
+                        assert(index_of >= 0);
+                        return index_of;
                     }
                     assert(text < (text_start + text_len));
                 }
