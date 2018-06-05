@@ -64,54 +64,56 @@ public:
 
     /* Searching */
     SM_NOINLINE_DECLARE(Long)
-    search(const char_type * text, size_type text_len,
+    search(const char_type * text_start, size_type text_len,
            const char_type * pattern_start, size_type pattern_len) const {
-        assert(text != nullptr);
+        assert(text_start != nullptr);
         assert(pattern_start != nullptr);
 
         int * kmp_next = this->kmp_next_.get();
         assert(kmp_next != nullptr);
 
         if (likely(pattern_len <= text_len)) {
-            register const char_type * target = text;
+            register const char_type * text = text_start;
             register const char_type * pattern = pattern_start;
 
-            const char_type * target_end = text + (text_len - pattern_len);
+            const char_type * text_end = text_start + (text_len - pattern_len);
             const char_type * pattern_end = pattern + pattern_len;
             do {
-                if (likely(*target != *pattern)) {
-                    int search_index = (int)(pattern - pattern_start);
-                    if (likely(search_index == 0)) {
-                        target++;
-                        if (unlikely(target > target_end)) {
+                if (likely(*text != *pattern)) {
+                    int pattern_idx = (int)(pattern - pattern_start);
+                    if (likely(pattern_idx == 0)) {
+                        text++;
+                        if (likely(text <= text_end)) {
+                            // continue
+                        }
+                        else {
                             // Not found
                             return Status::NotFound;
                         }
                     }
                     else {
-                        assert(search_index >= 1);
-                        int search_offset = kmp_next[search_index];
-                        int target_offset = search_index - search_offset;
-                        assert(target_offset >= 1);
-                        pattern = pattern_start + search_offset;
-                        target = target + target_offset;
-                        if (unlikely(target > target_end)) {
+                        assert(pattern_idx >= 1);
+                        int pattern_offset = kmp_next[pattern_idx];
+                        int text_offset = pattern_idx - pattern_offset;
+                        assert(text_offset >= 1);
+                        pattern = pattern_start + pattern_offset;
+                        text = text + text_offset;
+                        if (unlikely(text > text_end)) {
                             // Not found
                             return Status::NotFound;
                         }
                     }
                 }
                 else {
-                    target++;
+                    text++;
                     pattern++;
                     if (likely(pattern >= pattern_end)) {
                         // Has found
-                        assert((target - text) >= (intptr_t)pattern_len);
-                        Long pos = (Long)((target - text) - (intptr_t)pattern_len);
+                        Long pos = (Long)((text - text_start) - (intptr_t)pattern_len);
                         assert(pos >= 0);
                         return pos;
                     }
-                    assert(target < (text + text_len));
+                    assert(text < (text_start + text_len));
                 }
             } while (1);
         }

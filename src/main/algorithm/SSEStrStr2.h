@@ -69,13 +69,10 @@ template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
 sse42_strstr_v2(const char_type * text, const char_type * pattern) {
-    assert(text != nullptr);
-    assert(pattern != nullptr);
-
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
-    static const int mode_ordered = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ORDERED
-                                  | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+    static const int kEqualOrdered = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ORDERED
+                                   | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
     const char_type * t = text;
     const char_type * p = pattern;
@@ -90,6 +87,9 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
     __m128i __text, __pattern;
     __m128i __zero, __mask;
 
+    assert(text != nullptr);
+    assert(pattern != nullptr);
+
 #if defined(NDEBUG)
     (void)(__zero);
 #else
@@ -99,7 +99,7 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
 
     //__text = _mm_loadu_si128((__m128i *)t);
     __pattern = _mm_loadu_si128((__m128i *)p);
-    //p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
+    //p_has_null = _mm_cmpistrs(__pattern, __text, kEqualOrdered);
 
     // pxor         xmm0, xmm0
     // pcmpeqb      xmm1, xmm0
@@ -113,18 +113,18 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
         /* strlen(pattern) < kMaxSize (16 or 8) */
 #if 1
         do {
-            __text = _mm_loadu_si128((__m128i *)t);
+            __text = _mm_loadu_si128((__m128i *)text);
 
-            offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-            t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+            offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
+            t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
 
             if (likely(offset != 0)) {
-                t += offset;
+                text += offset;
             }
             else {
-                return t;
+                return text;
             }
-        } while ((t_has_null == 0) || (t_has_null == 1 && offset != kMaxSize));
+        } while ((t_has_null == 0) || (t_has_null != 0 && offset < kMaxSize));
 
         return nullptr;
 #else
@@ -132,9 +132,9 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
         do {
             __text = _mm_loadu_si128((__m128i *)t);
 
-            offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-            matched = _mm_cmpistrc(__pattern, __text, mode_ordered);
-            t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+            offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
+            matched = _mm_cmpistrc(__pattern, __text, kEqualOrdered);
+            t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
 
             if (likely((matched == 0) || (offset != 0))) {
                 t += offset;
@@ -157,10 +157,10 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
             __text = _mm_loadu_si128((__m128i *)t);
             __pattern = _mm_loadu_si128((__m128i *)p);
 
-            offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-            t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+            offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
+            t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
 #if !defined(NDEBUG)
-            p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
+            p_has_null = _mm_cmpistrs(__pattern, __text, kEqualOrdered);
             assert(p_has_null == 0);
 #endif
             if (likely(t_has_null == 0)) {
@@ -180,12 +180,12 @@ sse42_strstr_v2(const char_type * text, const char_type * pattern) {
                         __text = _mm_loadu_si128((__m128i *)t_16);
                         __pattern = _mm_loadu_si128((__m128i *)p_16);
 
-                        offset = _mm_cmpistri(__pattern, __text, mode_ordered);
-                        t_has_null = _mm_cmpistrz(__pattern, __text, mode_ordered);
+                        offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
+                        t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
                         if (likely(offset != 0))
                             break;
 
-                        p_has_null = _mm_cmpistrs(__pattern, __text, mode_ordered);
+                        p_has_null = _mm_cmpistrs(__pattern, __text, kEqualOrdered);
                     } while (t_has_null == 0 && p_has_null == 0);
 
                     if (likely(offset != 0)) {

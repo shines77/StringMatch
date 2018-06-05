@@ -29,6 +29,8 @@
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
 
+#define USE_BENCHMARK_TEST  0
+
 using namespace StringMatch;
 
 #ifndef _DEBUG
@@ -348,8 +350,11 @@ void StringMatch_benchmark()
 {
     typedef typename AlgorithmTy::Pattern pattern_type;
 
-    //static const size_t iters = 1;
+#if USE_BENCHMARK_TEST
+    static const size_t iters = 1;
+#else
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
+#endif
 
     test::StopWatch sw;
     double matching_time, full_time;
@@ -373,9 +378,14 @@ void StringMatch_benchmark()
         for (size_t i = 0; i < kSearchTexts; ++i) {
             for (size_t j = 0; j < kPatterns; ++j) {
                 Long index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
-                // printf("index_of = %d\n", (int)index_of);
+#if USE_BENCHMARK_TEST
+                printf("index_of = %d\n", (int)index_of);
+#endif
                 sum1 += index_of;
             }
+#if USE_BENCHMARK_TEST
+            printf("\n");
+#endif
         }
     }
     sw.stop();
@@ -392,9 +402,14 @@ void StringMatch_benchmark()
                 for (size_t j = 0; j < kPatterns; ++j) {
                     Long index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
                                                        pattern[j].c_str(), pattern[j].size());
-                    // printf("index_of = %d\n", (int)index_of);
+#if USE_BENCHMARK_TEST
+                    printf("index_of = %d\n", (int)index_of);
+#endif
                     sum2 += index_of;
                 }
+#if USE_BENCHMARK_TEST
+                printf("\n");
+#endif
             }
         }
         sw.stop();
@@ -419,7 +434,7 @@ int main(int argc, char * argv[])
 
     StringMatch_usage_examples();
 
-    //StringMatch_unittest<AnsiString::MemMem>();
+    //StringMatch_unittest<AnsiString::StrStr>();
     //StringMatch_unittest<AnsiString::MyMemMem>();
     //StringMatch_unittest<AnsiString::SSEStrStr>();
 
@@ -433,10 +448,10 @@ int main(int argc, char * argv[])
 
     //StringMatch_strstr_benchmark();
 
-    //StringMatch_benchmark<AnsiString::StrStr>();
-    //StringMatch_benchmark<AnsiString::SSEStrStr>();
-
-#if 1
+#if USE_BENCHMARK_TEST
+    StringMatch_benchmark<AnsiString::StrStr>();
+    StringMatch_benchmark<AnsiString::SSEStrStr>();
+#else
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStrOld>();
