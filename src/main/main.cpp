@@ -28,6 +28,7 @@
 #include "algorithm/Kmp2.h"
 #include "algorithm/BoyerMoore.h"
 #include "algorithm/Sunday.h"
+#include "algorithm/Horspool.h"
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
 
@@ -468,6 +469,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::Kmp2>();
     StringMatch_benchmark<AnsiString::BoyerMoore>();
     StringMatch_benchmark<AnsiString::Sunday>();
+    StringMatch_benchmark<AnsiString::Horspool>();
     StringMatch_benchmark<AnsiString::ShiftAnd>();
     StringMatch_benchmark<AnsiString::ShiftOr>();
 #endif

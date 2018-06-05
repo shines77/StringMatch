@@ -127,5 +127,8 @@
     <ClInclude Include="..\..\..\src\main\algorithm\Sunday.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\Horspool.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

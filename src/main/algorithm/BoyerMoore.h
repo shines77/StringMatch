@@ -53,11 +53,11 @@ public:
         assert(pattern != nullptr);
         assert(bmBc != nullptr);
 
-        for (size_t i = 0; i < kMaxAscii; ++i) {
+        for (size_type i = 0; i < kMaxAscii; ++i) {
             bmBc[i] = (int)length;
         }
-        for (int i = 0; i < (int)length - 1; ++i) {
-            bmBc[(uchar_type)pattern[i]] = ((int)length - 1) - i;
+        for (Long i = 0; i < ((Long)length - 1); ++i) {
+            bmBc[(uchar_type)pattern[i]] = (int)((Long)length - 1 - i);
         }
     }
 
@@ -162,7 +162,7 @@ public:
         assert(bmBc != nullptr);
 
         if (likely(pattern_len <= text_len)) {
-            const Long source_end = (Long)(text_len - pattern_len);
+            const Long source_last = (Long)(text_len - pattern_len);
             const Long pattern_last = (Long)pattern_len - 1;
             Long source_offset = 0;
             do {
@@ -188,7 +188,7 @@ public:
                     assert(source_offset >= 0 && source_offset < (Long)text_len);
                     return source_offset;
                 }
-            } while (likely(source_offset <= source_end));
+            } while (likely(source_offset <= source_last));
         }
 
         return Status::NotFound;

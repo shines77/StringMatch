@@ -145,7 +145,7 @@ _BitScanReverse64(unsigned long *firstBit1Index, unsigned long scanNum)
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-sse42_strstr(const char_type * text, const char_type * pattern,
+strstr_sse42(const char_type * text, const char_type * pattern,
              typename std::enable_if<detail::is_wchar<char_type>::value, char_type>::type * = nullptr) {
     return nullptr;
 }
@@ -155,7 +155,7 @@ sse42_strstr(const char_type * text, const char_type * pattern,
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-sse42_strstr(const char_type * text, const char_type * pattern) {
+strstr_sse42(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
     static const int kEqualOrdered = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ORDERED
@@ -319,7 +319,7 @@ STRSTR_MAIN_LOOP:
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-sse42_strstr_v1_old(const char_type * text, const char_type * pattern) {
+strstr_sse42_v1_old(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
     static const int kEqualOrdered = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ORDERED
@@ -485,7 +485,7 @@ STRSTR_MAIN_LOOP:
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-sse42_strstr_v1(const char_type * text, const char_type * pattern) {
+strstr_sse42_v1(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
     static const int kEqualOrdered = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ORDERED
@@ -653,7 +653,7 @@ public:
         this->destroy();
     }
 
-    static const char * name() { return "sse42_strstr()"; }
+    static const char * name() { return "strstr_sse42()"; }
     static bool need_preprocessing() { return false; }
 
     bool is_alive() const { return this->alive_; }
@@ -673,7 +673,7 @@ public:
                 const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-        const char_type * substr = sse42_strstr_v1(text, pattern);
+        const char_type * substr = strstr_sse42_v1(text, pattern);
         if (likely(substr != nullptr))
             return (Long)(substr - text);
         else
