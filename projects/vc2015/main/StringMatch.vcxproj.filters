@@ -124,5 +124,8 @@
     <ClInclude Include="..\..\..\src\main\algorithm\Kmp2.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\Sunday.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -162,33 +162,33 @@ public:
         assert(bmBc != nullptr);
 
         if (likely(pattern_len <= text_len)) {
-            const char_type * target_last = text + (text_len - pattern_len);
-            const Long pattern_step = (Long)pattern_len - 1;
-            Long target_idx = 0;
+            const Long source_end = (Long)(text_len - pattern_len);
+            const Long pattern_last = (Long)pattern_len - 1;
+            Long source_offset = 0;
             do {
-                register const char_type * scan = text + pattern_step + target_idx;
-                register const char_type * cursor = pattern + pattern_step;
-                assert(scan < (text + text_len));
+                register const char_type * source = text + pattern_last + source_offset;
+                register const char_type * cursor = pattern + pattern_last;
+                assert(source >= text && source < (text + text_len));
 
                 while (likely(cursor >= pattern)) {
-                    if (likely(*scan != *cursor)) {
+                    if (likely(*source != *cursor)) {
                         break;
                     }
-                    scan--;
+                    source--;
                     cursor--;
                 }
 
                 if (likely(cursor >= pattern)) {
                     Long pattern_idx = cursor - pattern;
-                    target_idx += sm_max(bmGs[pattern_idx],
-                                         bmBc[(uchar_type)*scan] - (pattern_step - pattern_idx));
+                    source_offset += sm_max(bmGs[pattern_idx],
+                                            bmBc[(uchar_type)*source] - (pattern_last - pattern_idx));
                 }
                 else {
                     // Has found
-                    assert(target_idx >= 0 && target_idx < (Long)text_len);
-                    return target_idx;
+                    assert(source_offset >= 0 && source_offset < (Long)text_len);
+                    return source_offset;
                 }
-            } while (likely(target_idx <= (Long)(text_len - pattern_len)));
+            } while (likely(source_offset <= source_end));
         }
 
         return Status::NotFound;
