@@ -20,6 +20,7 @@
 #include "algorithm/GlibcStrStr.h"
 #include "algorithm/GlibcStrStrOld.h"
 #include "algorithm/SSEStrStr.h"
+#include "algorithm/SSEStrStr2.h"
 #include "algorithm/MyMemMem.h"
 #include "algorithm/MyMemMemBw.h"
 #include "algorithm/StdSearch.h"
@@ -441,6 +442,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::GlibcStrStrOld>();
     StringMatch_benchmark<AnsiString::MyStrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr>();
+    StringMatch_benchmark<AnsiString::SSEStrStr2>();
     StringMatch_benchmark<AnsiString::MemMem>();
     StringMatch_benchmark<AnsiString::MyMemMem>();
     StringMatch_benchmark<AnsiString::MyMemMemBw>();
