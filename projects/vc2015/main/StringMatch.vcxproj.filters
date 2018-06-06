@@ -133,5 +133,14 @@
     <ClInclude Include="..\..\..\src\main\jstd\scoped_ptr.h">
       <Filter>src\jstd</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\support\bitscan_forward.h">
+      <Filter>src\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\support\bitscan_reverse.h">
+      <Filter>src\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\support\popcnt.h">
+      <Filter>src\support</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

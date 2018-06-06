@@ -36,7 +36,7 @@
 
 using namespace StringMatch;
 
-#ifndef _DEBUG
+#if defined(NDEBUG)
 static const size_t kIterations = 5000000;
 #else
 static const size_t kIterations = 10000;

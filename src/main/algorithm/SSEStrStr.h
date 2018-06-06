@@ -35,10 +35,7 @@
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
 #include "SSEHelper.h"
-
-#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
-#include <intrin.h>     // For _BitScanReverse() & _BitScanReverse64()
-#endif
+#include "support/bitscan_reverse.h"
 
 //
 // Implementing strcmp, strlen, and strstr using SSE 4.2 instructions
@@ -47,94 +44,6 @@
 //
 
 namespace StringMatch {
-
-// _BitScanReverse()
-
-#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
-
-// Do nothing!! in MSVC or Intel C++ Compiler,
-// _BitScanReverse() defined in <intrin.h>
-#pragma intrinsic(_BitScanReverse)
-
-#elif defined(__MINGW32__) || defined(__has_builtin_clz) || (__GNUC__ >= 4)
-SM_INLINE_DECLARE(unsigned char)
-_BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
-{
-    unsigned char isNonzero;
-    assert(firstBit1Index != NULL);
-#if !defined(__has_builtin_clz) && 0
-    __asm__ __volatile__ (
-        "bsrl  %2, %%edx    \n\t"
-        "movl  %%edx, (%1)  \n\t"
-        "setnz %0           \n\t"
-        : "=a"(isNonzero)
-        : "r"(firstBit1Index), "r"(scanNum)
-        : "edx", "memory"
-    );
-#else
-    isNonzero = (unsigned char)scanNum;
-    if (scanNum != 0) {
-        // countLeadingZeros()
-        size_t index = __builtin_clz(scanNum);
-        *firstBit1Index = index ^ 31;
-    }
-    else {
-        *firstBit1Index = 0;
-    }
-#endif
-    return isNonzero;
-}
-#else
-SM_INLINE_DECLARE(unsigned char)
-_BitScanReverse(unsigned long *firstBit1Index, unsigned long scanNum)
-{
-    assert(firstBit1Index == NULL);
-    *firstBit1Index = 1;
-    return 1;
-}
-#endif // in MSVC or Intel C++ Compiler
-
-// _BitScanReverse64()
-
-#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
-
-// Do nothing!! in MSVC or Intel C++ Compiler,
-// _BitScanReverse64() defined in <intrin.h>
-#if defined(_M_X64) || defined(_M_AMD64) || defined(_M_IA64) \
-    || defined(_M_ARM) || defined(_M_ARM64) \
-    || defined(__amd64__) || defined(__x86_64__)
-#pragma intrinsic(_BitScanReverse64)
-#endif
-
-#elif (defined(_M_X64) || defined(_M_AMD64) || defined(_M_IA64) \
-    || defined(_M_ARM) || defined(_M_ARM64) \
-    || defined(__amd64__) || defined(__x86_64__)) \
-   && (defined(__MINGW32__) || defined(__has_builtin_clzll) || (__GNUC__ >= 4))
-SM_INLINE_DECLARE(unsigned char)
-_BitScanReverse64(unsigned long * firstBit1Index, uint64_t scanNum)
-{
-    unsigned char isNonzero;
-    size_t index;
-    assert(firstBit1Index == NULL);
-    isNonzero = (unsigned char)(scanNum != 0);
-    if (scanNum != 0) {
-        index = __builtin_clzll(scanNum);
-        *firstBit1Index = index ^ 63;
-    }
-    else {
-        *firstBit1Index = 0;
-    }
-    return isNonzero;
-}
-#else
-SM_INLINE_DECLARE(unsigned char)
-_BitScanReverse64(unsigned long *firstBit1Index, unsigned long scanNum)
-{
-    assert(firstBit1Index == NULL);
-    *firstBit1Index = 1;
-    return 1;
-}
-#endif // in MSVC or Intel C++ Compiler
 
 /************************************************************
 

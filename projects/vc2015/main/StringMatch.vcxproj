@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\..\src\main\jstd\standard_iterator.h" />
     <ClInclude Include="..\..\..\src\main\jstd\string_iterator.h" />
     <ClInclude Include="..\..\..\src\main\StringMatch.h" />
+    <ClInclude Include="..\..\..\src\main\support\bitscan_forward.h" />
+    <ClInclude Include="..\..\..\src\main\support\bitscan_reverse.h" />
+    <ClInclude Include="..\..\..\src\main\support\popcnt.h" />
     <ClInclude Include="..\..\..\src\main\support\StopWatch.h" />
     <ClInclude Include="..\..\..\src\main\support\StringRef.h" />
   </ItemGroup>
