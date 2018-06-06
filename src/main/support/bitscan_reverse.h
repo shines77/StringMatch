@@ -143,7 +143,7 @@ __builtin_BitScanReverse64(unsigned long * index, unsigned long long mask)
 #if defined(__has_builtin_clzll)
     leading_zeros = __builtin_clzll((unsigned long long)mask);
 #else
-    leading_zeros= __native_clzll((unsigned long long)mask);
+    leading_zeros = __native_clzll((unsigned long long)mask);
 #endif
     *index = 64 - leading_zeros;
     return (unsigned char)(mask != 0);
