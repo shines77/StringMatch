@@ -12,6 +12,7 @@
 
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
+#include "jstd/scoped_ptr.h"
 
 namespace StringMatch {
 
@@ -27,7 +28,7 @@ public:
     static const size_t kMaxAscii = 256;
 
 private:
-    std::unique_ptr<int[]> bmGs_;
+    jstd::scoped_array<int> bmGs_;
     int bmBc_[kMaxAscii];
 
 public:
@@ -99,7 +100,7 @@ public:
         int i, j;
         int len = (int)length;
 
-        std::unique_ptr<int[]> suffix(new int[len]);
+        jstd::scoped_array<int> suffix(new int[len]);
         if (likely(suffix.get() != nullptr)) {
             this_type::suffixes(pattern, length, suffix.get());
 

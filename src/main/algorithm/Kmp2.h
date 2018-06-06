@@ -12,6 +12,7 @@
 
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
+#include "jstd/scoped_ptr.h"
 
 namespace StringMatch {
 
@@ -23,7 +24,7 @@ public:
     typedef std::size_t         size_type;
 
 private:
-    std::unique_ptr<int[]> kmp_next_;
+    jstd::scoped_array<int> kmp_next_;
 
 public:
     KmpImpl2() : kmp_next_() {}

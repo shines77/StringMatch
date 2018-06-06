@@ -130,5 +130,8 @@
     <ClInclude Include="..\..\..\src\main\algorithm\Horspool.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\jstd\scoped_ptr.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
