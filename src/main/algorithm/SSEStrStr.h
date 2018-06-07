@@ -429,7 +429,7 @@ strstr_sse42_v1(const char_type * text, const char_type * pattern) {
     uint64_t * mask_128i = (uint64_t *)&__mask;
     if (mask_128i[0] != 0 || mask_128i[1] != 0) {
         // The length of pattern is less than kMaxSize (16 or 8).
-#if 1
+#if 0
         do {
             __text = _mm_loadu_si128((const __m128i *)text);
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
@@ -444,7 +444,7 @@ strstr_sse42_v1(const char_type * text, const char_type * pattern) {
         else {
             return (text + offset);
         }
-#elif defined(_MSC_VER)
+#elif 1
         do {
             __text = _mm_loadu_si128((__m128i *)text);
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
