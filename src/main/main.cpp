@@ -68,6 +68,9 @@ static const char * s_Patterns[] = {
     "between",
     "people",
 
+    //"love you",
+    //"I love you",
+
     "largely mangrove",
     "largely Mangrove",
     "some dispute",
