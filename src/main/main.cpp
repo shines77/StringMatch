@@ -474,7 +474,7 @@ void StringMatch_benchmark()
         strName += " (*)";
     }
 
-    printf("  %-22s   %-12d   %8.3f ms\n", strName.c_str(), (int)sum1, matching_time);
+    printf("  %-22s   %-12d    %8.3f ms\n", strName.c_str(), (int)sum1, matching_time);
 
     if (AlgorithmTy::need_preprocessing()) {
         sum2 = 0;
@@ -497,7 +497,7 @@ void StringMatch_benchmark()
         sw.stop();
         full_time = sw.getElapsedMillisec();
 
-        printf("  %-22s   %-12d   %8.3f ms\n", AlgorithmTy::name(), (int)sum2, full_time);
+        printf("  %-22s   %-12d    %8.3f ms\n", AlgorithmTy::name(), (int)sum2, full_time);
     }
 }
 
@@ -531,15 +531,15 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr>();
 #else
-    printf("  Algorithm Name           CheckSum      Elapsed Time\n");
+    printf("  Algorithm Name           CheckSum        Elapsed Time\n");
     printf("----------------------------------------------------------------\n");
 
     StringMatch_benchmark<AnsiString::StrStr>();
+    StringMatch_benchmark<AnsiString::SSEStrStr>();
+    StringMatch_benchmark<AnsiString::SSEStrStr2>();
     StringMatch_benchmark<AnsiString::GlibcStrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStrOld>();
     StringMatch_benchmark<AnsiString::MyStrStr>();
-    StringMatch_benchmark<AnsiString::SSEStrStr>();
-    StringMatch_benchmark<AnsiString::SSEStrStr2>();
     printf("\n");
     StringMatch_benchmark<AnsiString::MemMem>();
     StringMatch_benchmark<AnsiString::MyMemMem>();
