@@ -136,7 +136,7 @@ public:
         this->destroy();
     }
 
-    static const char * name() { return "strstr() glibc-old"; }
+    static const char * name() { return "strstr_glibc_old()"; }
     static bool need_preprocessing() { return false; }
 
     bool is_alive() const { return this->alive_; }

@@ -349,7 +349,7 @@ void StringMatch_benchmark1()
 }
 
 template <typename AlgorithmTy>
-void StringMatch_benchmark()
+void StringMatch_benchmark2()
 {
     typedef typename AlgorithmTy::Pattern pattern_type;
 
@@ -425,6 +425,82 @@ void StringMatch_benchmark()
     printf("\n");
 }
 
+template <typename AlgorithmTy>
+void StringMatch_benchmark()
+{
+    typedef typename AlgorithmTy::Pattern pattern_type;
+
+#if USE_BENCHMARK_TEST
+    static const size_t iters = 1;
+#else
+    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
+#endif
+
+    test::StopWatch sw;
+    double matching_time, full_time;
+    Long sum1, sum2;
+
+    StringRef texts[kSearchTexts];
+    for (size_t i = 0; i < kSearchTexts; ++i) {
+        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
+    }
+
+    pattern_type pattern[kPatterns];
+    for (size_t i = 0; i < kPatterns; ++i) {
+        pattern[i].preprocessing(s_Patterns[i]);
+    }
+
+    sum1 = 0;
+    sw.start();
+    for (size_t loop = 0; loop < iters; ++loop) {
+        for (size_t i = 0; i < kSearchTexts; ++i) {
+            for (size_t j = 0; j < kPatterns; ++j) {
+                Long index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
+#if USE_BENCHMARK_TEST
+                printf("index_of = %d\n", (int)index_of);
+#endif
+                sum1 += index_of;
+            }
+#if USE_BENCHMARK_TEST
+            printf("\n");
+#endif
+        }
+    }
+    sw.stop();
+    matching_time = sw.getElapsedMillisec();
+
+    std::string strName = AlgorithmTy::name();
+    if (AlgorithmTy::need_preprocessing()) {
+        strName += " (*)";
+    }
+
+    printf("  %-20s  %-12d   %8.3f ms\n", strName.c_str(), (int)sum1, matching_time);
+
+    if (AlgorithmTy::need_preprocessing()) {
+        sum2 = 0;
+        sw.start();
+        for (size_t loop = 0; loop < iters; ++loop) {
+            for (size_t i = 0; i < kSearchTexts; ++i) {
+                for (size_t j = 0; j < kPatterns; ++j) {
+                    Long index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
+                                                       pattern[j].c_str(), pattern[j].size());
+#if USE_BENCHMARK_TEST
+                    printf("index_of = %d\n", (int)index_of);
+#endif
+                    sum2 += index_of;
+                }
+#if USE_BENCHMARK_TEST
+                printf("\n");
+#endif
+            }
+        }
+        sw.stop();
+        full_time = sw.getElapsedMillisec();
+
+        printf("  %-20s  %-12d   %8.3f ms\n", AlgorithmTy::name(), (int)sum2, full_time);
+    }
+}
+
 int main(int argc, char * argv[])
 {
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
@@ -455,6 +531,9 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr>();
 #else
+    printf("  Algorithm Name        CheckSum      Elapsed Time\n");
+    printf("----------------------------------------------------------------\n");
+
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStrOld>();
@@ -472,6 +551,9 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::Horspool>();
     StringMatch_benchmark<AnsiString::ShiftAnd>();
     StringMatch_benchmark<AnsiString::ShiftOr>();
+
+    printf("----------------------------------------------------------------\n");
+    printf("\n");
 #endif
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__))
