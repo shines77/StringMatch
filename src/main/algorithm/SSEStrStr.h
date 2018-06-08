@@ -639,10 +639,14 @@ STRSTR_MAIN_LOOP_16:
                     goto STRSTR_MAIN_LOOP_16;
                 }
                 else {
+                    // Has found
+                    assert(full_matched == 0);
                     return text;
                 }
             }
             else {
+                // Has found
+                assert(offset == 0);
                 return text;
             }
         } while (1);
