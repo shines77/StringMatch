@@ -71,8 +71,12 @@ SM_NOINLINE_DECLARE(const char_type *)
 strstr_sse42_v2(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
+
     static const int kEqualOrdered = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ORDERED
                                    | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+
+    static const int kEqualEach = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
+                                | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
     const char_type * t = text;
     const char_type * p = pattern;

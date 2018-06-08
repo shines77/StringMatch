@@ -55,7 +55,7 @@ static const char * s_SearchTexts[] = {
     "Here is a sample example.",
 
     "8'E . It consists of a number of low-lying, largely mangrove covered islands covering an area of around 665 km^2. "
-    "The population of Bakassi is the subject of some dispute, but is generally put at between 150,000 and 300,000 people."
+    "The population of Bakassi is theTsubject of some dispute, but is generally put at between 150,000 and 300,000 people."
 };
 
 static const char * s_Patterns[] = {
