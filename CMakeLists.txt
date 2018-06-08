@@ -36,8 +36,8 @@ if (NOT MSVC)
     ## set(CMAKE_EXE_LINKER_FLAGS "-lstdc++")
 
     ## -Wall -Werror -Wextra -Wno-format -Wno-unused-function
-    ## Reserved flags: -Wall
-    set(CMAKE_CXX_FLAGS_DEFAULT "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -mmmx -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2 -Wno-unused-function -Wno-deprecated-declarations -Wno-uninitialized -Wno-unused-variable -fPIC -D__SSE3__ -D__SSE4A__ -D__SSE4_1__ -D__SSE4_2__")
+    ## Reserved flags: -Wall, -D__SSE3__ -D__SSE4A__ -D__SSE4_1__ -D__SSE4_2__
+    set(CMAKE_CXX_FLAGS_DEFAULT "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libstdc++ -Wall -mmmx -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2 -Wno-unused-function -Wno-deprecated-declarations -Wno-uninitialized -Wno-unused-variable -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEFAULT} -O3 -DNDEBUG")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEFAULT} -g -pg -D_DEBUG")
 
