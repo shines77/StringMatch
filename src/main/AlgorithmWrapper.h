@@ -382,7 +382,7 @@ struct AlgorithmWrapper {
 
         Long find(const char_type * first, const char_type * last, const Pattern & pattern) {
             assert(first <= last);
-            return this->find(text, (size_type)(last - first), pattern);
+            return this->find(first, (size_type)(last - first), pattern);
         }
 
         template <size_t N>

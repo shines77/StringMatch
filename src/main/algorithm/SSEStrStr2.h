@@ -101,8 +101,8 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
 #endif
     // Check the length of pattern is less than 16?
 
-    //__text = _mm_loadu_si128((__m128i *)t);
-    __pattern = _mm_loadu_si128((__m128i *)p);
+    //__text = _mm_loadu_si128((const __m128i *)t);
+    __pattern = _mm_loadu_si128((const __m128i *)p);
     //p_has_null = _mm_cmpistrs(__pattern, __text, kEqualOrdered);
 
     // pxor         xmm0, xmm0
@@ -117,7 +117,7 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
         /* strlen(pattern) < kMaxSize (16 or 8) */
 #if 1
         do {
-            __text = _mm_loadu_si128((__m128i *)text);
+            __text = _mm_loadu_si128((const __m128i *)text);
 
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
             t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
@@ -134,7 +134,7 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
 #else
         int matched;
         do {
-            __text = _mm_loadu_si128((__m128i *)t);
+            __text = _mm_loadu_si128((const __m128i *)t);
 
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
             matched = _mm_cmpistrc(__pattern, __text, kEqualOrdered);
@@ -158,8 +158,8 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
     else {
         /* strlen(pattern) >= kMaxSize (16 or 8) */
         do {
-            __text = _mm_loadu_si128((__m128i *)t);
-            __pattern = _mm_loadu_si128((__m128i *)p);
+            __text = _mm_loadu_si128((const __m128i *)t);
+            __pattern = _mm_loadu_si128((const __m128i *)p);
 
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
             t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
@@ -181,8 +181,8 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
                         t_16 += kMaxSize;
                         p_16 += kMaxSize;
 
-                        __text = _mm_loadu_si128((__m128i *)t_16);
-                        __pattern = _mm_loadu_si128((__m128i *)p_16);
+                        __text = _mm_loadu_si128((const __m128i *)t_16);
+                        __pattern = _mm_loadu_si128((const __m128i *)p_16);
 
                         offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
                         t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);

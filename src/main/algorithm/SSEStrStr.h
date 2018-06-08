@@ -449,7 +449,7 @@ strstr_sse42_v1(const char_type * text, const char_type * pattern) {
         }
 #elif 1
         do {
-            __text = _mm_loadu_si128((__m128i *)text);
+            __text = _mm_loadu_si128((const __m128i *)text);
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
             t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
 
@@ -619,7 +619,7 @@ strstr_sse42_v1b(const char_type * text, const char_type * pattern) {
             do {
 STRSTR_MAIN_LOOP_16:
                 text += kMaxSize;
-                __text = _mm_loadu_si128((__m128i *)text);
+                __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
                 t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
             } while (offset >= kMaxSize && t_has_null == 0);
@@ -629,7 +629,7 @@ STRSTR_MAIN_LOOP_16:
             }
             else if (likely(offset != 0)) {
                 text += offset;
-                __text = _mm_loadu_si128((__m128i *)text);
+                __text = _mm_loadu_si128((const __m128i *)text);
 
                 __m128i __patt_mask;
                 __patt_mask = _mm_cmpistrm(__zero, __pattern, kEqualEachM);
@@ -671,7 +671,7 @@ STRSTR_MAIN_LOOP_16:
         }
 #elif 1
         do {
-            __text = _mm_loadu_si128((__m128i *)text);
+            __text = _mm_loadu_si128((const __m128i *)text);
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
             t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
 
