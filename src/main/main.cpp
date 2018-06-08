@@ -561,7 +561,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::ShiftOr>();
 
     printf("----------------------------------------------------------------\n");
-    printf("ps: (*) indication not included the preprocessing time.\n");
+    printf("  ps: (*) indication not included the preprocessing time.\n");
     printf("\n");
 #endif
 
