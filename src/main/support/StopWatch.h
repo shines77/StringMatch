@@ -102,8 +102,8 @@ public:
     StopWatchBase() : elapsed_time_(kTimeZero),
         total_elapsed_time_(kTimeZero), running_(false) {
         start_time_ = impl_type::get_timepoint_now();
-    };
-    ~StopWatchBase() {};
+    }
+    ~StopWatchBase() {}
 
     void reset() {
         __COMPILER_BARRIER();

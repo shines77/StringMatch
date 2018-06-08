@@ -151,7 +151,7 @@ public:
     }
 
     template <size_type N>
-    void assign(const value_type (&src)[N]) {
+    void assign(const value_type (&data)[N]) {
         this->set_data(data, N - 1);
     }
 
