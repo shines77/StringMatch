@@ -528,7 +528,7 @@ strstr_glibc(const char_type * haystack_start,
        linear coefficient than the Two-Way algorithm.  */
     needle_len = needle - needle_start;
     haystack = strchr(haystack_start + 1, *needle_start);
-    if (haystack == char_type('\0') || unlikely(needle_len == 1))
+    if (*haystack == char_type('\0') || unlikely(needle_len == 1))
         return (const char_type *)haystack;
 
     needle -= needle_len;

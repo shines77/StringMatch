@@ -35,7 +35,7 @@ if (NOT MSVC)
 
     ## -Wall -Werror -Wextra -Wno-format -Wno-unused-function
     ## Reserved flags: -Wall
-    set(CMAKE_CXX_FLAGS_DEFAULT "${CMAKE_CXX_FLAGS} -std=c++11 -mmmx -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2 -Wno-unused-function -Wno-deprecated-declarations -Wno-unused-variable -Wno-unused-parameter -Wno-reserved-id-macro -Wno-header-hygiene -Wno-deprecated-register -Wno-sign-conversion -Wno-cast-qual -fPIC -D__SSE3__ -D__SSE4A__ -D__SSE4_1__ -D__SSE4_2__")
+    set(CMAKE_CXX_FLAGS_DEFAULT "${CMAKE_CXX_FLAGS} -std=c++11 -mmmx -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2 -Wno-unused-function -Wno-deprecated-declarations -Wno-unused-variable -Wno-unused-parameter -Wno-reserved-id-macro -Wno-header-hygiene -Wno-deprecated-register -Wno-sign-conversion -Wno-cast-qual -Wno-uninitialized -Wno-cast-align -fPIC -D__SSE3__ -D__SSE4A__ -D__SSE4_1__ -D__SSE4_2__")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEFAULT} -O3 -DNDEBUG")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEFAULT} -g -pg -D_DEBUG")
 endif()
