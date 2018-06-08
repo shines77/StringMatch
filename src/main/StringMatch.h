@@ -67,7 +67,7 @@ using ::std::nullptr_t;
 #endif // sm_max
 
 #if defined(_MSC_VER)
-#  if _MSC_VER >= 1600
+#  if _MSC_VER >= 1700
 #    define SM_NOEXCEPT     _NOEXCEPT
 #  else
 #    define SM_NOEXCEPT
