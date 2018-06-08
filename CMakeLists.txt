@@ -28,6 +28,11 @@ else()
 endif()
 
 if (NOT MSVC)
+    ## Use clang-5.0++
+    set(CMAKE_CXX_COMPILER "clang-5.0++")
+    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -Werror -Weverything -Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast")
+    set(CMAKE_EXE_LINKER_FLAGS "-lc++ -lc++abi")
+
     ## -Wall -Werror -Wextra -Wno-format -Wno-unused-function
     set(CMAKE_CXX_FLAGS_DEFAULT "${CMAKE_CXX_FLAGS} -std=c++11 -mmmx -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2 -Wall -Wno-unused-function -Wno-deprecated-declarations -Wno-unused-variable -fPIC")
     add_compile_options("-D__SSE3__ -D__SSE4A__ -D__SSE4_1__ -D__SSE4_2__")
