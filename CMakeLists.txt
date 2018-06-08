@@ -28,8 +28,8 @@ else()
 endif()
 
 if (NOT MSVC)
-    ## Use clang-5.0++
-    set(CMAKE_CXX_COMPILER "clang-5.0++")
+    ## Use clang-5.0
+    set(CMAKE_CXX_COMPILER "clang++-5.0")
     set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -Werror -Weverything -Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast")
     set(CMAKE_EXE_LINKER_FLAGS "-lc++ -lc++abi")
 
