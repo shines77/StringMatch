@@ -117,7 +117,7 @@ found_needle:
     return (const char_type *)haystack;
 
 ret_0:
-    return 0;
+    return nullptr;
 }
 
 template <typename CharTy>
