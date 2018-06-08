@@ -30,7 +30,7 @@ endif()
 if (NOT MSVC)
     ## Use clang-5.0, libc++ & libstdc++
     set(CMAKE_CXX_COMPILER "clang++-5.0")
-    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libstdc++ -Werror -Weverything -Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast -Wno-uninitialized -Wno-unused-parameter -Wno-unused-template -Wno-reserved-id-macro -Wno-header-hygiene -Wno-deprecated-register -Wno-sign-conversion -Wno-cast-qual -Wno-cast-align")
+    set(CMAKE_CXX_FLAGS "-v -std=c++11 -stdlib=libstdc++ -Werror -Weverything -Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast -Wno-uninitialized -Wno-unused-parameter -Wno-unused-template -Wno-reserved-id-macro -Wno-header-hygiene -Wno-deprecated-register -Wno-sign-conversion -Wno-cast-qual -Wno-cast-align")
     set(CMAKE_EXE_LINKER_FLAGS "-lstdc++ -lstdc++abi")
 
     ## -Wall -Werror -Wextra -Wno-format -Wno-unused-function
