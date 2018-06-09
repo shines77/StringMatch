@@ -38,7 +38,6 @@ if (NOT MSVC)
     ## Reserved flags: -Wall, -D__SSE3__ -D__SSE4A__ -D__SSE4_1__ -D__SSE4_2__
     set(CMAKE_CXX_FLAGS_DEFAULT "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -mmmx -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2 -Wno-unused-function -Wno-deprecated-declarations -Wno-uninitialized -Wno-unused-variable -fPIC")
 
-    ## add_compile_options("-D__SSE3__=1 -D__SSE4A__=1 -D__SSE4_1__=1 -D__SSE4_2__=1")
     add_compile_options(-D__SSE3__=1 -D__SSE4A__=1 -D__SSE4_1__=1 -D__SSE4_2__=1)
 
     if (CMAKE_CXX_COMPILER STREQUAL "/usr/bin/c++")
