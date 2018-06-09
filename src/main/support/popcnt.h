@@ -13,6 +13,7 @@
 // popcount() algorithm
 //
 // See: http://www.cnblogs.com/Martinium/articles/popcount.html
+// See: https://en.wikipedia.org/wiki/Hamming_weight
 // See: https://stackoverflow.com/questions/757059/position-of-least-significant-bit-that-is-set
 //
 
@@ -53,6 +54,16 @@ static inline
 unsigned int __native_popcnt64(uint64_t x)
 {
 #if 1
+    x -=  ((x >> 1) & 0x55555555U);
+    x  = (((x >> 2) & 0x33333333U) + (x & 0x33333333U));
+    x  = (((x >> 4) + x) & 0x0F0F0F0FU);
+    x +=   (x >> 8);
+    x +=   (x >> 16);
+    x +=   (x >> 32);
+    x  = x & 0x0000007FU;
+    assert(x >= 0 && x <= 64);
+    return (unsigned int)x;
+#elif 0
     x = (x & 0x5555555555555555ULL) + ((x >>  1) & 0x5555555555555555ULL);
     x = (x & 0x3333333333333333ULL) + ((x >>  2) & 0x3333333333333333ULL);
     x = (x & 0x0F0F0F0F0F0F0F0FULL) + ((x >>  4) & 0x0F0F0F0F0F0F0F0FULL);
