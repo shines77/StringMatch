@@ -10,7 +10,6 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 message("------------ Options -------------")
-message("  CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 message("  CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 message("----------------------------------")
@@ -30,10 +29,10 @@ endif()
 
 if (NOT MSVC)
     ## Use clang-5.0, libc++ & libstdc++
-    ## set(CMAKE_CXX_COMPILER "clang++-5.0")
-    ## set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libstdc++ -Weverything -Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast -Wno-uninitialized -Wno-unused-parameter -Wno-unused-template -Wno-reserved-id-macro -Wno-header-hygiene -Wno-deprecated-register -Wno-sign-conversion -Wno-cast-qual -Wno-cast-align")
-    ## "-lc++abi"
-    ## set(CMAKE_EXE_LINKER_FLAGS "-lstdc++")
+    set(CMAKE_CXX_COMPILER "clang++-5.0")
+    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libstdc++ -Weverything -Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast -Wno-uninitialized -Wno-unused-parameter -Wno-unused-template -Wno-reserved-id-macro -Wno-header-hygiene -Wno-deprecated-register -Wno-sign-conversion -Wno-cast-qual -Wno-cast-align")
+    ## Reserved flags: "-lc++abi"
+     set(CMAKE_EXE_LINKER_FLAGS "-lstdc++")
 
     ## -Wall -Werror -Wextra -Wno-format -Wno-unused-function
     ## Reserved flags: -Wall, -D__SSE3__ -D__SSE4A__ -D__SSE4_1__ -D__SSE4_2__
@@ -68,14 +67,14 @@ else()
     set(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-include_directories(include)
-include_directories(src)
-include_directories(src/main)
-include_directories(src/test)
-include_directories(src/unittest)
+include_directories(../include)
+include_directories(../src)
+include_directories(../src/main)
+include_directories(../src/test)
+include_directories(../src/unittest)
 
 set(SOURCE_FILES
-    src/main/main.cpp
+    ../src/main/main.cpp
     )
 
 add_custom_target(debug
