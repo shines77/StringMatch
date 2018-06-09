@@ -950,7 +950,7 @@ public:
                 const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-        const char_type * substr = strstr_sse42_v1b(text, pattern);
+        const char_type * substr = strstr_sse42_v1c(text, pattern);
         if (likely(substr != nullptr))
             return (Long)(substr - text);
         else
