@@ -112,8 +112,7 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
 
     uint64_t * mask_128i = (uint64_t *)&__mask;
-    if (mask_128i[0] != 0 || mask_128i[1] != 0) {
-    //if (likely(p_has_null != 0)) {
+    if (likely(mask_128i[0] != 0 || mask_128i[1] != 0)) {
         /* strlen(pattern) < kMaxSize (16 or 8) */
 #if 1
         do {
@@ -163,7 +162,7 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
 
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
             t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
-#if !defined(NDEBUG)
+#ifndef NDEBUG
             p_has_null = _mm_cmpistrs(__pattern, __text, kEqualOrdered);
             assert(p_has_null == 0);
 #endif
@@ -203,19 +202,9 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
                 }
             }
             else {
-#if 0
-                if (likely(offset == kMaxSize)) {
-                    break;
-                }
-                else if (likely(offset != 0)) {
-                    /* It's suffix (offset > 0 and offset < kMaxSize)
-                       or not match (offset = kMaxSize), kMaxSize = 16 or 8 */
-                    t += offset;
-
-                    if (t_has_null != 0)
-                        break;
-                }
-#endif
+                assert(t_has_null != 0);
+                // Because the length of pattern is >= 16,
+                // if text has null terminator, must be dismatch.
                 break;
             }
         } while (1);
