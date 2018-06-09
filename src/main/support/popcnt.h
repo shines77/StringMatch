@@ -7,6 +7,7 @@
 #endif
 
 #include "basic/stdint.h"
+#include <assert.h>
 
 //
 // popcount() algorithm
@@ -58,7 +59,8 @@ unsigned int __native_popcnt64(uint64_t x)
     x = (x & 0x00FF00FF00FF00FFULL) + ((x >>  8) & 0x00FF00FF00FF00FFULL);
     x = (x & 0x0000FFFF0000FFFFULL) + ((x >> 16) & 0x0000FFFF0000FFFFULL);
     x = (x & 0x00000000FFFFFFFFULL) + ((x >> 32) & 0x00000000FFFFFFFFULL);
-    return (unsigned int)(x & 0x000000000000007FULL);
+    assert(x >= 0 && x <= 64);
+    return (unsigned int)x;
 #else
     unsigned int high, low;
     unsigned int n1, n2;
