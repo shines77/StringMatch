@@ -49,8 +49,7 @@ public:
     }
 
     /* Preprocessing bad characters. */
-    static void preBmBc(const char * pattern, size_type length,
-                        int * bmBc) {
+    static void preBmBc(const char * pattern, size_type length, int * bmBc) {
         assert(pattern != nullptr);
         assert(bmBc != nullptr);
 

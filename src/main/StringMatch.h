@@ -76,6 +76,10 @@ using ::std::nullptr_t;
 #  define SM_NOEXCEPT       noexcept
 #endif
 
+#ifndef SM_UNUSED_VAR
+#define SM_UNUSED_VAR(var)  (void)(var)
+#endif
+
 #ifdef Long
 #undef Long
 #endif

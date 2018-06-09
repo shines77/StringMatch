@@ -147,6 +147,8 @@ public:
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_type length) {
         /* Don't need to do preprocessing. */
+        SM_UNUSED_VAR(pattern);
+        SM_UNUSED_VAR(length);
         return true;
     }
 
