@@ -57,14 +57,14 @@ static const size_t kIterations = 10000;
 //
 // See: http://volnitsky.com/project/str_search/index.html
 //
-static const alignas(16) char * s_SearchTexts[] = {
+static const char * s_SearchTexts[] = {
     "Here is a sample example.",
 
     "8'E . It consists of a number of low-lying, largely mangrove covered islands covering an area of around 665 km^2. "
     "The population of Bakassi is theTsubject of some dispute, but is generally put at between 150,000 and 300,000 people."
 };
 
-static const alignas(16) char * s_Patterns[] = {
+static const char * s_Patterns[] = {
     "sample",
     "example",
 
@@ -467,8 +467,9 @@ void StringMatch_benchmark()
 #if defined(_MSC_VER)
         pattern_data[i] = (char *)_aligned_malloc(length + 1, 16);
 #else
+        pattern_data[i] = nullptr;
         int err = posix_memalign((void **)&pattern_data[i], 16, length + 1);
-        if (!err)
+        if (pattern_data[i] == nullptr)
             return;
 #endif
         memcpy((void *)pattern_data[i], (const void *)s_Patterns[i], length + 1);
