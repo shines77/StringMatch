@@ -453,13 +453,14 @@ strstr_sse42_v1_c(const char_type * text, const char_type * pattern) {
     uint64_t * mask_128i = (uint64_t *)&__mask;
     if (likely(mask_128i[0] != 0 || mask_128i[1] != 0)) {
         // The length of pattern is less than kMaxSize (16 or 8).
+        text -= kMaxSize;
         do {
             do {
 STRSTR_MAIN_LOOP_16:
+                text += kMaxSize;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
                 t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
-                text += kMaxSize;
             } while (offset >= kMaxSize && t_has_null == 0);
 
             if (likely(t_has_null != 0 && offset >= kMaxSize)) {
@@ -467,7 +468,7 @@ STRSTR_MAIN_LOOP_16:
             }
             else if (likely(offset != 0)) {
                 assert(offset > 0 && offset < kMaxSize);
-                text -= (kMaxSize - offset);
+                text += offset;
                 __text = _mm_loadu_si128((const __m128i *)text);
 
                 __m128i __patt_mask;
@@ -475,7 +476,7 @@ STRSTR_MAIN_LOOP_16:
                 __text = _mm_and_si128(__text, __patt_mask);
                 int full_matched = _mm_cmpistrc(__pattern, __text, kEqualEach);
                 if (likely(full_matched != 0)) {
-                    text++;
+                    text -= (kMaxSize - 1);
                     goto STRSTR_MAIN_LOOP_16;
                 }
                 else {
@@ -487,7 +488,7 @@ STRSTR_MAIN_LOOP_16:
             else {
                 // Has found
                 assert(offset == 0);
-                return (text - kMaxSize);
+                return text;
             }
         } while (1);
 
