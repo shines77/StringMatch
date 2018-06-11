@@ -449,10 +449,33 @@ void StringMatch_benchmark()
     double matching_time, full_time;
     Long sum1, sum2;
 
+#if USE_ALIGNED_PATTAEN
+    // Let search texts first address align for 16 bytes.
+    StringRef texts[kSearchTexts];
+    char * text_data[kPatterns];
+    for (size_t i = 0; i < kSearchTexts; ++i) {
+        size_t length = strlen(s_SearchTexts[i]);
+
+        // Don't use C++11 alloc aligned memory version:
+        // void * aligned_alloc(size_t alignment, size_t size);
+        // is for more versatility.
+#if defined(_MSC_VER)
+        text_data[i] = (char *)_aligned_malloc(length + 1, 16);
+#else
+        text_data[i] = nullptr;
+        int err = posix_memalign((void **)&text_data[i], 16, length + 1);
+        if (text_data[i] == nullptr)
+            return;
+#endif
+        memcpy((void *)text_data[i], (const void *)s_SearchTexts[i], length + 1);
+        texts[i].set_data(text_data[i], length);
+    }
+#else
     StringRef texts[kSearchTexts];
     for (size_t i = 0; i < kSearchTexts; ++i) {
         texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
     }
+#endif
 
 #if USE_ALIGNED_PATTAEN
     // Let pattern first address align for 16 bytes.
