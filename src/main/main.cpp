@@ -11,6 +11,12 @@
 #include <iostream>
 #include <string>
 
+#ifndef __cplusplus
+#include <stdalign.h>   // C11 defines _Alignas().  This header defines alignas()
+#endif
+
+#define USE_ALIGNED_PATTAEN     1
+
 #include "StringMatch.h"
 #include "support/StopWatch.h"
 
@@ -32,7 +38,7 @@
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
 
-#define USE_BENCHMARK_TEST  0
+#define USE_BENCHMARK_TEST      0
 
 using namespace StringMatch;
 
@@ -51,14 +57,14 @@ static const size_t kIterations = 10000;
 //
 // See: http://volnitsky.com/project/str_search/index.html
 //
-static const char * s_SearchTexts[] = {
+static const alignas(16) char * s_SearchTexts[] = {
     "Here is a sample example.",
 
     "8'E . It consists of a number of low-lying, largely mangrove covered islands covering an area of around 665 km^2. "
     "The population of Bakassi is theTsubject of some dispute, but is generally put at between 150,000 and 300,000 people."
 };
 
-static const char * s_Patterns[] = {
+static const alignas(16) char * s_Patterns[] = {
     "sample",
     "example",
 
@@ -448,10 +454,35 @@ void StringMatch_benchmark()
         texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
     }
 
+#if USE_ALIGNED_PATTAEN
+    // Let pattern first address align for 16 bytes.
+    StringRef pattern_ref[kPatterns];
+    char * pattern_data[kPatterns];
+    for (size_t i = 0; i < kPatterns; ++i) {
+        size_t length = strlen(s_Patterns[i]);
+
+        // Don't use C++11 alloc aligned memory version:
+        // void * aligned_alloc(size_t alignment, size_t size);
+        // is for more versatility.
+#if defined(_MSC_VER)
+        pattern_data[i] = (char *)_aligned_malloc(length + 1, 16);
+#else
+        posix_memalign((void *)&pattern_data[i], length + 1, 16);
+#endif
+        memcpy((void *)pattern_data[i], (const void *)s_Patterns[i], length + 1);
+        pattern_ref[i].set_data(pattern_data[i], length);
+    }
+
+    pattern_type pattern[kPatterns];
+    for (size_t i = 0; i < kPatterns; ++i) {
+        pattern[i].preprocessing(pattern_ref[i]);
+    }
+#else
     pattern_type pattern[kPatterns];
     for (size_t i = 0; i < kPatterns; ++i) {
         pattern[i].preprocessing(s_Patterns[i]);
     }
+#endif
 
     sum1 = 0;
     sw.start();
@@ -502,6 +533,19 @@ void StringMatch_benchmark()
 
         printf("  %-22s   %-12d    %8.3f ms\n", AlgorithmTy::name(), (int)sum2, full_time);
     }
+
+#if USE_ALIGNED_PATTAEN
+    for (size_t i = 0; i < kPatterns; ++i) {
+        if (pattern_data[i] != nullptr) {
+#if defined(_MSC_VER)
+            _aligned_free(pattern_data[i]);
+#else
+            free(pattern_data[i]);
+#endif
+            pattern_data[i] = nullptr;
+        }
+    }
+#endif
 }
 
 int main(int argc, char * argv[])
