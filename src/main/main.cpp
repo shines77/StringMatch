@@ -467,8 +467,8 @@ void StringMatch_benchmark()
 #if defined(_MSC_VER)
         pattern_data[i] = (char *)_aligned_malloc(length + 1, 16);
 #else
-        int err = posix_memalign((void **)&pattern_data[i], length + 1, 16);
-        if (err)
+        int err = posix_memalign((void **)&pattern_data[i], 16, length + 1);
+        if (!err)
             return;
 #endif
         memcpy((void *)pattern_data[i], (const void *)s_Patterns[i], length + 1);
