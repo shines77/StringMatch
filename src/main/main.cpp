@@ -16,6 +16,7 @@
 #endif
 
 #define USE_ALIGNED_PATTAEN     1
+#define USE_BENCHMARK_TEST      0
 
 #include "StringMatch.h"
 #include "support/StopWatch.h"
@@ -37,8 +38,6 @@
 #include "algorithm/Horspool.h"
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
-
-#define USE_BENCHMARK_TEST      0
 
 using namespace StringMatch;
 
@@ -561,6 +560,17 @@ void StringMatch_benchmark()
     }
 
 #if USE_ALIGNED_PATTAEN
+    for (size_t i = 0; i < kSearchTexts; ++i) {
+        if (text_data[i] != nullptr) {
+#if defined(_MSC_VER)
+            _aligned_free(text_data[i]);
+#else
+            free(text_data[i]);
+#endif
+            text_data[i] = nullptr;
+        }
+    }
+
     for (size_t i = 0; i < kPatterns; ++i) {
         if (pattern_data[i] != nullptr) {
 #if defined(_MSC_VER)
