@@ -195,7 +195,7 @@ STRSTR_MAIN_LOOP_16:
 #endif
     }
     else {
-        // The length of pattern is more than or equal kMaxSize (16 or 8).
+        // The length of pattern is greater than or equal to kMaxSize (16 or 8).
         text -= kMaxSize;
         do {
 STRSTR_MAIN_LOOP:
@@ -342,7 +342,7 @@ STRSTR_MAIN_LOOP_16:
         return nullptr;
     }
     else {
-        // The length of pattern is more than or equal kMaxSize (16 or 8).
+        // The length of pattern is greater than or equal to kMaxSize (16 or 8).
         text -= kMaxSize;
         do {
 STRSTR_MAIN_LOOP:
@@ -357,14 +357,21 @@ STRSTR_MAIN_LOOP:
                 assert(offset >= kMaxSize);
                 break;
             }
-            else if (likely(offset != 0)) {
+            else {
                 assert(t_has_null == 0);
-                assert(offset > 0);
+                assert(offset >= 0 && offset < kMaxSize);
 
-                text += offset;
-
-                const char_type * t = text;
-                const char_type * p = pattern;
+                const char_type * t;
+                const char_type * p;
+                if (likely(offset != 0)) {
+                    text += offset;
+                    t = text;
+                    p = pattern;
+                }
+                else {
+                    t = text + kMaxSize;
+                    p = pattern + kMaxSize;
+                }
                 do {
                     __m128i __patt, __patt_mask;
                     __text = _mm_loadu_si128((const __m128i *)t);
@@ -392,10 +399,10 @@ STRSTR_MAIN_LOOP:
                         goto STRSTR_MAIN_LOOP;
                     }
                 } while (1);
-            }
 
-            // Has found
-            return text;
+                // Has found
+                return text;
+            }
         } while (1);
     }
 
@@ -405,7 +412,7 @@ STRSTR_MAIN_LOOP:
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-strstr_sse42_v1_b_aligned(const char_type * text, const char_type * pattern) {
+strstr_sse42_v1_c(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
 
@@ -433,7 +440,7 @@ strstr_sse42_v1_b_aligned(const char_type * text, const char_type * pattern) {
     __zero = { 0 };
 #endif
     // Check the length of pattern is less than kMaxSize (16 or 8)?
-    __pattern = _mm_load_si128((const __m128i *)pattern);
+    __pattern = _mm_loadu_si128((const __m128i *)pattern);
 
     // pxor         xmm0, xmm0
     // pcmpeqb      xmm1, xmm0
@@ -460,6 +467,7 @@ STRSTR_MAIN_LOOP_16:
                 break;
             }
             else if (likely(offset != 0)) {
+                assert(offset > 0 && offset < kMaxSize);
                 text += offset;
                 __text = _mm_loadu_si128((const __m128i *)text);
 
@@ -487,7 +495,7 @@ STRSTR_MAIN_LOOP_16:
         return nullptr;
     }
     else {
-        // The length of pattern is more than or equal kMaxSize (16 or 8).
+        // The length of pattern is greater than or equal to kMaxSize (16 or 8).
         text -= kMaxSize;
         do {
 STRSTR_MAIN_LOOP:
@@ -502,18 +510,17 @@ STRSTR_MAIN_LOOP:
                 assert(offset >= kMaxSize);
                 break;
             }
-            else if (likely(offset != 0)) {
+            else {
                 assert(t_has_null == 0);
-                assert(offset > 0);
+                assert(offset >= 0 && offset < kMaxSize);
 
-                text += offset;
-
-                const char_type * t = text;
-                const char_type * p = pattern;
+                const char_type * match_start = text + offset;
+                const char_type * t = text + kMaxSize;
+                const char_type * p = pattern + (kMaxSize - offset);
                 do {
                     __m128i __patt, __patt_mask;
                     __text = _mm_loadu_si128((const __m128i *)t);
-                    __patt = _mm_load_si128((const __m128i *)p);
+                    __patt = _mm_loadu_si128((const __m128i *)p);
                     __patt_mask = _mm_cmpistrm(__zero, __patt, kEqualEachM);
                     __text = _mm_and_si128(__text, __patt_mask);
                     t += kMaxSize;
@@ -533,14 +540,14 @@ STRSTR_MAIN_LOOP:
                     }
                     else {
                         // Restart to search the next char.
-                        text -= (kMaxSize - 1);
+                        text = match_start + 1;
                         goto STRSTR_MAIN_LOOP;
                     }
                 } while (1);
-            }
 
-            // Has found
-            return text;
+                // Has found
+                return match_start;
+            }
         } while (1);
     }
 
@@ -586,7 +593,7 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
 #if USE_ALIGNED_PATTAEN
-        const char_type * substr = strstr_sse42_v1_b_aligned(text, pattern);
+        const char_type * substr = strstr_sse42_v1_c(text, pattern);
 #else
         const char_type * substr = strstr_sse42_v1_b(text, pattern);
 #endif
