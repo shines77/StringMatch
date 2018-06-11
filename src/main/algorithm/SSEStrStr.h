@@ -595,7 +595,7 @@ public:
 #if USE_ALIGNED_PATTAEN
         const char_type * substr = strstr_sse42_v1_c(text, pattern);
 #else
-        const char_type * substr = strstr_sse42_v1_b(text, pattern);
+        const char_type * substr = strstr_sse42_v1_c(text, pattern);
 #endif
         if (likely(substr != nullptr))
             return (Long)(substr - text);
