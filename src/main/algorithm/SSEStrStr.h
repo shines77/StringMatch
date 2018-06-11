@@ -496,13 +496,14 @@ STRSTR_MAIN_LOOP_16:
     }
     else {
         // The length of pattern is greater than or equal to kMaxSize (16 or 8).
+        text -= kMaxSize;
         do {
 STRSTR_MAIN_LOOP:
             do {
+                text += kMaxSize;
                 __text = _mm_loadu_si128((const __m128i *)text);
                 offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
                 t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
-                text += kMaxSize;
             } while (offset >= kMaxSize && t_has_null == 0);
 
             if (likely(t_has_null != 0)) {
@@ -513,8 +514,8 @@ STRSTR_MAIN_LOOP:
                 assert(t_has_null == 0);
                 assert(offset >= 0 && offset < kMaxSize);
 
-                const char_type * match_start = text - (kMaxSize - offset);
-                const char_type * t = text;
+                const char_type * match_start = text + offset;
+                const char_type * t = text + kMaxSize;
                 const char_type * p = pattern + (kMaxSize - offset);
                 do {
                     __m128i __patt, __patt_mask;
@@ -539,7 +540,7 @@ STRSTR_MAIN_LOOP:
                     }
                     else {
                         // Restart to search the next char.
-                        text = match_start + 1;
+                        text = match_start + 1 - kMaxSize;
                         goto STRSTR_MAIN_LOOP;
                     }
                 } while (1);
