@@ -38,6 +38,7 @@
 #include "algorithm/BoyerMoore.h"
 #include "algorithm/Sunday.h"
 #include "algorithm/Horspool.h"
+#include "algorithm/BMTuned.h"
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
 
@@ -640,6 +641,7 @@ int main(int argc, char * argv[])
 #endif
     StringMatch_benchmark<AnsiString::Sunday>();
     StringMatch_benchmark<AnsiString::Horspool>();
+    StringMatch_benchmark<AnsiString::BMTuned>();
 #if TEST_ALL_BENCHMARK
     printf("\n");
     StringMatch_benchmark<AnsiString::ShiftAnd>();

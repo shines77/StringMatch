@@ -22,6 +22,7 @@
     <ClCompile Include="..\..\..\src\main\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\main\algorithm\BMTuned.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\BoyerMoore.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\GlibcStrStr.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\GlibcStrStrOld.h" />

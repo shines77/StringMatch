@@ -155,18 +155,21 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
 
-        int * bmGs = this->bmGs_.get();
-        int * bmBc = (int *)&this->bmBc_[0];
-
-        assert(bmGs != nullptr);
-        assert(bmBc != nullptr);
+        if (unlikely(pattern_len == 0))
+            return 0;
 
         if (likely(pattern_len <= text_len)) {
+            int * bmGs = this->bmGs_.get();
+            int * bmBc = (int *)&this->bmBc_[0];
+
+            assert(bmGs != nullptr);
+            assert(bmBc != nullptr);
+
             const Long source_last = (Long)(text_len - pattern_len);
             const Long pattern_last = (Long)pattern_len - 1;
             Long source_offset = 0;
             do {
-                register const char_type * source = text + pattern_last + source_offset;
+                register const char_type * source = text + source_offset + pattern_last;
                 register const char_type * cursor = pattern + pattern_last;
                 assert(source >= text && source < (text + text_len));
 
