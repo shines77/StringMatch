@@ -1,6 +1,6 @@
 
-#ifndef STRING_MATCH_HORSPOOL_H
-#define STRING_MATCH_HORSPOOL_H
+#ifndef STRING_MATCH_QUICK_SEARCH_H
+#define STRING_MATCH_QUICK_SEARCH_H
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -14,15 +14,15 @@
 #include "AlgorithmWrapper.h"
 
 //
-// See: http://www-igm.univ-mlv.fr/~lecroq/string/node18.html#SECTION00180
+// See: http://www-igm.univ-mlv.fr/~lecroq/string/node19.html#SECTION00190
 //
 
 namespace StringMatch {
 
 template <typename CharTy>
-class HorspoolImpl {
+class QuickSearchImpl {
 public:
-    typedef HorspoolImpl<CharTy>    this_type;
+    typedef QuickSearchImpl<CharTy> this_type;
     typedef CharTy                  char_type;
     typedef std::size_t             size_type;
     typedef typename detail::uchar_traits<CharTy>::type
@@ -32,15 +32,15 @@ public:
 
 private:
     bool alive_;
-    int hpBc_[kMaxAscii];
+    int qsBc_[kMaxAscii];
 
 public:
-    HorspoolImpl() : alive_(false) {}
-    ~HorspoolImpl() {
+    QuickSearchImpl() : alive_(false) {}
+    ~QuickSearchImpl() {
         this->destroy();
     }
 
-    static const char * name() { return "Horspool"; }
+    static const char * name() { return "QuickSearch"; }
     static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
@@ -57,10 +57,10 @@ public:
         assert(pattern != nullptr);
 
         for (size_t i = 0; i < kMaxAscii; ++i) {
-            this->hpBc_[i] = (int)length;
+            this->qsBc_[i] = (int)(length + 1);
         }
-        for (Long i = 0; i < ((Long)length - 1); ++i) {
-            this->hpBc_[(uchar_type)pattern[i]] = (int)((Long)length - 1 - i);
+        for (Long i = 0; i < (Long)length; ++i) {
+            this->qsBc_[(uchar_type)pattern[i]] = (int)(length - i);
         }
 
         this->alive_ = true;
@@ -78,7 +78,7 @@ public:
             return 0;
 
         if (likely(pattern_len <= text_len)) {
-            int * shift = (int *)&this->hpBc_[0];
+            int * shift = (int *)&this->qsBc_[0];
             assert(shift != nullptr);
 
             const char_type * pattern_end = pattern + pattern_len;
@@ -91,11 +91,11 @@ public:
                 assert(source >= text && source < (text + text_len));
 
                 // Save the last compare char.
-                uchar_type last_char = (uchar_type)*source;
+                uchar_type next_char = (uchar_type)*(source + 1);
 
                 while (likely(cursor >= pattern)) {
                     if (likely(*source != *cursor)) {
-                        source_idx += shift[last_char];
+                        source_idx += shift[next_char];
                         break;
                     }
                     source--;
@@ -114,13 +114,13 @@ public:
 };
 
 namespace AnsiString {
-    typedef AlgorithmWrapper< HorspoolImpl<char> >      Horspool;
+    typedef AlgorithmWrapper< QuickSearchImpl<char> >       QuickSearch;
 } // namespace AnsiString
 
 namespace UnicodeString {
-    typedef AlgorithmWrapper< HorspoolImpl<wchar_t> >   Horspool;
+    typedef AlgorithmWrapper< QuickSearchImpl<wchar_t> >    QuickSearch;
 } // namespace UnicodeString
 
 } // namespace StringMatch
 
-#endif // STRING_MATCH_HORSPOOL_H
+#endif // STRING_MATCH_QUICK_SEARCH_H

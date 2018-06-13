@@ -33,6 +33,7 @@
     <ClInclude Include="..\..\..\src\main\algorithm\MyMemMem.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\MyMemMemBw.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\MyStrStr.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\QuickSearch.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\ShiftAnd.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\ShiftOr.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\SSEHelper.h" />

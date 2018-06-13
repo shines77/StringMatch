@@ -75,10 +75,10 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
 
-        int * shift = (int *)&this->shift_[0];
-        assert(shift != nullptr);
-
         if (likely(pattern_len <= text_len)) {
+            int * shift = (int *)&this->shift_[0];
+            assert(shift != nullptr);
+
             const char_type * pattern_end = pattern + pattern_len;
             const Long source_last = (Long)(text_len - pattern_len);
             Long source_idx = 0;

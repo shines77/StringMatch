@@ -14,6 +14,10 @@
 #include "AlgorithmWrapper.h"
 #include "jstd/scoped_ptr.h"
 
+//
+// See: http://www-igm.univ-mlv.fr/~lecroq/string/tunedbm.html#SECTION00195
+//
+
 namespace StringMatch {
 
 template <typename CharTy>

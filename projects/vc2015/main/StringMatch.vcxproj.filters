@@ -148,5 +148,8 @@
     <ClInclude Include="..\..\..\src\main\algorithm\BMTuned.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\QuickSearch.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
