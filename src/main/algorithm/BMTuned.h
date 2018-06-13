@@ -98,11 +98,12 @@ public:
             bmBc[last_char] = 0;
             assert(shift > 0);
 
-            jstd::scoped_array<char_type> text_new(new char[text_len + pattern_len + 1]);
+            jstd::scoped_array<char_type> text_new(new char_type[text_len + pattern_len + 1]);
             char_type * text = text_new.get();
             if (text != nullptr) {
                 memcpy((void *)text, (const void *)text_start, text_len);
-                memset((void *)(text + text_len), (int)(uchar_type)pattern[last], pattern_len);
+                memset((void *)(text + text_len), (int)(uchar_type)pattern[last],
+                                pattern_len * sizeof(char_type));
                 *(text + text_len + pattern_len) = char_type('\0');
             }
 
