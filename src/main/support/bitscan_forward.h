@@ -55,8 +55,7 @@
 #include <assert.h>
 
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
- || defined(__amd64__) || defined(__x86_64__)
+ || defined(_M_IA64) || defined(__amd64__) || defined(__x86_64__)
 #define __IS_X86_64      1
 #endif // _WIN64
 

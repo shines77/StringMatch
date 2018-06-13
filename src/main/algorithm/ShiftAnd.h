@@ -77,23 +77,12 @@ public:
         assert(bitmap != nullptr);
 
         if (likely(pattern_len <= text_len)) {
-#if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
- || defined(__amd64__) || defined(__x86_64__)
             register mask_type state = 0;
             for (size_t i = 0; i < text_len; ++i) {
                 state = ((state << 1) | 1) & bitmap[(uchar_type)text[i]];
                 if (unlikely((state & mask) != 0))
                     return (Long)(i + 1 - pattern_len);
             }
-#else
-            register mask_type state = 0;
-            for (size_t i = 0; i < text_len; ++i) {
-                state = ((state << 1) | 1) & bitmap[(uchar_type)text[i]];
-                if (unlikely((state & mask) != 0))
-                    return (Long)(i + 1 - pattern_len);
-            }
-#endif // _WIN64 || __amd64__
         }
 
         return Status::NotFound;
@@ -101,8 +90,7 @@ public:
 };
 
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
- || defined(__amd64__) || defined(__x86_64__)
+ || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
 namespace AnsiString {
     typedef AlgorithmWrapper< ShiftAndImpl<char, uint64_t> >    ShiftAnd;
 } // namespace AnsiString

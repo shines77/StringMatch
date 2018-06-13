@@ -33,7 +33,7 @@ using ::std::nullptr_t;
 // macro sm_countof(array)
 //
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64)
+ || defined(_M_IA64) || defined(_M_ARM64)
     #define sm_unaligned __unaligned
 #else
     #define sm_unaligned

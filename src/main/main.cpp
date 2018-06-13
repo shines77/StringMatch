@@ -588,15 +588,25 @@ void StringMatch_benchmark()
 #endif
 }
 
-int main(int argc, char * argv[])
+void print_arch_type()
 {
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM64) \
  || defined(__amd64__) || defined(__x86_64__)
     printf("Arch type: __amd64__\n\n");
+#elif defined(_M_IA64)
+    printf("Arch type: __itanium64__\n\n");
+#elif defined(_M_ARM64)
+    printf("Arch type: __arm64__\n\n");
+#elif defined(_M_ARM)
+    printf("Arch type: __arm__\n\n");
 #else
     printf("Arch type: __x86__\n\n");
 #endif
+}
+
+int main(int argc, char * argv[])
+{
+    print_arch_type();
 
     StringMatch_usage_examples();
 
