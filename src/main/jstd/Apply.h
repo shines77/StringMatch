@@ -22,7 +22,7 @@ namespace detail {
     //
     template <size_t N>
     struct Apply {
-        template<typename Func, typename Tuple, typename... Args>
+        template <typename Func, typename Tuple, typename... Args>
         static inline auto apply(Func && func, Tuple && tuple, Args &&... args)
             -> decltype(Apply<N - 1>::apply(
                 ::std::forward<Func>(func), ::std::forward<Tuple>(tuple),
@@ -39,7 +39,7 @@ namespace detail {
 
     template <>
     struct Apply<0> {
-        template<typename Func, typename Tuple, typename... Args>
+        template <typename Func, typename Tuple, typename... Args>
         static inline auto apply(Func && func, Tuple && tuple, Args &&... args)
             -> decltype(::std::forward<Func>(func)(::std::forward<Args>(args)...))
         {

@@ -51,6 +51,7 @@
     <ClInclude Include="..\..\..\src\main\basic\stddef.h" />
     <ClInclude Include="..\..\..\src\main\basic\stdint.h" />
     <ClInclude Include="..\..\..\src\main\basic\stdsize.h" />
+    <ClInclude Include="..\..\..\src\main\jstd\char_traits.h" />
     <ClInclude Include="..\..\..\src\main\jstd\forward_iterator.h" />
     <ClInclude Include="..\..\..\src\main\jstd\iterator.h" />
     <ClInclude Include="..\..\..\src\main\jstd\scoped_ptr.h" />

@@ -21,7 +21,7 @@ public:
     typedef CharTy                          char_type;
     typedef MaskTy                          mask_type;
     typedef std::size_t                     size_type;
-    typedef typename detail::uchar_traits<CharTy>::type
+    typedef typename jstd::uchar_traits<CharTy>::type
                                             uchar_type;
 
     static const size_t kMaxAscii = 256;

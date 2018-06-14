@@ -101,7 +101,7 @@ static
 size_t
 critical_factorization(const char_type * pneedle, size_t needle_len, size_t * period)
 {
-    typedef typename detail::uchar_traits<char_type>::type uchar_type;
+    typedef typename jstd::uchar_traits<char_type>::type uchar_type;
 
     /* Index of last byte of left half, or SIZE_MAX.  */
     size_t max_suffix, max_suffix_rev;
@@ -210,7 +210,7 @@ const char_type *
 two_way_short_needle(const char_type * haystack, size_t haystack_len,
                      const char_type * needle, size_t needle_len)
 {
-    typedef typename detail::uchar_traits<char_type>::type uchar_type;
+    typedef typename jstd::uchar_traits<char_type>::type uchar_type;
 
     size_t i;       /* Index into current byte of NEEDLE.  */
     size_t j;       /* Index into current window of HAYSTACK.  */
@@ -371,7 +371,7 @@ const char_type *
 two_way_long_needle(const char_type * haystack, size_t haystack_len,
                     const char_type * needle, size_t needle_len)
 {
-    typedef typename detail::uchar_traits<char_type>::type uchar_type;
+    typedef typename jstd::uchar_traits<char_type>::type uchar_type;
 
     size_t i;           /* Index into current byte of NEEDLE.  */
     size_t j;           /* Index into current window of HAYSTACK.  */

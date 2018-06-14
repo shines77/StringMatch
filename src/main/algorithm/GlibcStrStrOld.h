@@ -26,7 +26,7 @@ SM_NOINLINE_DECLARE(const char_type *)
 strstr_glibc_old(const char_type * phaystack, const char_type * pneedle)
 {
     typedef unsigned unsigned_type;
-    typedef typename detail::uchar_traits<char_type>::type uchar_type;
+    typedef typename jstd::uchar_traits<char_type>::type uchar_type;
 
     const uchar_type * needle;
     const uchar_type * haystack = (const uchar_type * )phaystack;

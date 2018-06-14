@@ -53,7 +53,7 @@ template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
 strstr_sse42(const char_type * text, const char_type * pattern,
-             typename std::enable_if<detail::is_wchar<char_type>::value, char_type>::type * = nullptr) {
+             typename std::enable_if<jstd::is_wchar<char_type>::value, char_type>::type * = nullptr) {
     return nullptr;
 }
 

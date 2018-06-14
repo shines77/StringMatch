@@ -25,7 +25,7 @@ public:
     typedef QuickSearchImpl<CharTy> this_type;
     typedef CharTy                  char_type;
     typedef std::size_t             size_type;
-    typedef typename detail::uchar_traits<CharTy>::type
+    typedef typename jstd::uchar_traits<CharTy>::type
                                     uchar_type;
 
     static const size_t kMaxAscii = 256;
@@ -90,7 +90,7 @@ public:
                 register const char_type * cursor = pattern + pattern_last;
                 assert(source >= text && source < (text + text_len));
 
-                // Save the last compare char.
+                // Save the next char of the last compare char.
                 uchar_type next_char = (uchar_type)*(source + 1);
 
                 while (likely(cursor >= pattern)) {
