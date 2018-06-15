@@ -21,10 +21,9 @@
 #include "StringMatch.h"
 #include "jstd/char_traits.h"
 #include "support/StringRef.h"
+#include "algorithm/AhoCorasick.h"
 
 namespace StringMatch {
-
-class AhoCorasick;
 
 struct Console {
     static void print_result(const char * text, size_t text_len,
@@ -49,6 +48,38 @@ struct Console {
         print_result(text, text_len, pattern, pattern_len, index_of);
         printf("sum: %-11d, time spent: %0.3f ms\n", sum, time_spent);
         printf("\n");
+    }
+};
+
+template <typename AlgorithmImpl>
+struct AlgorithmCounter {
+    static void reset_counter() {
+    }
+
+    static int get_counter() {
+        return 0;
+    }
+};
+
+template <>
+struct AlgorithmCounter<AhoCorasickImpl<char>> {
+    static void reset_counter() {
+        AhoCorasickImpl<char>::reset_counter();
+    }
+
+    static int get_counter() {
+        return AhoCorasickImpl<char>::get_counter();
+    }
+};
+
+template <>
+struct AlgorithmCounter<AhoCorasickImpl<wchar_t>> {
+    static void reset_counter() {
+        AhoCorasickImpl<wchar_t>::reset_counter();
+    }
+
+    static int get_counter() {
+        return AhoCorasickImpl<wchar_t>::get_counter();
     }
 };
 
@@ -337,11 +368,11 @@ struct AlgorithmWrapper {
     static bool need_preprocessing() { return algorithm_type::need_preprocessing(); }
 
     static void reset_counter() {
-        algorithm_type::reset_counter();
+        AlgorithmCounter<algorithm_type>::reset_counter();
     }
 
     static int get_counter() {
-        return algorithm_type::get_counter();
+        return AlgorithmCounter<algorithm_type>::get_counter();
     }
 
     // AlgorithmWrapper::match(matcher, pattern)
@@ -353,7 +384,6 @@ struct AlgorithmWrapper {
                      const char_type * pattern, size_type pattern_len) {
         return Matcher::find(text, length, pattern, pattern_len);
     }
-
 }; // struct AlgorithmWrapper<AlgorithmTy>
 
 template <typename AlgorithmTy>
@@ -362,6 +392,14 @@ Long AlgorithmWrapper<AlgorithmTy>::Pattern::match(
     const typename AlgorithmWrapper<AlgorithmTy>::Matcher & matcher) const {
     return this->match(matcher.c_str(), matcher.size());
 }
+
+namespace AnsiString {
+    typedef AlgorithmWrapper< AhoCorasickImpl<char> >       AhoCorasick;
+} // namespace AnsiString
+
+namespace UnicodeString {
+    typedef AlgorithmWrapper< AhoCorasickImpl<wchar_t> >    AhoCorasick;
+} // namespace UnicodeString
 
 } // namespace StringMatch
 

@@ -13,6 +13,7 @@
 #include <assert.h>
 
 #include "StringMatch.h"
+#include "jstd/scoped_ptr.h"
 #include "AlgorithmWrapper.h"
 
 #define USE_PLACEMENT_NEW   1
@@ -349,14 +350,6 @@ MemoryPool AhoCorasickImpl<T>::memory_pool;
 
 template <typename T>
 int AhoCorasickImpl<T>::pool_idx = 0;
-
-namespace AnsiString {
-    typedef AlgorithmWrapper< AhoCorasickImpl<char> >       AhoCorasick;
-} // namespace AnsiString
-
-namespace UnicodeString {
-    typedef AlgorithmWrapper< AhoCorasickImpl<wchar_t> >    AhoCorasick;
-} // namespace UnicodeString
 
 } // namespace StringMatch
 
