@@ -21,6 +21,11 @@
 // See: https://blog.csdn.net/q547550831/article/details/51860017
 // See: https://blog.csdn.net/v_JULY_v/article/details/7041827
 //
+// Code:
+//
+// See: https://blog.csdn.net/creatorx/article/details/71100840
+// See: https://blog.csdn.net/silence401/article/details/52662605
+//
 
 namespace StringMatch {
 
@@ -50,8 +55,6 @@ struct ACNode {
     void destroy() {
 #if USE_PLACEMENT_NEW
   #if 0
-        this->fail = nullptr;
-        this->cnt = 0;
         for (size_type i = 0; i < kMaxAscii; ++i) {
             if (this->next[i] != nullptr) {
                 this->next[i]->~ACNode();
@@ -60,8 +63,6 @@ struct ACNode {
         }
   #endif
 #else
-        //this->fail = nullptr;
-        //this->cnt = 0;
         for (size_type i = 0; i < kMaxAscii; ++i) {
             if (this->next[i] != nullptr) {
                 delete next[i];
@@ -77,7 +78,7 @@ public:
     typedef std::size_t size_type;
     typedef ACNode      node_type;
 
-    static const size_type kMaxSize = 65536;
+    static const size_type kMaxSize = 32768;
 
 private:
     bool inited_;
@@ -241,8 +242,8 @@ public:
 
     /* Searching */
     SM_NOINLINE_DECLARE(Long)
-    search1(const char_type * text, size_type text_len,
-            const char_type * pattern, size_type pattern_len) const {
+    search(const char_type * text, size_type text_len,
+           const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 
@@ -253,18 +254,18 @@ public:
 
             const char_type * text_start = text;
             const char_type * text_end = text + text_len;
-            while (text < text_end) {
+            while (likely(text < text_end)) {
                 uchar_type ch = (uchar_type)*text;
                 do {
                     node_type * next = node->next[ch];
-                    if (next == nullptr) {
+                    if (likely(next == nullptr)) {
                         // Dismatch
-                        if (node == root) {
+                        if (likely(node == root)) {
                             text++;
                             break;
                         }
                         else {
-                            if (node->fail != nullptr) {
+                            if (likely(node->fail != nullptr)) {
                                 node = node->fail;
                             }
                             else {
@@ -278,7 +279,7 @@ public:
                         // Matched one char
                         assert(next != nullptr);
                         node = next;
-                        if (node->cnt <= 0) {
+                        if (likely(node->cnt <= 0)) {
                             // Isn't a leaf node.
                             text++;
                             break;
@@ -298,8 +299,8 @@ public:
 
     /* Searching */
     SM_NOINLINE_DECLARE(Long)
-    search(const char_type * text, size_type text_len,
-           const char_type * pattern, size_type pattern_len) const {
+    search2(const char_type * text, size_type text_len,
+            const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 
@@ -310,9 +311,9 @@ public:
 
             const char_type * text_start = text;
             const char_type * text_end = text + text_len;
-            while (text < text_end) {
+            while (likely(text < text_end)) {
                 uchar_type ch = (uchar_type)*text;
-                while (node->next[ch] == nullptr && node != root) {
+                while (likely(node->next[ch] == nullptr && node != root)) {
                     if (node->fail != nullptr) {
                         node = node->fail;
                     }
@@ -322,12 +323,12 @@ public:
                     }
                 }
                 node = node->next[ch];
-                if (node == nullptr) {
+                if (likely(node == nullptr)) {
                     node = root;
                     text++;
                 }
                 else {
-                    if (node->cnt <= 0) {
+                    if (likely(node->cnt <= 0)) {
                         text++;
                     }
                     else {
