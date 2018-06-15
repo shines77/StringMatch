@@ -41,6 +41,13 @@ public:
         this->destroy();
     }
 
+    static void reset_counter() {
+    }
+
+    static int get_counter() {
+        return 0;
+    }
+
     static const char * name() { return "BM Tuned"; }
     static bool need_preprocessing() { return true; }
 

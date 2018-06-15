@@ -24,6 +24,8 @@
 
 namespace StringMatch {
 
+class AhoCorasick;
+
 struct Console {
     static void print_result(const char * text, size_t text_len,
                              const char * pattern, size_t pattern_len, int index_of) {
@@ -333,6 +335,14 @@ struct AlgorithmWrapper {
 
     static const char * name() { return algorithm_type::name(); }
     static bool need_preprocessing() { return algorithm_type::need_preprocessing(); }
+
+    static void reset_counter() {
+        algorithm_type::reset_counter();
+    }
+
+    static int get_counter() {
+        return algorithm_type::get_counter();
+    }
 
     // AlgorithmWrapper::match(matcher, pattern)
     static Long match(const Matcher & matcher, const Pattern & pattern) {

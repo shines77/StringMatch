@@ -181,6 +181,13 @@ public:
         this->destroy();
     }
 
+    static void reset_counter() {
+    }
+
+    static int get_counter() {
+        return 0;
+    }
+
     static const char * name() { return "my_memmem()"; }
     static bool need_preprocessing() { return false; }
 

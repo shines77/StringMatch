@@ -42,6 +42,7 @@
 #include "algorithm/BMTuned.h"
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
+#include "algorithm/AhoCorasick.h"
 
 using namespace StringMatch;
 
@@ -556,6 +557,10 @@ void StringMatch_benchmark()
                 printf("\n");
 #endif
             }
+            //if (typeid(AlgorithmTy).hash_code() == typeid(StringMatch::AhoCorasick).hash_code()) {
+                //printf("pool_idx = %d\n", AlgorithmTy::get_counter());
+                AlgorithmTy::reset_counter();
+            //}
         }
         sw.stop();
         full_time = sw.getElapsedMillisec();
@@ -659,6 +664,8 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::ShiftAnd>();
 #endif
     StringMatch_benchmark<AnsiString::ShiftOr>();
+
+    StringMatch_benchmark<AnsiString::AhoCorasick>();
 
     printf("----------------------------------------------------------------\n");
     printf("  ps: (*) indicates that not included the preprocessing time.\n");

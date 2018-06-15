@@ -154,5 +154,8 @@
     <ClInclude Include="..\..\..\src\main\jstd\char_traits.h">
       <Filter>src\jstd</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\AhoCorasick.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
