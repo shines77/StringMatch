@@ -177,7 +177,7 @@ public:
         for (size_type i = 0; i < length; ++i) {
             uchar_type ch = (uchar_type)*pattern++;
             assert(node != nullptr);
-            if (node->next[ch] == nullptr) {
+            if (likely(node->next[ch] == nullptr)) {
 #if USE_PLACEMENT_NEW
                 void * next_ptr = AhoCorasickImpl::memory_pool.get(AhoCorasickImpl::pool_idx);
                 node_type * next = new (next_ptr) node_type();
@@ -205,24 +205,24 @@ public:
         this->queue_.push_back(root);
 
         int head = 0;
-        while (head < this->queue_.size()) {
+        while (likely(head < this->queue_.size())) {
             node_type * node = nullptr;
             node_type * cur = this->queue_[head++];
             for (size_type i = 0; i < kMaxAscii; ++i) {
-                if (cur->next[i] != nullptr) {
-                    if (cur == root) {
+                if (likely(cur->next[i] != nullptr)) {
+                    if (likely(cur == root)) {
                         cur->next[i]->fail = root;
                     }
                     else {
                         node = cur->fail;
-                        while (node != nullptr) {
-                            if (node->next[i] != nullptr) {
+                        while (likely(node != nullptr)) {
+                            if (likely(node->next[i] != nullptr)) {
                                 cur->next[i]->fail = node->next[i];
                                 break;
                             }
                             node = node->fail;
                         }
-                        if (node == nullptr) {
+                        if (likely(node == nullptr)) {
                             cur->next[i]->fail = root;
                         }
                     }
