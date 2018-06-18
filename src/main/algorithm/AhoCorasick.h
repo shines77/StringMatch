@@ -204,7 +204,7 @@ public:
         node_type * root = this->root_.get();
         this->queue_.push_back(root);
 
-        int head = 0;
+        size_type head = 0;
         while (likely(head < this->queue_.size())) {
             node_type * node = nullptr;
             node_type * cur = this->queue_[head++];
