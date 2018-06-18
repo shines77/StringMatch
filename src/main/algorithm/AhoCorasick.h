@@ -216,11 +216,13 @@ public:
                     else {
                         node = cur->fail;
                         while (likely(node != nullptr)) {
-                            if (likely(node->next[i] != nullptr)) {
+                            if (likely(node->next[i] == nullptr)) {
+                                node = node->fail;
+                            }
+                            else {
                                 cur->next[i]->fail = node->next[i];
                                 break;
                             }
-                            node = node->fail;
                         }
                         if (likely(node == nullptr)) {
                             cur->next[i]->fail = root;
@@ -315,7 +317,7 @@ public:
             while (likely(text < text_end)) {
                 uchar_type ch = (uchar_type)*text;
                 while (likely(node->next[ch] == nullptr && node != root)) {
-                    if (node->fail != nullptr) {
+                    if (likely(node->fail != nullptr)) {
                         node = node->fail;
                     }
                     else {
