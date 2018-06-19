@@ -210,35 +210,35 @@ public:
 
         size_type head = 0;
         while (likely(head < this->queue_.size())) {
-            node_type * node = nullptr;
             node_type * cur = this->queue_[head++];
             for (size_type i = 0; i < kMaxAscii; ++i) {
-                if (likely(cur->next[i] == nullptr)) {
+                node_type * next = cur->next[i];
+                if (likely(next == nullptr)) {
                     continue;
                 }
                 else {
                     if (likely(cur == root)) {
-                        cur->next[i]->fail = root;
-                        this->queue_.push_back(cur->next[i]);
+                        next->fail = root;
+                        this->queue_.push_back(next);
                     }
                     else {
-                        node = cur->fail;
+                        node_type * node = cur->fail;
                         do {
                             if (likely(node != nullptr)) {
                                 if (likely(node->next[i] == nullptr)) {
                                     node = node->fail;
                                 }
                                 else {
-                                    cur->next[i]->fail = node->next[i];
+                                    next->fail = node->next[i];
                                     break;
                                 }
                             }
                             else {
-                                cur->next[i]->fail = root;
+                                next->fail = root;
                                 break;
                             }
                         } while (1);
-                        this->queue_.push_back(cur->next[i]);
+                        this->queue_.push_back(next);
                     }
                 }
             }
