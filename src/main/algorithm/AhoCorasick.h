@@ -79,7 +79,7 @@ public:
     typedef std::size_t size_type;
     typedef ACNode      node_type;
 
-    static const size_type kMaxSize = 32768;
+    static const size_type kMaxSize = 16384;
 
 private:
     bool inited_;
@@ -169,6 +169,82 @@ public:
         this->root_.reset();
     }
 
+#if 1
+    void build_trie(const char_type * pattern, size_type length) {
+        node_type * root = this->root_.get();
+        node_type * node = root;
+        assert(node != nullptr);
+
+        for (size_type i = 0; i < length; ++i) {
+            uchar_type ch = (uchar_type)*pattern++;
+            assert(node != nullptr);
+            if (likely(node->next[ch] == nullptr)) {
+#if USE_PLACEMENT_NEW
+                void * next_ptr = AhoCorasickImpl::memory_pool.get(AhoCorasickImpl::pool_idx);
+                node_type * next = new (next_ptr) node_type();
+                assert((void *)next == next_ptr);
+                AhoCorasickImpl::pool_idx++;
+#else
+                node_type * next = new node_type();
+#endif
+                node->next[ch] = next;
+                assert(next != nullptr);
+                node = next;
+            }
+            else {
+                node = node->next[ch];
+            }
+        }
+
+        // Record the leaf node.
+        node->cnt++;
+    }
+
+    void build_automation(const char_type * pattern, size_type length) {
+        // First step: build the trie tree.
+        build_trie(pattern, length);
+
+        // Second step: build the automation.
+        node_type * root = this->root_.get();
+        this->queue_.push_back(root);
+
+        size_type head = 0;
+        while (likely(head < this->queue_.size())) {
+            node_type * node = nullptr;
+            node_type * cur = this->queue_[head++];
+            for (size_type i = 0; i < kMaxAscii; ++i) {
+                if (likely(cur->next[i] == nullptr)) {
+                    continue;
+                }
+                else {
+                    if (likely(cur == root)) {
+                        cur->next[i]->fail = root;
+                        this->queue_.push_back(cur->next[i]);
+                    }
+                    else {
+                        node = cur->fail;
+                        do {
+                            if (likely(node != nullptr)) {
+                                if (likely(node->next[i] == nullptr)) {
+                                    node = node->fail;
+                                }
+                                else {
+                                    cur->next[i]->fail = node->next[i];
+                                    break;
+                                }
+                            }
+                            else {
+                                cur->next[i]->fail = root;
+                                break;
+                            }
+                        } while (1);
+                        this->queue_.push_back(cur->next[i]);
+                    }
+                }
+            }
+        }
+    }
+#else
     void build_trie(const char_type * pattern, size_type length) {
         node_type * root = this->root_.get();
         node_type * node = root;
@@ -209,7 +285,10 @@ public:
             node_type * node = nullptr;
             node_type * cur = this->queue_[head++];
             for (size_type i = 0; i < kMaxAscii; ++i) {
-                if (likely(cur->next[i] != nullptr)) {
+                if (likely(cur->next[i] == nullptr)) {
+                    continue;
+                }
+                else {
                     if (likely(cur == root)) {
                         cur->next[i]->fail = root;
                     }
@@ -233,6 +312,7 @@ public:
             }
         }
     }
+#endif
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_type length) {
