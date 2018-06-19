@@ -206,7 +206,7 @@ public:
 
         // Second step: build the automation.
         node_type * root = this->root_.get();
-        this->queue_.push_back(root);
+        this->queue_.emplace_back(root);
 
         size_type head = 0;
         while (likely(head < this->queue_.size())) {
@@ -238,7 +238,7 @@ public:
                                 break;
                             }
                         } while (1);
-                        this->queue_.push_back(next);
+                        this->queue_.emplace_back(next);
                     }
                 }
             }

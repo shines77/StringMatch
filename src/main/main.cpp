@@ -648,8 +648,8 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::MyMemMemBw>();
     printf("\n");
     StringMatch_benchmark<AnsiString::StdSearch>();
-#if TEST_ALL_BENCHMARK
     printf("\n");
+#if TEST_ALL_BENCHMARK
     StringMatch_benchmark<AnsiString::Kmp>();
     StringMatch_benchmark<AnsiString::Kmp2>();
     printf("\n");
@@ -659,12 +659,12 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::Horspool>();
     StringMatch_benchmark<AnsiString::QuickSearch>();
     StringMatch_benchmark<AnsiString::BMTuned>();
-#if TEST_ALL_BENCHMARK
     printf("\n");
+#if TEST_ALL_BENCHMARK
     StringMatch_benchmark<AnsiString::ShiftAnd>();
 #endif
     StringMatch_benchmark<AnsiString::ShiftOr>();
-
+    printf("\n");
     StringMatch_benchmark<AnsiString::AhoCorasick>();
 
     printf("----------------------------------------------------------------\n");
