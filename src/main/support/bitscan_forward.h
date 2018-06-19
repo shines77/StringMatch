@@ -98,23 +98,23 @@
 // __GNUC__
 
 #define __BitScanForward(index, mask) \
-        __builtin_BitScanForward(index, mask)
+        __builtin_BitScanForward((unsigned long *)&(index), (unsigned long)mask)
 
 #if __IS_X86_64
     #define __BitScanForward64(index, mask) \
-            __builtin_BitScanForward64(index, mask)
+            __builtin_BitScanForward64((unsigned long *)&(index), (unsigned long long)mask)
 #else
     #define __BitScanForward64(index, mask) \
-            __BitScanForward(index, (unsigned long)mask)
+            __BitScanForward(index, mask)
 #endif // __x86_64__
 
 #else
     // Not support
     #define __BitScanForward(index, mask) \
-            __builtin_BitScanForward(index, mask)
+            __builtin_BitScanForward((unsigned long *)&(index), (unsigned long)mask)
 
     #define __BitScanForward64(index, mask) \
-            __builtin_BitScanForward64(index, mask)
+            __builtin_BitScanForward64((unsigned long *)&(index), (unsigned long long)mask)
 
     // #error "The compiler does not support BitScanForward()."
 #endif // BitScanForward()

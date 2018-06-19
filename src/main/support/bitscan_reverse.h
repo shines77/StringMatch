@@ -98,23 +98,23 @@
 // __GNUC__
 
 #define __BitScanReverse(index, mask) \
-        __builtin_BitScanReverse(index, mask)
+        __builtin_BitScanReverse((unsigned long *)&(index), (unsigned long)mask)
 
 #if __IS_X86_64
     #define __BitScanReverse64(index, mask) \
-            __builtin_BitScanReverse64(index, mask)
+            __builtin_BitScanReverse64((unsigned long *)&(index), (unsigned long long)mask)
 #else
     #define __BitScanReverse64(index, mask) \
-            __builtin_BitScanReverse(index, (unsigned long)mask)
+            __BitScanReverse(index, mask)
 #endif // __x86_64__
 
 #else
     // Not support
     #define __BitScanReverse(index, mask) \
-            __builtin_BitScanReverse(index, mask)
+            __builtin_BitScanReverse((unsigned long *)&(index), (unsigned long)mask)
 
     #define __BitScanReverse64(index, mask) \
-            __builtin_BitScanReverse64(index, mask)
+            __builtin_BitScanReverse64((unsigned long *)&(index), (unsigned long long)mask)
 
     // #error "The compiler does not support BitScanReverse()."
 #endif // BitScanReverse()
