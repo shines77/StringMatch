@@ -219,7 +219,7 @@ public:
                 else {
                     if (likely(cur == root)) {
                         next->fail = root;
-                        this->queue_.push_back(next);
+                        this->queue_.emplace_back(next);
                     }
                     else {
                         node_type * node = cur->fail;
