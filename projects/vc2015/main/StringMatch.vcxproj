@@ -58,6 +58,7 @@
     <ClInclude Include="..\..\..\src\main\jstd\scoped_ptr.h" />
     <ClInclude Include="..\..\..\src\main\jstd\standard_iterator.h" />
     <ClInclude Include="..\..\..\src\main\jstd\string_iterator.h" />
+    <ClInclude Include="..\..\..\src\main\jstd\vector.h" />
     <ClInclude Include="..\..\..\src\main\StringMatch.h" />
     <ClInclude Include="..\..\..\src\main\support\bitscan_forward.h" />
     <ClInclude Include="..\..\..\src\main\support\bitscan_reverse.h" />

@@ -14,6 +14,7 @@
 
 #include "StringMatch.h"
 #include "jstd/scoped_ptr.h"
+#include "jstd/vector.h"
 #include "AlgorithmWrapper.h"
 
 #define USE_PLACEMENT_NEW   1
@@ -93,7 +94,7 @@ public:
         if (!this->inited_) {
             this->nodes_.reserve(kMaxSize);
             for (size_type i = 0; i < kMaxSize; ++i) {
-                this->nodes_.push_back(new node_type());
+                this->nodes_.emplace_back(new node_type());
             }
             this->inited_ = true;
         }
@@ -134,7 +135,7 @@ public:
 
 private:
     jstd::scoped_ptr<node_type> root_;
-    std::vector<node_type *> queue_;
+    jstd::vector<node_type *> queue_;
 
 public:
     AhoCorasickImpl() : root_(nullptr) {
@@ -162,7 +163,7 @@ public:
 
     void init() {
         this->root_.reset(new node_type());
-        this->queue_.reserve(64);
+        this->queue_.reserve(63);
     }
 
     void destroy() {

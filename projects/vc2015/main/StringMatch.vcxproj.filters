@@ -157,5 +157,8 @@
     <ClInclude Include="..\..\..\src\main\algorithm\AhoCorasick.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\jstd\vector.h">
+      <Filter>src\jstd</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

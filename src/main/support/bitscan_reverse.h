@@ -62,7 +62,7 @@
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 #include <intrin.h>     // For _BitScanReverse(), _BitScanReverse64()
 #pragma intrinsic(_BitScanReverse)
-#if __IS_AMD64
+#if __IS_X86_64
 #pragma intrinsic(_BitScanReverse64)
 #endif // _WIN64
 #endif // _MSC_VER
