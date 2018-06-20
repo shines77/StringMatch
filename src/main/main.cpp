@@ -180,7 +180,7 @@ void StringMatch_unittest()
     }
     sw.stop();
     pattern.print_result("Here is a sample example.",
-                         (int)index_of, (int)sum, sw.getElapsedMillisec());
+                         (int)index_of, (int)sum, sw.getMillisec());
 
     // pattern1: "sample"
     pattern_type pattern1(pattern_text_1);
@@ -193,7 +193,7 @@ void StringMatch_unittest()
     }
     sw.stop();
     pattern1.print_result("Here is a sample example.",
-                          (int)index_of, (int)sum, sw.getElapsedMillisec());
+                          (int)index_of, (int)sum, sw.getMillisec());
 
     // pattern2: "a sample"
     pattern_type pattern2(pattern_text_2);
@@ -206,7 +206,7 @@ void StringMatch_unittest()
     }
     sw.stop();
     pattern2.print_result("Here is a sample example.",
-                          (int)index_of, (int)sum, sw.getElapsedMillisec());
+                          (int)index_of, (int)sum, sw.getMillisec());
 }
 
 void StringMatch_strstr_benchmark1()
@@ -249,7 +249,7 @@ void StringMatch_strstr_benchmark1()
     sw.stop();
 
     printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n\n",
-            (int)sum, sw.getElapsedMillisec());
+            (int)sum, sw.getMillisec());
 }
 
 void StringMatch_strstr_benchmark()
@@ -290,7 +290,7 @@ void StringMatch_strstr_benchmark()
     sw.stop();
 
     printf(" strstr()** [Preprocessing: no ] sum: %d, time: %0.3f ms\n\n",
-           (int)sum, sw.getElapsedMillisec());
+           (int)sum, sw.getMillisec());
 }
 
 template <typename AlgorithmTy>
@@ -336,7 +336,7 @@ void StringMatch_benchmark1()
         }
     }
     sw.stop();
-    matching_time = sw.getElapsedMillisec();
+    matching_time = sw.getMillisec();
 
     printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n", (int)sum1, matching_time);
 
@@ -353,7 +353,7 @@ void StringMatch_benchmark1()
             }
         }
         sw.stop();
-        full_time = sw.getElapsedMillisec();
+        full_time = sw.getMillisec();
 
         printf("[Preprocessing: yes] sum: %-11d, time: %0.3f ms\n", (int)sum2, full_time);
     }
@@ -405,7 +405,7 @@ void StringMatch_benchmark2()
         }
     }
     sw.stop();
-    matching_time = sw.getElapsedMillisec();
+    matching_time = sw.getMillisec();
 
     printf(" %s [Preprocessing: no ] sum: %d, time: %0.3f ms\n",
            AlgorithmTy::name(), (int)sum1, matching_time);
@@ -429,7 +429,7 @@ void StringMatch_benchmark2()
             }
         }
         sw.stop();
-        full_time = sw.getElapsedMillisec();
+        full_time = sw.getMillisec();
 
         printf(" %s [Preprocessing: yes] sum: %d, time: %0.3f ms\n",
                AlgorithmTy::name(), (int)sum2, full_time);
@@ -531,7 +531,7 @@ void StringMatch_benchmark()
         }
     }
     sw.stop();
-    matching_time = sw.getElapsedMillisec();
+    matching_time = sw.getMillisec();
 
     std::string strName = AlgorithmTy::name();
     if (AlgorithmTy::need_preprocessing()) {
@@ -563,7 +563,7 @@ void StringMatch_benchmark()
             //}
         }
         sw.stop();
-        full_time = sw.getElapsedMillisec();
+        full_time = sw.getMillisec();
 
         printf("  %-22s   %-12d    %8.3f ms\n", AlgorithmTy::name(), (int)sum2, full_time);
     }
