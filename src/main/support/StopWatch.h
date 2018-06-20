@@ -6,7 +6,7 @@
 #pragma once
 #endif
 
-#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
+#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(_WINDOWS_)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -17,11 +17,10 @@
 
 #if !defined(_MSC_VER) || (_MSC_VER >= 1800)
 #include <chrono>
-#include <mutex>
 #endif
 
 #ifndef __COMPILER_BARRIER
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER) || defined(__ICL)
+#if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
 #define __COMPILER_BARRIER()        _ReadWriteBarrier()
 #else
 #define __COMPILER_BARRIER()        asm volatile ("" : : : "memory")
@@ -412,7 +411,7 @@ typedef StopWatchExBase< StdStopWatchImpl<double> >     StopWatchEx;
 
 #endif // (_MSC_VER >= 1800)
 
-#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
+#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(_WINDOWS_)
 
 template <typename TimeFloatTy>
 class timeGetTimeImpl {
@@ -450,7 +449,7 @@ typedef StopWatchExBase< StdStopWatchImpl<double> > timeGetTimeStopWatchEx;
 
 #endif // _WIN32
 
-#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__)
+#if defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(_WINDOWS_)
 
 template <typename TimeFloatTy>
 class getTickCountImpl {
@@ -495,8 +494,8 @@ typedef StopWatchExBase< timeGetTimeImpl<double> >  StopWatchEx;
 
 #endif
 
-#undef __COMPILER_BARRIER
-
 } // namespace test
+
+#undef __COMPILER_BARRIER
 
 #endif // SUPPORT_STOPWATCH_H
