@@ -100,7 +100,7 @@ public:
     StopWatchBase(StopWatchBase<T> const & src) :
         start_time_(src.start_time_), stop_time_(src.stop_time_) {
     }
-    ~StopWatchBase() {};
+    ~StopWatchBase() {}
 
     void reset() {
         __COMPILER_BARRIER();
