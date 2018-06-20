@@ -15,9 +15,10 @@
 #include <stdalign.h>   // C11 defines _Alignas().  This header defines alignas()
 #endif
 
-#define USE_ALIGNED_PATTAEN     0
 
-#define TEST_ALL_BENCHMARK      0
+#define TEST_ALL_BENCHMARK      1
+#define USE_ALIGNED_PATTAEN     1
+
 #define USE_BENCHMARK_TEST      0
 
 #include "StringMatch.h"
