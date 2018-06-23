@@ -20,6 +20,8 @@
 #define USE_PLACEMENT_NEW   1
 
 //
+// Article:
+//
 // See: https://blog.csdn.net/q547550831/article/details/51860017
 // See: https://blog.csdn.net/v_JULY_v/article/details/7041827
 //
@@ -435,5 +437,7 @@ template <typename T>
 int AhoCorasickImpl<T>::pool_idx = 0;
 
 } // namespace StringMatch
+
+#undef USE_PLACEMENT_NEW
 
 #endif // STRING_MATCH_AHO_CORASICK_H
