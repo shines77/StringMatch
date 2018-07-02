@@ -673,7 +673,7 @@ int main(int argc, char * argv[])
     printf("\n");
 #endif
 
-#if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(__WINDOWS__))
+#if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(_WINDOWS_))
     ::system("pause");
 #endif
     return 0;
