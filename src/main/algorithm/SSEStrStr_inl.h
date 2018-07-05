@@ -32,18 +32,15 @@ strstr_sse42(const char_type * text, const char_type * pattern) {
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
     int offset, null;
-#if defined(NDEBUG)
-    (void)(__zero);
-#else
-    __zero = { 0 };
-#endif
+
     // Check the length of pattern is less than kMaxSize (16 or 8)?
     __pattern = _mm_loadu_si128((const __m128i *)pattern);
 
     // pxor         xmm0, xmm0
     // pcmpeqb      xmm1, xmm0
     // pmovmskb     edx,  xmm1
-    __zero = _mm_xor_si128(__zero, __zero);
+    //__zero = _mm_xor_si128(__zero, __zero);
+    __zero = _mm_setzero_si128();
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
     //offset = _mm_movemask_epi8(__mask);
     
@@ -198,18 +195,14 @@ strstr_sse42_v1_old(const char_type * text, const char_type * pattern) {
     assert(text != nullptr);
     assert(pattern != nullptr);
 
-#if defined(NDEBUG)
-    (void)(__zero);
-#else
-    __zero = { 0 };
-#endif
     // Check the length of pattern is less than 16?
     __pattern = _mm_loadu_si128((const __m128i *)pattern);
 
     // pxor         xmm0, xmm0
     // pcmpeqb      xmm1, xmm0
     // pmovmskb     edx,  xmm1
-    __zero = _mm_xor_si128(__zero, __zero);
+    //__zero = _mm_xor_si128(__zero, __zero);
+    __zero = _mm_setzero_si128();
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
     //offset = _mm_movemask_epi8(__mask);
     
@@ -365,18 +358,14 @@ strstr_sse42_v1(const char_type * text, const char_type * pattern) {
     assert(text != nullptr);
     assert(pattern != nullptr);
 
-#if defined(NDEBUG)
-    (void)(__zero);
-#else
-    __zero = { 0 };
-#endif
     // Check the length of pattern is less than kMaxSize (16 or 8)?
     __pattern = _mm_loadu_si128((const __m128i *)pattern);
 
     // pxor         xmm0, xmm0
     // pcmpeqb      xmm1, xmm0
     // pmovmskb     edx,  xmm1
-    __zero = _mm_xor_si128(__zero, __zero);
+    //__zero = _mm_xor_si128(__zero, __zero);
+    __zero = _mm_setzero_si128();
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
     //offset = _mm_movemask_epi8(__mask);
     

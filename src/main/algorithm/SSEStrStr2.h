@@ -94,11 +94,6 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
     assert(text != nullptr);
     assert(pattern != nullptr);
 
-#if defined(NDEBUG)
-    (void)(__zero);
-#else
-    __zero = { 0 };
-#endif
     // Check the length of pattern is less than 16?
 
     //__text = _mm_loadu_si128((const __m128i *)t);
@@ -108,7 +103,8 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
     // pxor         xmm0, xmm0
     // pcmpeqb      xmm1, xmm0
     // pmovmskb     edx,  xmm1
-    __zero = _mm_xor_si128(__zero, __zero);
+    //__zero = _mm_xor_si128(__zero, __zero);
+    __zero = _mm_setzero_si128();
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
 
     uint64_t * mask_128i = (uint64_t *)&__mask;
