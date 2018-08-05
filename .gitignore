@@ -43,6 +43,8 @@
 # Ignore thumbnails and icon cache files created by Windows
 Thumbs.db
 ehthumbs.db
+
+# Ignore some files on Windows
 .DS_Store*
 Icon?
 
@@ -140,6 +142,7 @@ UpgradeLog.htm
 # Ignore CMake cache or temp files(folders)
 /CMakeFiles
 *CMakeCache.txt
+/Makefile
 
 # Ignore boost, tbb
 /deps/boost/
@@ -154,6 +157,7 @@ UpgradeLog.htm
 /temp/
 !/[Bb]uild/ReadMe.txt
 /[Bb]uild/*/
+*.save
 
 # Ignore bin and build folders
 /[Bb]in/
