@@ -1,8 +1,8 @@
 
 /**************************************************************************************
 
- _BitScanForward (VC) = __builtin_ctz (gcc) = bsf (asm)
- _BitScanReverse (VC) = __builtin_clz (gcc) = bsr (asm)
+ _BitScanForward(index, mask) - (VC) = __builtin_ctz(unsigned int i) - (gcc) = bsf eax - (asm)
+ _BitScanReverse(index, mask) - (VC) = __builtin_clz(unsigned int i) - (gcc) = bsr eax - (asm)
 
   On ARM it would be the CLZ (count leading zeroes) instruction.
 
@@ -67,15 +67,28 @@
 #endif // _WIN64
 #endif // _MSC_VER
 
-//#include <xmmintrin.h>  // For MMX, SSE instructions
-#include <emmintrin.h>  // For SSE2 instructions, __SSE2__ | -msse2
-
 //
 // See: http://www.cnblogs.com/zyl910/archive/2012/08/27/intrin_table_gcc.html
 //
+//#include <xmmintrin.h>    // For MMX, SSE instructions
+//#include <emmintrin.h>    // For SSE2 instructions, __SSE2__ | -msse2
 //#include <avxintrin.h>    // __AVX__  | -mavx     AVX:  Advanced Vector Extensions
 //#include <avx2intrin.h>   // __AVX2__ | -mavx2    AVX2: Advanced Vector Extensions 2
 //
+
+/* __has_builtin() available in clang */
+#ifdef __has_builtin
+#  if __has_builtin(__builtin_ctz)
+#    define __has_builtin_ctz
+#  endif
+#  if __has_builtin(__builtin_ctzll)
+#    define __has_builtin_ctzll
+#  endif
+/* __builtin_ctz available beginning with GCC 3.4 */
+#elif (__GNUC__ * 100 + __GNUC_MINOR__) >= 304
+#  define __has_builtin_ctz
+#  define __has_builtin_ctzll
+#endif // __has_builtin
 
 // Get the index of the first bit on set to 1.
 #if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
@@ -87,10 +100,7 @@
 #if __IS_X86_64
     #define __BitScanForward64(index, mask) \
             _BitScanForward64((unsigned long *)&(index), (unsigned long long)(mask))
-#else
-    #define __BitScanForward64(index, mask) \
-            __BitScanForward(index, mask)
-#endif // _WIN64
+#endif // __x86_64__
 
 #elif (defined(__GNUC__) && ((__GNUC__ >= 4) \
    || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)))) \
@@ -103,9 +113,6 @@
 #if __IS_X86_64
     #define __BitScanForward64(index, mask) \
             __builtin_BitScanForward64((unsigned long *)&(index), (unsigned long long)mask)
-#else
-    #define __BitScanForward64(index, mask) \
-            __BitScanForward(index, mask)
 #endif // __x86_64__
 
 #else
@@ -113,8 +120,10 @@
     #define __BitScanForward(index, mask) \
             __builtin_BitScanForward((unsigned long *)&(index), (unsigned long)mask)
 
+#if __IS_X86_64
     #define __BitScanForward64(index, mask) \
             __builtin_BitScanForward64((unsigned long *)&(index), (unsigned long long)mask)
+#endif // __x86_64__
 
     // #error "The compiler does not support BitScanForward()."
 #endif // BitScanForward()
@@ -125,31 +134,35 @@ static inline
 unsigned char
 __builtin_BitScanForward(unsigned long * index, unsigned long mask)
 {
-    assert(index != nullptr);
-    unsigned int trailing_zeros;
-#if defined(__has_builtin_ctz)
+    int trailing_zeros;
+#if defined(__has_builtin_ctz) || defined(__linux__)
     trailing_zeros = __builtin_ctz((unsigned int)mask);
 #else
-    trailing_zeros = __native_ctz((unsigned int)mask);
+    trailing_zeros = __internal_ctz((unsigned int)mask);
 #endif
-    *index = trailing_zeros;
+    assert(index != nullptr);
+    *index = (unsigned long)trailing_zeros;
     return (unsigned char)(mask != 0);
 }
+
+#if __IS_X86_64
 
 static inline
 unsigned char
 __builtin_BitScanForward64(unsigned long * index, unsigned long long mask)
 {
-    assert(index != nullptr);
-    unsigned int trailing_zeros;
-#if defined(__has_builtin_ctzll)
+    int trailing_zeros;
+#if defined(__has_builtin_ctzll) || defined(__linux__)
     trailing_zeros = __builtin_ctzll((unsigned long long)mask);
 #else
-    trailing_zeros = __native_ctzll((unsigned long long)mask);
+    trailing_zeros = __internal_ctzll((unsigned long long)mask);
 #endif
-    *index = trailing_zeros;
+    assert(index != nullptr);
+    *index = (unsigned long)trailing_zeros;
     return (unsigned char)(mask != 0);
 }
+
+#endif // __IS_X86_64
 
 #undef __IS_X86_64
 

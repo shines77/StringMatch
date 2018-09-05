@@ -1,8 +1,8 @@
 
 /**************************************************************************************
 
- _BitScanForward (VC) = __builtin_ctz (gcc) = bsf (asm)
- _BitScanReverse (VC) = __builtin_clz (gcc) = bsr (asm)
+ _BitScanForward(index, mask) - (VC) = __builtin_ctz(unsigned int i) - (gcc) = bsf eax - (asm)
+ _BitScanReverse(index, mask) - (VC) = __builtin_clz(unsigned int i) - (gcc) = bsr eax - (asm)
 
   On ARM it would be the CLZ (count leading zeroes) instruction.
 
@@ -67,15 +67,28 @@
 #endif // _WIN64
 #endif // _MSC_VER
 
-//#include <xmmintrin.h>  // For MMX, SSE instructions
-#include <emmintrin.h>  // For SSE2 instructions, __SSE2__ | -msse2
-
 //
 // See: http://www.cnblogs.com/zyl910/archive/2012/08/27/intrin_table_gcc.html
 //
+//#include <xmmintrin.h>    // For MMX, SSE instructions
+//#include <emmintrin.h>    // For SSE2 instructions, __SSE2__ | -msse2
 //#include <avxintrin.h>    // __AVX__  | -mavx     AVX:  Advanced Vector Extensions
 //#include <avx2intrin.h>   // __AVX2__ | -mavx2    AVX2: Advanced Vector Extensions 2
 //
+
+/* __has_builtin() available in clang */
+#ifdef __has_builtin
+#  if __has_builtin(__builtin_clz)
+#    define __has_builtin_clz
+#  endif
+#  if __has_builtin(__builtin_clzll)
+#    define __has_builtin_clzll
+#  endif
+/* __builtin_clz available beginning with GCC 3.4 */
+#elif (__GNUC__ * 100 + __GNUC_MINOR__) >= 304
+#  define __has_builtin_clz
+#  define __has_builtin_clzll
+#endif // __has_builtin
 
 // Get the index of the first bit on set to 1.
 #if defined(_MSC_VER) || defined(__ICL) || defined(__INTEL_COMPILER)
@@ -87,10 +100,7 @@
 #if __IS_X86_64
     #define __BitScanReverse64(index, mask) \
             _BitScanReverse64((unsigned long *)&(index), (unsigned __int64)(mask))
-#else
-    #define __BitScanReverse64(index, mask) \
-            __BitScanReverse(index, mask)
-#endif // _WIN64
+#endif // __x86_64__
 
 #elif (defined(__GNUC__) && ((__GNUC__ >= 4) \
    || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 4)))) \
@@ -103,9 +113,6 @@
 #if __IS_X86_64
     #define __BitScanReverse64(index, mask) \
             __builtin_BitScanReverse64((unsigned long *)&(index), (unsigned long long)mask)
-#else
-    #define __BitScanReverse64(index, mask) \
-            __BitScanReverse(index, mask)
 #endif // __x86_64__
 
 #else
@@ -113,8 +120,10 @@
     #define __BitScanReverse(index, mask) \
             __builtin_BitScanReverse((unsigned long *)&(index), (unsigned long)mask)
 
+#if __IS_X86_64
     #define __BitScanReverse64(index, mask) \
             __builtin_BitScanReverse64((unsigned long *)&(index), (unsigned long long)mask)
+#endif // __x86_64__
 
     // #error "The compiler does not support BitScanReverse()."
 #endif // BitScanReverse()
@@ -125,31 +134,35 @@ static inline
 unsigned char
 __builtin_BitScanReverse(unsigned long * index, unsigned long mask)
 {
-    assert(index != nullptr);
-    unsigned int leading_zeros;
-#if defined(__has_builtin_clz)
+    int leading_zeros;
+#if defined(__has_builtin_clz) || defined(__linux__)
     leading_zeros = __builtin_clz((unsigned int)mask);
 #else
-    leading_zeros = __native_clz((unsigned int)mask);
+    leading_zeros = __internal_clz((unsigned int)mask);
 #endif
-    *index = 32 - leading_zeros;
+    assert(index != nullptr);
+    *index = (unsigned long)(31 ^ leading_zeros);
     return (unsigned char)(mask != 0);
 }
+
+#if __IS_X86_64
 
 static inline
 unsigned char
 __builtin_BitScanReverse64(unsigned long * index, unsigned long long mask)
 {
-    assert(index != nullptr);
-    unsigned int leading_zeros;
-#if defined(__has_builtin_clzll)
+    int leading_zeros;
+#if defined(__has_builtin_clzll) || defined(__linux__)
     leading_zeros = __builtin_clzll((unsigned long long)mask);
 #else
-    leading_zeros = __native_clzll((unsigned long long)mask);
+    leading_zeros = __internal_clzll((uint64_t)mask);
 #endif
-    *index = 64 - leading_zeros;
+    assert(index != nullptr);
+    *index = (unsigned long)(63 ^ leading_zeros);
     return (unsigned char)(mask != 0);
 }
+
+#endif // __IS_X86_64
 
 #undef __IS_X86_64
 
