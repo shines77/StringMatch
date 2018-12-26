@@ -597,7 +597,7 @@ void StringMatch_benchmark()
 void print_arch_type()
 {
 #if defined(WIN64) || defined(_WIN64) || defined(_M_X64) || defined(_M_AMD64) \
- || defined(__amd64__) || defined(__x86_64__)
+ || defined(__amd64__) || defined(__x86_64__) || defined(__aarch64__)
     printf("Arch type: __amd64__\n\n");
 #elif defined(_M_IA64)
     printf("Arch type: __itanium64__\n\n");
