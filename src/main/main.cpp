@@ -366,9 +366,12 @@ void StringMatch_benchmark()
                preprocessing_time, searching_time, full_searching_time);
     }
     else {
-        printf("  %-22s   %-12u       -----       %8.3f ms       -----   \n",
+        preprocessing_time = 0.0;
+        SM_UNUSED_VAR(preprocessing_time);
+        SM_UNUSED_VAR(full_searching_time);
+        printf("  %-22s   %-12u    %s    %8.3f ms    %s\n",
                AlgorithmTy::name(), (unsigned int)(searching_sum + full_searching_sum),
-               searching_time);
+               "   -----   ", searching_time, "   -----   ");
     }
 
 #if USE_ALIGNED_PATTAEN
