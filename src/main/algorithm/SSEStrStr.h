@@ -62,7 +62,7 @@ strstr_sse42(const char_type * text, const char_type * pattern,
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-strstr_sse42_v1_a(const char_type * text, const char_type * pattern) {
+strstr_sse42_v1a(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
 
@@ -256,7 +256,7 @@ STRSTR_MAIN_LOOP:
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-strstr_sse42_v1_b(const char_type * text, const char_type * pattern) {
+strstr_sse42_v1b(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
 
@@ -404,7 +404,7 @@ STRSTR_MAIN_LOOP:
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-strstr_sse42_v1_c(const char_type * text, const char_type * pattern) {
+strstr_sse42_v1c(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
 
@@ -579,11 +579,7 @@ public:
                 const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-#if USE_ALIGNED_PATTAEN
-        const char_type * substr = strstr_sse42_v1_c(text, pattern);
-#else
-        const char_type * substr = strstr_sse42_v1_c(text, pattern);
-#endif
+        const char_type * substr = strstr_sse42_v1c(text, pattern);
         if (likely(substr != nullptr))
             return (Long)(substr - text);
         else

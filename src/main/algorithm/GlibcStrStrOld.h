@@ -82,7 +82,6 @@ jin:
                     }
                 } while ((scan = *++haystack) != cursor2);
             }
-
 crest:
             {
                 const uchar_type * rneedle;

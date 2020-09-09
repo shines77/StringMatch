@@ -16,10 +16,11 @@
 #endif
 
 
-#define TEST_ALL_BENCHMARK      1
-#define USE_ALIGNED_PATTAEN     1
+#define TEST_ALL_BENCHMARK          1
+#define USE_ALIGNED_PATTAEN         1
 
-#define USE_BENCHMARK_TEST      0
+#define SWITCH_BENCHMARK_TEST       0
+#define ENABLE_AHOCORASICK_TEST     1
 
 #include "StringMatch.h"
 #include "support/StopWatch.h"
@@ -48,9 +49,9 @@
 using namespace StringMatch;
 
 #if defined(NDEBUG)
-static const size_t kIterations = 5000000;
+static const size_t kIterations = 2000000;
 #else
-static const size_t kIterations = 10000;
+static const size_t kIterations = 1000;
 #endif
 
 //
@@ -62,14 +63,29 @@ static const size_t kIterations = 10000;
 //
 // See: http://volnitsky.com/project/str_search/index.html
 //
-static const char * s_SearchTexts[] = {
+static const char * SearchTexts[] = {
     "Here is a sample example.",
 
-    "8'E . It consists of a number of low-lying, largely mangrove covered islands covering an area of around 665 km^2. "
-    "The population of Bakassi is theTsubject of some dispute, but is generally put at between 150,000 and 300,000 people."
+    "8'E . It consists of a number of low-lying, largely mangrove "
+    "covered islands covering an area of around 665 km^2. "
+    "The population of Bakassi is theTsubject of some dispute, "
+    "but is generally put at between 150,000 and 300,000 people."
+
+    "This historical depiction of the coat of arms of California was illustrated "
+    "by American engraver "
+    "Henry Mitchell in State Arms of the Union, published in 1876 by Louis Prang. "
+    "A state in the Pacific region of the U.S., California was admitted into the "
+    "Union on September 9, 1850. The escutcheon depicts the goddess Minerva, "
+    "representing the political birth of the state, seated underneath the state "
+    "motto Eureka. At her feet crouches a grizzly bear, feeding upon bunches of grapes that, "
+    "with the plough and sheaf of wheat on the right, are emblematic of the state's bounty. "
+    "On the left, a miner at work, with a rocker and bowl at his side, illustrates the golden "
+    "wealth of the land, while the snow-clad peaks of the Sierra Nevada and shipping on the "
+    "Sacramento River make up the background. A similar design appears on the current Great "
+    "Seal of California."
 };
 
-static const char * s_Patterns[] = {
+static const char * Patterns[] = {
     "sample",
     "example",
 
@@ -79,8 +95,8 @@ static const char * s_Patterns[] = {
     "between",
     "people",
 
-    //"love you",
-    //"I love you",
+    "love you",
+    "I love you",
 
     "largely mangrove",
     "largely Mangrove",
@@ -91,11 +107,18 @@ static const char * s_Patterns[] = {
 
     "between 150,000",
     "between 150,0000",
-    "between 150,000 and 300,000 people."
+    "between 150,000 and 300,000 people.",
+
+    "River",
+    "Sacramento River",
+    "grizzly bear",
+    "California",
+    "Henry Mitchell",
+    "the Sierra Nevada"
 };
 
-static const size_t kSearchTexts = sm_countof_i(s_SearchTexts);
-static const size_t kPatterns = sm_countof_i(s_Patterns);
+static const size_t kSearchTexts = sm_countof_i(SearchTexts);
+static const size_t kPatterns = sm_countof_i(Patterns);
 
 void StringMatch_usage_examples()
 {
@@ -210,300 +233,72 @@ void StringMatch_unittest()
                           (int)index_of, (int)sum, sw.getMillisec());
 }
 
-void StringMatch_strstr_benchmark1()
-{
-    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
-
-    test::StopWatch sw;
-    Long sum;
-
-    printf("------------------------------------------------------\n");
-    printf("  Benchmark: %s\n", "strstr() **");
-    printf("------------------------------------------------------\n\n");
-
-    StringRef texts[kSearchTexts];
-    for (size_t i = 0; i < kSearchTexts; ++i) {
-        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
-    }
-
-    StringRef patterns[kPatterns];
-    for (size_t i = 0; i < kPatterns; ++i) {
-        patterns[i].set_data(s_Patterns[i], strlen(s_Patterns[i]));
-    }
-
-    sum = 0;
-    sw.start();
-    for (size_t loop = 0; loop < iters; ++loop) {
-        for (size_t i = 0; i < kSearchTexts; ++i) {
-            for (size_t j = 0; j < kPatterns; ++j) {
-                const char * substr = strstr(texts[i].c_str(), patterns[j].c_str());
-                if (substr != nullptr) {
-                    Long index_of = (Long)(substr - texts[i].c_str());
-                    sum += index_of;
-                }
-                else {
-                    sum += (int)Status::NotFound;
-                }
-            }
-        }
-    }
-    sw.stop();
-
-    printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n\n",
-            (int)sum, sw.getMillisec());
-}
-
-void StringMatch_strstr_benchmark()
-{
-    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
-
-    test::StopWatch sw;
-    Long sum;
-
-    printf("---------------------------------------------------------------------\n");
-
-    StringRef texts[kSearchTexts];
-    for (size_t i = 0; i < kSearchTexts; ++i) {
-        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
-    }
-
-    StringRef patterns[kPatterns];
-    for (size_t i = 0; i < kPatterns; ++i) {
-        patterns[i].set_data(s_Patterns[i], strlen(s_Patterns[i]));
-    }
-
-    sum = 0;
-    sw.start();
-    for (size_t loop = 0; loop < iters; ++loop) {
-        for (size_t i = 0; i < kSearchTexts; ++i) {
-            for (size_t j = 0; j < kPatterns; ++j) {
-                const char * substr = strstr(texts[i].c_str(), patterns[j].c_str());
-                if (substr != nullptr) {
-                    int index_of = (int)(substr - texts[i].c_str());
-                    sum += index_of;
-                }
-                else {
-                    sum += (int)Status::NotFound;
-                }
-            }
-        }
-    }
-    sw.stop();
-
-    printf(" strstr()** [Preprocessing: no ] sum: %d, time: %0.3f ms\n\n",
-           (int)sum, sw.getMillisec());
-}
-
-template <typename AlgorithmTy>
-void StringMatch_benchmark1()
-{
-    typedef typename AlgorithmTy::Pattern pattern_type;
-
-    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
-
-    test::StopWatch sw;
-    double matching_time, full_time;
-    Long sum1, sum2;
-
-    printf("-----------------------------------------------------------\n");
-    printf("  Benchmark for: %s\n", AlgorithmTy::name());
-    printf("-----------------------------------------------------------\n\n");
-
-    StringRef texts[kSearchTexts];
-    for (size_t i = 0; i < kSearchTexts; ++i) {
-        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
-    }
-
-    pattern_type pattern[kPatterns];
-    for (size_t i = 0; i < kPatterns; ++i) {
-        pattern[i].preprocessing(s_Patterns[i]);
-    }
-
-#if 0
-    if (AlgorithmTy::need_preprocessing())
-        printf("need preprocessing: yes\n\n");
-    else
-        printf("need preprocessing: no\n\n");
-#endif
-
-    sum1 = 0;
-    sw.start();
-    for (size_t loop = 0; loop < iters; ++loop) {
-        for (size_t i = 0; i < kSearchTexts; ++i) {
-            for (size_t j = 0; j < kPatterns; ++j) {
-                Long index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
-                sum1 += index_of;
-            }
-        }
-    }
-    sw.stop();
-    matching_time = sw.getMillisec();
-
-    printf("[Preprocessing: no ] sum: %-11d, time: %0.3f ms\n", (int)sum1, matching_time);
-
-    if (AlgorithmTy::need_preprocessing()) {
-        sum2 = 0;
-        sw.start();
-        for (size_t loop = 0; loop < iters; ++loop) {
-            for (size_t i = 0; i < kSearchTexts; ++i) {
-                for (size_t j = 0; j < kPatterns; ++j) {
-                    Long index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
-                                                       pattern[j].c_str(), pattern[j].size());
-                    sum2 += index_of;
-                }
-            }
-        }
-        sw.stop();
-        full_time = sw.getMillisec();
-
-        printf("[Preprocessing: yes] sum: %-11d, time: %0.3f ms\n", (int)sum2, full_time);
-    }
-
-    printf("\n");
-}
-
-template <typename AlgorithmTy>
-void StringMatch_benchmark2()
-{
-    typedef typename AlgorithmTy::Pattern pattern_type;
-
-#if USE_BENCHMARK_TEST
-    static const size_t iters = 1;
-#else
-    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
-#endif
-
-    test::StopWatch sw;
-    double matching_time, full_time;
-    Long sum1, sum2;
-
-    printf("---------------------------------------------------------------------\n");
-
-    StringRef texts[kSearchTexts];
-    for (size_t i = 0; i < kSearchTexts; ++i) {
-        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
-    }
-
-    pattern_type pattern[kPatterns];
-    for (size_t i = 0; i < kPatterns; ++i) {
-        pattern[i].preprocessing(s_Patterns[i]);
-    }
-
-    sum1 = 0;
-    sw.start();
-    for (size_t loop = 0; loop < iters; ++loop) {
-        for (size_t i = 0; i < kSearchTexts; ++i) {
-            for (size_t j = 0; j < kPatterns; ++j) {
-                Long index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
-#if USE_BENCHMARK_TEST
-                printf("index_of = %d\n", (int)index_of);
-#endif
-                sum1 += index_of;
-            }
-#if USE_BENCHMARK_TEST
-            printf("\n");
-#endif
-        }
-    }
-    sw.stop();
-    matching_time = sw.getMillisec();
-
-    printf(" %s [Preprocessing: no ] sum: %d, time: %0.3f ms\n",
-           AlgorithmTy::name(), (int)sum1, matching_time);
-
-    if (AlgorithmTy::need_preprocessing()) {
-        sum2 = 0;
-        sw.start();
-        for (size_t loop = 0; loop < iters; ++loop) {
-            for (size_t i = 0; i < kSearchTexts; ++i) {
-                for (size_t j = 0; j < kPatterns; ++j) {
-                    Long index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
-                                                       pattern[j].c_str(), pattern[j].size());
-#if USE_BENCHMARK_TEST
-                    printf("index_of = %d\n", (int)index_of);
-#endif
-                    sum2 += index_of;
-                }
-#if USE_BENCHMARK_TEST
-                printf("\n");
-#endif
-            }
-        }
-        sw.stop();
-        full_time = sw.getMillisec();
-
-        printf(" %s [Preprocessing: yes] sum: %d, time: %0.3f ms\n",
-               AlgorithmTy::name(), (int)sum2, full_time);
-    }
-
-    printf("\n");
-}
-
 template <typename AlgorithmTy>
 void StringMatch_benchmark()
 {
     typedef typename AlgorithmTy::Pattern pattern_type;
 
-#if USE_BENCHMARK_TEST
+#if SWITCH_BENCHMARK_TEST
     static const size_t iters = 1;
 #else
     static const size_t iters = kIterations / (kSearchTexts * kPatterns);
 #endif
 
     test::StopWatch sw;
-    double matching_time, full_time;
-    Long sum1, sum2;
+    double preprocessing_time, searching_time, full_searching_time;
+    Long searching_sum, full_searching_sum;
 
 #if USE_ALIGNED_PATTAEN
     // Let search texts first address align for 16 bytes.
     StringRef texts[kSearchTexts];
     char * text_data[kPatterns];
     for (size_t i = 0; i < kSearchTexts; ++i) {
-        size_t length = strlen(s_SearchTexts[i]);
+        size_t length = ::strlen(SearchTexts[i]);
 
         // Don't use C++11 alloc aligned memory version:
         // void * aligned_alloc(size_t alignment, size_t size);
         // is for more versatility.
 #if defined(_MSC_VER)
-        text_data[i] = (char *)_aligned_malloc(length + 1, 16);
+        text_data[i] = (char *)::_aligned_malloc(length + 1, 16);
 #else
         text_data[i] = nullptr;
-        int err = posix_memalign((void **)&text_data[i], 16, length + 1);
+        int err = ::posix_memalign((void **)&text_data[i], 16, length + 1);
         if (text_data[i] == nullptr)
             return;
 #endif
-        memcpy((void *)text_data[i], (const void *)s_SearchTexts[i], length + 1);
+        ::memcpy((void *)text_data[i], (const void *)SearchTexts[i], length + 1);
         texts[i].set_data(text_data[i], length);
     }
 #else
     StringRef texts[kSearchTexts];
     for (size_t i = 0; i < kSearchTexts; ++i) {
-        texts[i].set_data(s_SearchTexts[i], strlen(s_SearchTexts[i]));
+        texts[i].set_data(SearchTexts[i], ::strlen(SearchTexts[i]));
     }
-#endif
+#endif // USE_ALIGNED_PATTAEN
 
 #if USE_ALIGNED_PATTAEN
     // Let pattern first address align for 16 bytes.
     StringRef pattern_ref[kPatterns];
     char * pattern_data[kPatterns];
     for (size_t i = 0; i < kPatterns; ++i) {
-        size_t length = strlen(s_Patterns[i]);
+        size_t length = ::strlen(Patterns[i]);
 
         // Don't use C++11 alloc aligned memory version:
         // void * aligned_alloc(size_t alignment, size_t size);
         // is for more versatility.
 #if defined(_MSC_VER)
-        pattern_data[i] = (char *)_aligned_malloc(length + 1, 16);
+        pattern_data[i] = (char *)::_aligned_malloc(length + 1, 16);
 #else
         pattern_data[i] = nullptr;
-        int err = posix_memalign((void **)&pattern_data[i], 16, length + 1);
+        int err = ::posix_memalign((void **)&pattern_data[i], 16, length + 1);
         if (pattern_data[i] == nullptr)
             return;
 #endif
-        memcpy((void *)pattern_data[i], (const void *)s_Patterns[i], length + 1);
+        ::memcpy((void *)pattern_data[i], (const void *)Patterns[i], length + 1);
         pattern_ref[i].set_data(pattern_data[i], length);
     }
 
+    // Preprocessing
     pattern_type pattern[kPatterns];
     for (size_t i = 0; i < kPatterns; ++i) {
         pattern[i].preprocessing(pattern_ref[i]);
@@ -511,50 +306,45 @@ void StringMatch_benchmark()
 #else
     pattern_type pattern[kPatterns];
     for (size_t i = 0; i < kPatterns; ++i) {
-        pattern[i].preprocessing(s_Patterns[i]);
+        pattern[i].preprocessing(Patterns[i]);
     }
-#endif
+#endif // USE_ALIGNED_PATTAEN
 
-    sum1 = 0;
+    // Searching
+    searching_sum = 0;
     sw.start();
     for (size_t loop = 0; loop < iters; ++loop) {
         for (size_t i = 0; i < kSearchTexts; ++i) {
             for (size_t j = 0; j < kPatterns; ++j) {
                 Long index_of = pattern[j].match(texts[i].c_str(), texts[i].size());
-#if USE_BENCHMARK_TEST
+#if SWITCH_BENCHMARK_TEST
                 printf("index_of = %d\n", (int)index_of);
 #endif
-                sum1 += index_of;
+                searching_sum += index_of;
             }
-#if USE_BENCHMARK_TEST
+#if SWITCH_BENCHMARK_TEST
             printf("\n");
 #endif
         }
     }
     sw.stop();
-    matching_time = sw.getMillisec();
+    searching_time = sw.getMillisec();
 
-    std::string strName = AlgorithmTy::name();
+    // Full searching
+    full_searching_sum = 0;
     if (AlgorithmTy::need_preprocessing()) {
-        strName += " (*)";
-    }
-
-    printf("  %-22s   %-12d    %8.3f ms\n", strName.c_str(), (int)sum1, matching_time);
-
-    if (AlgorithmTy::need_preprocessing()) {
-        sum2 = 0;
         sw.start();
         for (size_t loop = 0; loop < iters; ++loop) {
             for (size_t i = 0; i < kSearchTexts; ++i) {
                 for (size_t j = 0; j < kPatterns; ++j) {
                     Long index_of = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
                                                        pattern[j].c_str(), pattern[j].size());
-#if USE_BENCHMARK_TEST
+#if SWITCH_BENCHMARK_TEST
                     printf("index_of = %d\n", (int)index_of);
 #endif
-                    sum2 += index_of;
+                    full_searching_sum += index_of;
                 }
-#if USE_BENCHMARK_TEST
+#if SWITCH_BENCHMARK_TEST
                 printf("\n");
 #endif
             }
@@ -564,18 +354,30 @@ void StringMatch_benchmark()
             //}
         }
         sw.stop();
-        full_time = sw.getMillisec();
+        full_searching_time = sw.getMillisec();
+    }
 
-        printf("  %-22s   %-12d    %8.3f ms\n", AlgorithmTy::name(), (int)sum2, full_time);
+    if (AlgorithmTy::need_preprocessing()) {
+        preprocessing_time = full_searching_time - searching_time;
+        if (preprocessing_time < 0.0)
+            preprocessing_time = 0.0;
+        printf("  %-22s   %-12u    %8.3f ms    %8.3f ms    %8.3f ms\n",
+               AlgorithmTy::name(), (unsigned int)((searching_sum + full_searching_sum) / 2),
+               preprocessing_time, searching_time, full_searching_time);
+    }
+    else {
+        printf("  %-22s   %-12u       -----       %8.3f ms       -----   \n",
+               AlgorithmTy::name(), (unsigned int)(searching_sum + full_searching_sum),
+               searching_time);
     }
 
 #if USE_ALIGNED_PATTAEN
     for (size_t i = 0; i < kSearchTexts; ++i) {
         if (text_data[i] != nullptr) {
 #if defined(_MSC_VER)
-            _aligned_free(text_data[i]);
+            ::_aligned_free(text_data[i]);
 #else
-            free(text_data[i]);
+            ::free(text_data[i]);
 #endif
             text_data[i] = nullptr;
         }
@@ -584,9 +386,9 @@ void StringMatch_benchmark()
     for (size_t i = 0; i < kPatterns; ++i) {
         if (pattern_data[i] != nullptr) {
 #if defined(_MSC_VER)
-            _aligned_free(pattern_data[i]);
+            ::_aligned_free(pattern_data[i]);
 #else
-            free(pattern_data[i]);
+            ::free(pattern_data[i]);
 #endif
             pattern_data[i] = nullptr;
         }
@@ -616,26 +418,22 @@ int main(int argc, char * argv[])
 
     StringMatch_usage_examples();
 
-    //StringMatch_unittest<AnsiString::StrStr>();
-    //StringMatch_unittest<AnsiString::MyMemMem>();
-    //StringMatch_unittest<AnsiString::SSEStrStr>();
-
 #if 0
     StringMatch_unittest<AnsiString::StrStr>();
     StringMatch_unittest<AnsiString::MemMem>();
+    StringMatch_unittest<AnsiString::MyMemMem>();
+    StringMatch_unittest<AnsiString::SSEStrStr>();
     StringMatch_unittest<AnsiString::Kmp>();
     StringMatch_unittest<AnsiString::BoyerMoore>();
     StringMatch_unittest<AnsiString::ShiftOr>();
 #endif
 
-    //StringMatch_strstr_benchmark();
-
-#if USE_BENCHMARK_TEST
+#if SWITCH_BENCHMARK_TEST
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr>();
 #else
-    printf("  Algorithm Name           CheckSum        Elapsed Time\n");
-    printf("----------------------------------------------------------------\n");
+    printf("  Algorithm Name           CheckSum       Preprocessing   Search Time    Full Search Time\n");
+    printf("---------------------------------------------------------------------------------------------\n");
 
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr>();
@@ -645,14 +443,18 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::MyStrStr>();
     printf("\n");
     StringMatch_benchmark<AnsiString::MemMem>();
+#if 0
     StringMatch_benchmark<AnsiString::MyMemMem>();
     StringMatch_benchmark<AnsiString::MyMemMemBw>();
+#endif
     printf("\n");
     StringMatch_benchmark<AnsiString::StdSearch>();
     printf("\n");
 #if TEST_ALL_BENCHMARK
     StringMatch_benchmark<AnsiString::Kmp>();
+#if 0
     StringMatch_benchmark<AnsiString::Kmp2>();
+#endif
     printf("\n");
     StringMatch_benchmark<AnsiString::BoyerMoore>();
 #endif
@@ -666,10 +468,12 @@ int main(int argc, char * argv[])
 #endif
     StringMatch_benchmark<AnsiString::ShiftOr>();
     printf("\n");
+#if ENABLE_AHOCORASICK_TEST
     StringMatch_benchmark<AnsiString::AhoCorasick>();
+#endif
 
-    printf("----------------------------------------------------------------\n");
-    printf("  ps: (*) indicates that not included the preprocessing time.\n");
+    printf("---------------------------------------------------------------------------------------------\n");
+    //printf("  ps: (*) indicates that not included the preprocessing time.\n");
     printf("\n");
 #endif
 

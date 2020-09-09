@@ -17,7 +17,7 @@
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
 
-#if defined(_MSC_VER) || 1
+#if defined(_MSC_VER)
 #define memmem  memmem_msvc
 #endif // _MSC_VER
 

@@ -153,7 +153,7 @@ struct AlgorithmWrapper {
         // Pattern::preprocessing()
         bool preprocessing(const char_type * pattern, size_type length) {
             assert(pattern != nullptr);
-            bool success = this->internal_preprocessing(pattern, length);
+            bool success = this->preprocessing_impl(pattern, length);
             this->compiled_ = success;
             return success;
         }
@@ -229,7 +229,7 @@ struct AlgorithmWrapper {
             this->algorithm_.destroy();
         }
 
-        bool internal_preprocessing(const char_type * pattern, size_type length) {
+        bool preprocessing_impl(const char_type * pattern, size_type length) {
             this->pattern_.set_data(pattern, length);
             return this->algorithm_.preprocessing(pattern, length);
         }
@@ -320,7 +320,7 @@ struct AlgorithmWrapper {
         // Matcher::find(text, length, pattern);
         Long find(const char_type * text, size_type length, const Pattern & pattern) {
             assert(text != nullptr);
-            return this->internal_find(text, length, pattern);
+            return this->find_impl(text, length, pattern);
         }
 
         Long find(const char_type * text, const Pattern & pattern) {
@@ -358,7 +358,7 @@ struct AlgorithmWrapper {
         }
 
     private:
-        Long internal_find(const char_type * text, size_type text_len, const Pattern & pattern) {
+        Long find_impl(const char_type * text, size_type text_len, const Pattern & pattern) {
             this->text_.set_data(text, text_len);
             return pattern.match(text, text_len);
         }
