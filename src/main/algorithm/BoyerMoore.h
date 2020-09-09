@@ -230,11 +230,11 @@ private:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< BoyerMooreImpl<char> >    BoyerMoore;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< BoyerMooreImpl<wchar_t> > BoyerMoore;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

@@ -44,6 +44,7 @@
 #include "algorithm/BMTuned.h"
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
+#include "algorithm/Rabin-Karp.h"
 #include "algorithm/AhoCorasick.h"
 
 using namespace StringMatch;
@@ -461,15 +462,17 @@ int main(int argc, char * argv[])
     printf("\n");
     StringMatch_benchmark<AnsiString::BoyerMoore>();
 #endif
+    StringMatch_benchmark<AnsiString::BMTuned>();
     StringMatch_benchmark<AnsiString::Sunday>();
     StringMatch_benchmark<AnsiString::Horspool>();
     StringMatch_benchmark<AnsiString::QuickSearch>();
-    StringMatch_benchmark<AnsiString::BMTuned>();
     printf("\n");
 #if TEST_ALL_BENCHMARK
     StringMatch_benchmark<AnsiString::ShiftAnd>();
 #endif
     StringMatch_benchmark<AnsiString::ShiftOr>();
+    StringMatch_benchmark<AnsiString::RabinKarp2>();
+    StringMatch_benchmark<AnsiString::RabinKarp31>();
     printf("\n");
 #if ENABLE_AHOCORASICK_TEST
     StringMatch_benchmark<AnsiString::AhoCorasick>();

@@ -21,11 +21,7 @@ public:
     typedef CharTy              char_type;
     typedef std::size_t         size_type;
 
-private:
-    bool alive_;
-
-public:
-    StrStrImpl() : alive_(true) {}
+    StrStrImpl() {}
     ~StrStrImpl() {
         this->destroy();
     }
@@ -33,10 +29,9 @@ public:
     static const char * name() { return "strstr()"; }
     static bool need_preprocessing() { return false; }
 
-    bool is_alive() const { return this->alive_; }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -66,11 +61,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< StrStrImpl<char> >    StrStr;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< StrStrImpl<wchar_t> > StrStr;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

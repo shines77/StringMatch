@@ -548,11 +548,7 @@ public:
     typedef CharTy                  char_type;
     typedef std::size_t             size_type;
 
-private:
-    bool alive_;
-
-public:
-    SSEStrStrImpl() : alive_(true) {}
+    SSEStrStrImpl() {}
     ~SSEStrStrImpl() {
         this->destroy();
     }
@@ -560,10 +556,9 @@ public:
     static const char * name() { return "strstr_sse42()"; }
     static bool need_preprocessing() { return false; }
 
-    bool is_alive() const { return this->alive_; }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -589,11 +584,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< SSEStrStrImpl<char> >     SSEStrStr;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< SSEStrStrImpl<wchar_t> >  SSEStrStr;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

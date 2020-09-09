@@ -172,11 +172,7 @@ public:
     typedef CharTy                  char_type;
     typedef std::size_t             size_type;
 
-private:
-    bool alive_;
-
-public:
-    MyMemMemImpl() : alive_(true) {}
+    MyMemMemImpl() {}
     ~MyMemMemImpl() {
         this->destroy();
     }
@@ -184,10 +180,9 @@ public:
     static const char * name() { return "my_memmem()"; }
     static bool need_preprocessing() { return false; }
 
-    bool is_alive() const { return this->alive_; }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -213,11 +208,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< MyMemMemImpl<char> >    MyMemMem;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< MyMemMemImpl<wchar_t> > MyMemMem;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

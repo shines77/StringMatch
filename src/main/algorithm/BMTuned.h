@@ -32,11 +32,10 @@ public:
     static const size_t kMaxAscii = 256;
 
 private:
-    bool alive_;
     int bmBc_[kMaxAscii];
 
 public:
-    BMTunedImpl() : alive_(false) {}
+    BMTunedImpl() {}
     ~BMTunedImpl() {
         this->destroy();
     }
@@ -44,12 +43,9 @@ public:
     static const char * name() { return "BM Tuned"; }
     static bool need_preprocessing() { return true; }
 
-    bool is_alive() const {
-        return this->alive_;
-    }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing bad characters. */
@@ -74,7 +70,6 @@ public:
         int * bmBc = (int *)&this->bmBc_[0];
         this_type::preBmBc(pattern, length, bmBc);
 
-        this->alive_ = true;
         return true;
     }
 
@@ -156,11 +151,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< BMTunedImpl<char> >    BMTuned;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< BMTunedImpl<wchar_t> > BMTuned;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

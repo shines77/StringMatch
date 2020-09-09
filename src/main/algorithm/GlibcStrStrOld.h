@@ -126,11 +126,7 @@ public:
     typedef CharTy                      char_type;
     typedef std::size_t                 size_type;
 
-private:
-    bool alive_;
-
-public:
-    GlibcStrStrOldImpl() : alive_(true) {}
+    GlibcStrStrOldImpl() {}
     ~GlibcStrStrOldImpl() {
         this->destroy();
     }
@@ -138,10 +134,9 @@ public:
     static const char * name() { return "strstr_glibc_old()"; }
     static bool need_preprocessing() { return false; }
 
-    bool is_alive() const { return this->alive_; }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -167,11 +162,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< GlibcStrStrOldImpl<char> >    GlibcStrStrOld;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< GlibcStrStrOldImpl<wchar_t> > GlibcStrStrOld;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

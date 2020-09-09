@@ -160,5 +160,8 @@
     <ClInclude Include="..\..\..\src\main\jstd\vector.h">
       <Filter>src\jstd</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\Rabin-Karp.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

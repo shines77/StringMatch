@@ -32,11 +32,10 @@ public:
     static const size_t kMaxAscii = 256;
 
 private:
-    bool alive_;
     int shift_[kMaxAscii];
 
 public:
-    SundayImpl() : alive_(false) {}
+    SundayImpl() {}
     ~SundayImpl() {
         this->destroy();
     }
@@ -44,12 +43,9 @@ public:
     static const char * name() { return "Sunday"; }
     static bool need_preprocessing() { return true; }
 
-    bool is_alive() const {
-        return this->alive_;
-    }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -64,7 +60,6 @@ public:
             this->shift_[(uchar_type)pattern[i]] = (int)(length - i);
         }
 
-        this->alive_ = true;
         return true;
     }
 
@@ -110,11 +105,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< SundayImpl<char> >    Sunday;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< SundayImpl<wchar_t> > Sunday;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

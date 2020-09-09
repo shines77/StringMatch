@@ -31,11 +31,10 @@ public:
     static const size_t kMaxAscii = 256;
 
 private:
-    bool alive_;
     int qsBc_[kMaxAscii];
 
 public:
-    QuickSearchImpl() : alive_(false) {}
+    QuickSearchImpl() {}
     ~QuickSearchImpl() {
         this->destroy();
     }
@@ -43,12 +42,9 @@ public:
     static const char * name() { return "QuickSearch"; }
     static bool need_preprocessing() { return true; }
 
-    bool is_alive() const {
-        return this->alive_;
-    }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -63,7 +59,6 @@ public:
             this->qsBc_[(uchar_type)pattern[i]] = (int)(length - i);
         }
 
-        this->alive_ = true;
         return true;
     }
 
@@ -115,11 +110,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< QuickSearchImpl<char> >       QuickSearch;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< QuickSearchImpl<wchar_t> >    QuickSearch;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

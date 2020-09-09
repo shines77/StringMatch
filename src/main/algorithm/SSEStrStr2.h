@@ -110,18 +110,18 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
     uint64_t * mask_128i = (uint64_t *)&__mask;
     if (likely(mask_128i[0] != 0 || mask_128i[1] != 0)) {
         /* strlen(pattern) < kMaxSize (16 or 8) */
-#if 1
+#if 0
         do {
-            __text = _mm_loadu_si128((const __m128i *)text);
+            __text = _mm_loadu_si128((const __m128i *)t);
 
             offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
             t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
 
             if (likely(offset != 0)) {
-                text += offset;
+                t += offset;
             }
             else {
-                return text;
+                return t;
             }
         } while ((t_has_null == 0) || (t_has_null != 0 && offset < kMaxSize));
 
@@ -181,10 +181,9 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
 
                         offset = _mm_cmpistri(__pattern, __text, kEqualOrdered);
                         t_has_null = _mm_cmpistrz(__pattern, __text, kEqualOrdered);
+                        p_has_null = _mm_cmpistrs(__pattern, __text, kEqualOrdered);
                         if (likely(offset != 0))
                             break;
-
-                        p_has_null = _mm_cmpistrs(__pattern, __text, kEqualOrdered);
                     } while (t_has_null == 0 && p_has_null == 0);
 
                     if (likely(offset != 0)) {
@@ -216,11 +215,7 @@ public:
     typedef CharTy                  char_type;
     typedef std::size_t             size_type;
 
-private:
-    bool alive_;
-
-public:
-    SSEStrStr2Impl() : alive_(true) {}
+    SSEStrStr2Impl() {}
     ~SSEStrStr2Impl() {
         this->destroy();
     }
@@ -228,10 +223,9 @@ public:
     static const char * name() { return "strstr_sse42_v2()"; }
     static bool need_preprocessing() { return false; }
 
-    bool is_alive() const { return this->alive_; }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -257,11 +251,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< SSEStrStr2Impl<char> >    SSEStrStr2;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< SSEStrStr2Impl<wchar_t> > SSEStrStr2;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

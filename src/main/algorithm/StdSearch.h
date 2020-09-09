@@ -27,11 +27,7 @@ public:
     typedef CharTy                  char_type;
     typedef std::size_t             size_type;
 
-private:
-    bool alive_;
-
-public:
-    StdSearchImpl() : alive_(true) {}
+    StdSearchImpl() {}
     ~StdSearchImpl() {
         this->destroy();
     }
@@ -39,10 +35,9 @@ public:
     static const char * name() { return "std::search()"; }
     static bool need_preprocessing() { return false; }
 
-    bool is_alive() const { return this->alive_; }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -83,11 +78,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< StdSearchImpl<char> >    StdSearch;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< StdSearchImpl<wchar_t> > StdSearch;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

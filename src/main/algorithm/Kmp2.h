@@ -102,11 +102,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< KmpImpl2<char> >    Kmp2;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< KmpImpl2<wchar_t> > Kmp2;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

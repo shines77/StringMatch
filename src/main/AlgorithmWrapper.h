@@ -395,11 +395,11 @@ Long AlgorithmWrapper<AlgorithmTy>::Pattern::match(
 
 namespace AnsiString {
     typedef AlgorithmWrapper< AhoCorasickImpl<char> >       AhoCorasick;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< AhoCorasickImpl<wchar_t> >    AhoCorasick;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 

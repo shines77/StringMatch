@@ -28,11 +28,10 @@ public:
 
 private:
     mask_type mask_;
-    bool alive_;
     mask_type bitmap_[kMaxAscii];
 
 public:
-    ShiftAndImpl() : mask_(0), alive_(true) {}
+    ShiftAndImpl() : mask_(0) {}
     ~ShiftAndImpl() {
         this->destroy();
     }
@@ -40,20 +39,21 @@ public:
     static const char * name() { return "ShiftAnd"; }
     static bool need_preprocessing() { return true; }
 
-    bool is_alive() const {
-        return this->alive_;
-    }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
     bool preprocessing(const char_type * pattern, size_type length) {
         assert(pattern != nullptr);
 
+#if 1
+        ::memset((void *)&this->bitmap_[0], 0, kMaxAscii * sizeof(mask_type));
+#else
         for (size_t i = 0; i < kMaxAscii; ++i)
             this->bitmap_[i] = 0;
+#endif
 
         mask_type mask = 1;
         for (size_t i = 0; i < length; ++i) {
@@ -93,19 +93,19 @@ public:
  || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
 namespace AnsiString {
     typedef AlgorithmWrapper< ShiftAndImpl<char, uint64_t> >    ShiftAnd;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< ShiftAndImpl<wchar_t, uint64_t> > ShiftAnd;
-} // namespace UnicodeString
+}
 #else
 namespace AnsiString {
     typedef AlgorithmWrapper< ShiftAndImpl<char, uint32_t> >    ShiftAnd;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< ShiftAndImpl<wchar_t, uint32_t> > ShiftAnd;
-} // namespace UnicodeString
+}
 #endif // _WIN64 || __amd64__
 
 } // namespace StringMatch

@@ -31,11 +31,10 @@ public:
     static const size_t kMaxAscii = 256;
 
 private:
-    bool alive_;
     int hpBc_[kMaxAscii];
 
 public:
-    HorspoolImpl() : alive_(false) {}
+    HorspoolImpl() {}
     ~HorspoolImpl() {
         this->destroy();
     }
@@ -43,12 +42,9 @@ public:
     static const char * name() { return "Horspool"; }
     static bool need_preprocessing() { return true; }
 
-    bool is_alive() const {
-        return this->alive_;
-    }
+    bool is_alive() const { return true; }
 
     void destroy() {
-        this->alive_ = false;
     }
 
     /* Preprocessing */
@@ -63,7 +59,6 @@ public:
             this->hpBc_[(uchar_type)pattern[i]] = (int)((Long)length - 1 - i);
         }
 
-        this->alive_ = true;
         return true;
     }
 
@@ -115,11 +110,11 @@ public:
 
 namespace AnsiString {
     typedef AlgorithmWrapper< HorspoolImpl<char> >      Horspool;
-} // namespace AnsiString
+}
 
 namespace UnicodeString {
     typedef AlgorithmWrapper< HorspoolImpl<wchar_t> >   Horspool;
-} // namespace UnicodeString
+}
 
 } // namespace StringMatch
 
