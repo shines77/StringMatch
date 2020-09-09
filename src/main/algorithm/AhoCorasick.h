@@ -160,7 +160,7 @@ public:
     static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
-        return (this->root_->get() != nullptr);
+        return (this->root_.get() != nullptr);
     }
 
     void init() {
