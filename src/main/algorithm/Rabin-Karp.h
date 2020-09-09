@@ -100,7 +100,7 @@ public:
             }
 
             for (size_type i = 0; i < (text_len - pattern_len); ++i) {
-                // a + bcd + e, abcd
+                // Double check: a + bcd + e, abcd
                 if (unlikely(hash_code == this->pattern_code_)) {
                     if (::memcmp((const void *)&text[i], (const void *)&pattern[0],
                                  pattern_len * sizeof(char_type)) == 0) {
