@@ -121,6 +121,36 @@ static const char * Patterns[] = {
 static const size_t kSearchTexts = sm_countof_i(SearchTexts);
 static const size_t kPatterns = sm_countof_i(Patterns);
 
+static const int kWarmupMillsecs = 600;
+
+void cpu_warmup(int delayTime)
+{
+#if defined(NDEBUG)
+    double startTime, stopTime;
+    double delayTimeLimit = (double)delayTime / 1000.0;
+    volatile int sum = 0;
+
+    printf("CPU warm-up begin ...\n");
+    fflush(stdout);
+    startTime = test::StopWatch::timestamp();
+    double elapsedTime;
+    do {
+        for (int i = 0; i < 500; ++i) {
+            sum += i;
+            for (int j = 5000; j >= 0; --j) {
+                sum -= j;
+            }
+        }
+        stopTime = test::StopWatch::timestamp();
+        elapsedTime = stopTime - startTime;
+    } while (elapsedTime < delayTimeLimit);
+
+    printf("sum = %u, time: %0.3f ms\n", sum, elapsedTime * 1000.0);
+    printf("CPU warm-up end   ... \n\n");
+    fflush(stdout);
+#endif // !_DEBUG
+}
+
 void StringMatch_usage_examples()
 {
     // Usage 1
@@ -421,6 +451,8 @@ int main(int argc, char * argv[])
     print_arch_type();
 
     StringMatch_usage_examples();
+
+    cpu_warmup(1000);
 
 #if 0
     StringMatch_unittest<AnsiString::StrStr>();
