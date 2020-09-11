@@ -36,7 +36,7 @@
 #include "algorithm/MyMemMemBw.h"
 #include "algorithm/StdSearch.h"
 #include "algorithm/Kmp.h"
-#include "algorithm/Kmp2.h"
+#include "algorithm/KmpStd.h"
 #include "algorithm/BoyerMoore.h"
 #include "algorithm/Sunday.h"
 #include "algorithm/Horspool.h"
@@ -486,11 +486,9 @@ int main(int argc, char * argv[])
     printf("\n");
     StringMatch_benchmark<AnsiString::StdSearch>();
     printf("\n");
-#if TEST_ALL_BENCHMARK
     StringMatch_benchmark<AnsiString::Kmp>();
-#if 0
-    StringMatch_benchmark<AnsiString::Kmp2>();
-#endif
+#if TEST_ALL_BENCHMARK
+    StringMatch_benchmark<AnsiString::KmpStd>();
     printf("\n");
     StringMatch_benchmark<AnsiString::BoyerMoore>();
 #endif

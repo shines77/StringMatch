@@ -17,9 +17,9 @@
 namespace StringMatch {
 
 template <typename CharTy>
-class KmpImpl2 {
+class KmpStdImpl {
 public:
-    typedef KmpImpl2<CharTy>    this_type;
+    typedef KmpStdImpl<CharTy>    this_type;
     typedef CharTy              char_type;
     typedef std::size_t         size_type;
 
@@ -27,12 +27,12 @@ private:
     jstd::scoped_array<int> kmp_next_;
 
 public:
-    KmpImpl2() : kmp_next_() {}
-    ~KmpImpl2() {
+    KmpStdImpl() : kmp_next_() {}
+    ~KmpStdImpl() {
         this->destroy();
     }
 
-    static const char * name() { return "Kmp2"; }
+    static const char * name() { return "Kmp (Standard)"; }
     static bool need_preprocessing() { return true; }
 
     bool is_alive() const {
@@ -101,11 +101,11 @@ public:
 };
 
 namespace AnsiString {
-    typedef AlgorithmWrapper< KmpImpl2<char> >    Kmp2;
+    typedef AlgorithmWrapper< KmpStdImpl<char> >    KmpStd;
 }
 
 namespace UnicodeString {
-    typedef AlgorithmWrapper< KmpImpl2<wchar_t> > Kmp2;
+    typedef AlgorithmWrapper< KmpStdImpl<wchar_t> > KmpStd;
 }
 
 } // namespace StringMatch

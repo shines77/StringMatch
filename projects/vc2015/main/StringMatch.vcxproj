@@ -29,7 +29,7 @@
     <ClInclude Include="..\..\..\src\main\algorithm\GlibcStrStrOld.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\Horspool.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\Kmp.h" />
-    <ClInclude Include="..\..\..\src\main\algorithm\Kmp2.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\KmpStd.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\MemMem.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\MyMemMem.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\MyMemMemBw.h" />
