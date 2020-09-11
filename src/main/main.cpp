@@ -20,7 +20,7 @@
 #define USE_ALIGNED_PATTAEN         1
 
 #define SWITCH_BENCHMARK_TEST       0
-#define ENABLE_AHOCORASICK_TEST     1
+#define ENABLE_AHOCORASICK_TEST     0
 
 #include "StringMatch.h"
 #include "support/StopWatch.h"
