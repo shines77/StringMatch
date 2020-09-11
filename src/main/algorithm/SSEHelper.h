@@ -18,6 +18,27 @@ struct SSEHelper {
 };
 
 template <>
+struct SSEHelper<char> {
+    static const int _SIDD_CHAR_OPS = _SIDD_UBYTE_OPS;
+    static const int kMaxSize = 8;
+    static const int kWordSize = 2;
+};
+
+template <>
+struct SSEHelper<signed char> {
+    static const int _SIDD_CHAR_OPS = _SIDD_UBYTE_OPS;
+    static const int kMaxSize = 8;
+    static const int kWordSize = 2;
+};
+
+template <>
+struct SSEHelper<unsigned char> {
+    static const int _SIDD_CHAR_OPS = _SIDD_UBYTE_OPS;
+    static const int kMaxSize = 8;
+    static const int kWordSize = 2;
+};
+
+template <>
 struct SSEHelper<short> {
     static const int _SIDD_CHAR_OPS = _SIDD_UWORD_OPS;
     static const int kMaxSize = 8;

@@ -68,7 +68,7 @@ namespace StringMatch {
 template <typename char_type>
 static
 SM_NOINLINE_DECLARE(const char_type *)
-strstr_sse42_v2(const char_type * text, const char_type * pattern) {
+strstr_sse42_v2a(const char_type * text, const char_type * pattern) {
     static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
     static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
 
@@ -206,6 +206,90 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
 
         return nullptr;
     }
+}
+
+//
+// See: https://www.strchr.com/strcmp_and_strlen_using_sse_4.2
+//
+template <typename char_type>
+static
+SM_NOINLINE_DECLARE(const char_type *)
+strstr_sse42_v2(const char_type * text, const char_type * pattern) {
+    static const int kMaxSize = SSEHelper<char_type>::kMaxSize;
+    static const int _SIDD_CHAR_OPS = SSEHelper<char_type>::_SIDD_CHAR_OPS;
+
+    static const int kEqualOrdered = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_ORDERED
+                                   | _SIDD_POSITIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+
+    static const int kEqualEach = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
+                                | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+    static const int kEqualEachMask = kEqualEach | _SIDD_UNIT_MASK;
+
+    const char_type * t = text;
+    const char_type * p = pattern;
+
+    const char_type * t_16;
+    const char_type * p_16;
+
+    int offset, matched;
+    int t_has_null, p_has_null;
+
+    __m128i __text, __pattern, __pattern_0;
+    __m128i __zero, __mask;
+
+    assert(text != nullptr);
+    assert(pattern != nullptr);
+
+    // load the first 16 bytes of pattern
+    __pattern_0 = _mm_loadu_si128((const __m128i *)p);
+    __zero = _mm_setzero_si128();
+
+    t -= 16;
+
+    do {
+        // find the first possible match of 16-byte fragment in text
+        do {
+            t += 16;
+            __text = _mm_loadu_si128((const __m128i *)t);
+            matched    = _mm_cmpistrc(__pattern_0, __text, kEqualOrdered);
+            t_has_null = _mm_cmpistrz(__pattern_0, __text, kEqualOrdered);
+            offset     = _mm_cmpistri(__pattern_0, __text, kEqualOrdered);
+        } while (matched == 0 && t_has_null == 0);     // ja: ~CF & ~ZF
+
+        if (matched == 0) {
+            return nullptr;
+        }
+
+        // save the possible match start
+        t += offset;
+
+        t_16 = t;
+        p_16 = p;
+
+        // compare the strings
+        do {
+            __pattern = _mm_loadu_si128((const __m128i *)p_16);
+            // mask out invalid bytes in the text
+            __mask = _mm_cmpistrm(__zero, __pattern, kEqualEachMask);
+            p_16 += 16;
+            __text = _mm_loadu_si128((const __m128i *)t_16);
+            t_16 += 16;
+            __text = _mm_and_si128(__text, __mask);
+
+            matched    = _mm_cmpistrc(__pattern, __text, kEqualEach);
+            p_has_null = _mm_cmpistrz(__pattern, __text, kEqualEach);
+            offset     = _mm_cmpistri(__pattern, __text, kEqualEach);
+        } while (matched == 0 && p_has_null == 0);     // ja: ~CF & ~ZF
+
+        if (matched == 0) {
+            return t;
+        }
+
+        // continue searching from the next byte
+        t -= 15;
+    } while (1);
+
+    return nullptr;
 }
 
 template <typename CharTy>

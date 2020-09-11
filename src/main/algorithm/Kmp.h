@@ -65,23 +65,23 @@ public:
 
     /* Searching */
     SM_NOINLINE_DECLARE(Long)
-    search(const char_type * text_start, size_type text_len,
-           const char_type * pattern_start, size_type pattern_len) const {
-        assert(text_start != nullptr);
-        assert(pattern_start != nullptr);
+    search(const char_type * text_first, size_type text_len,
+           const char_type * pattern_first, size_type pattern_len) const {
+        assert(text_first != nullptr);
+        assert(pattern_first != nullptr);
 
         int * kmp_next = this->kmp_next_.get();
         assert(kmp_next != nullptr);
 
         if (likely(pattern_len <= text_len)) {
-            register const char_type * text = text_start;
-            register const char_type * pattern = pattern_start;
+            register const char_type * text = text_first;
+            register const char_type * pattern = pattern_first;
 
-            const char_type * text_end = text_start + (text_len - pattern_len);
+            const char_type * text_end = text_first + (text_len - pattern_len);
             const char_type * pattern_end = pattern + pattern_len;
             do {
                 if (likely(*text != *pattern)) {
-                    int matched_chars = (int)(pattern - pattern_start);
+                    int matched_chars = (int)(pattern - pattern_first);
                     if (likely(matched_chars == 0)) {
                         text++;
                         if (likely(text <= text_end)) {
@@ -97,7 +97,7 @@ public:
                         int partial_matched = kmp_next[matched_chars];
                         int text_offset = matched_chars - partial_matched;
                         assert(text_offset >= 1);
-                        pattern = pattern_start + partial_matched;
+                        pattern = pattern_first + partial_matched;
                         text = text + text_offset;
                         if (unlikely(text > text_end)) {
                             // Not found
@@ -110,11 +110,11 @@ public:
                     pattern++;
                     if (likely(pattern >= pattern_end)) {
                         // Has found
-                        Long index_of = (Long)((text - text_start) - (intptr_t)pattern_len);
+                        Long index_of = (Long)((text - text_first) - (intptr_t)pattern_len);
                         assert(index_of >= 0);
                         return index_of;
                     }
-                    assert(text < (text_start + text_len));
+                    assert(text < (text_first + text_len));
                 }
             } while (1);
         }
