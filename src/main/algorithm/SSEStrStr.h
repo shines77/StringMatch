@@ -559,7 +559,7 @@ strstr_sse42_v1c2(const char_type * text, const char_type * pattern) {
     __m128i __text, __pattern, __zero, __mask;
     int offset;
     int matched;
-    int t_has_null;
+    int t_has_null, p_has_null;
 
     assert(text != nullptr);
     assert(pattern != nullptr);
@@ -645,9 +645,10 @@ STRSTR_MAIN_LOOP:
                     t += kMaxSize;
                     p += kMaxSize;
                     int full_matched = _mm_cmpistrc(__patt, __text, kEqualEach);
-                    int p_has_null   = _mm_cmpistrs(__patt, __text, kEqualEach);
+                    t_has_null       = _mm_cmpistrz(__patt, __text, kEqualEach);
+                    p_has_null       = _mm_cmpistrs(__patt, __text, kEqualEach);
                     if (likely(full_matched == 0)) {
-                        if (likely(p_has_null == 0)) {
+                        if (likely(p_has_null == 0 && t_has_null == 0)) {
                             // Scan the next part pattern
                             continue;
                         }
@@ -988,7 +989,7 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
 #if defined(_MSC_VER)
-        const char_type * substr = strstr_sse42_v1c(text, pattern);
+        const char_type * substr = strstr_sse42_v1c2(text, pattern);
 #else
         const char_type * substr = strstr_sse42_v1c2(text, pattern);
 #endif
