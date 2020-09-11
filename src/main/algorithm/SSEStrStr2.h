@@ -232,7 +232,7 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
     const char_type * p_16;
 
     int offset, matched;
-    int t_has_null, p_has_null;
+    int t_has_null;
 
     __m128i __text, __pattern, __pattern_0;
     __m128i __zero, __mask;
@@ -244,12 +244,12 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
     __pattern_0 = _mm_loadu_si128((const __m128i *)p);
     __zero = _mm_setzero_si128();
 
-    t -= 16;
+    t -= kMaxSize;
 
     do {
         // find the first possible match of 16-byte fragment in text
         do {
-            t += 16;
+            t += kMaxSize;
             __text = _mm_loadu_si128((const __m128i *)t);
             matched    = _mm_cmpistrc(__pattern_0, __text, kEqualOrdered);
             t_has_null = _mm_cmpistrz(__pattern_0, __text, kEqualOrdered);
@@ -271,22 +271,22 @@ strstr_sse42_v2(const char_type * text, const char_type * pattern) {
             __pattern = _mm_loadu_si128((const __m128i *)p_16);
             // mask out invalid bytes in the text
             __mask = _mm_cmpistrm(__zero, __pattern, kEqualEachMask);
-            p_16 += 16;
+            p_16 += kMaxSize;
             __text = _mm_loadu_si128((const __m128i *)t_16);
-            t_16 += 16;
+            t_16 += kMaxSize;
             __text = _mm_and_si128(__text, __mask);
 
             matched    = _mm_cmpistrc(__pattern, __text, kEqualEach);
-            p_has_null = _mm_cmpistrz(__pattern, __text, kEqualEach);
+            t_has_null = _mm_cmpistrz(__pattern, __text, kEqualEach);
             offset     = _mm_cmpistri(__pattern, __text, kEqualEach);
-        } while (matched == 0 && p_has_null == 0);     // ja: ~CF & ~ZF
+        } while (matched == 0 && t_has_null == 0);     // ja: ~CF & ~ZF
 
         if (matched == 0) {
             return t;
         }
 
         // continue searching from the next byte
-        t -= 15;
+        t -= (kMaxSize - 1);
     } while (1);
 
     return nullptr;
