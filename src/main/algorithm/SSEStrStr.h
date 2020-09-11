@@ -72,9 +72,7 @@ strstr_sse42_v1a(const char_type * text, const char_type * pattern) {
     static const int kEqualEach = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
-    static const int kEqualEachM = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
-                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT
-                                 | _SIDD_UNIT_MASK;
+    static const int kEqualEachMark = kEqualEach | _SIDD_UNIT_MASK;
 
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
@@ -118,7 +116,7 @@ STRSTR_MAIN_LOOP_16:
                 __text = _mm_loadu_si128((const __m128i *)text);
 
                 __m128i __patt_mask;
-                __patt_mask = _mm_cmpistrm(__zero, __pattern, kEqualEachM);
+                __patt_mask = _mm_cmpistrm(__zero, __pattern, kEqualEachMark);
                 __text = _mm_and_si128(__text, __patt_mask);
                 int full_matched = _mm_cmpistrc(__pattern, __text, kEqualEach);
                 if (likely(full_matched != 0)) {
@@ -219,7 +217,7 @@ STRSTR_MAIN_LOOP:
                 __text = _mm_loadu_si128((const __m128i *)t);
                 __patt = __pattern;
                 do {
-                    __patt_mask = _mm_cmpistrm(__zero, __patt, kEqualEachM);
+                    __patt_mask = _mm_cmpistrm(__zero, __patt, kEqualEachMark);
                     __text = _mm_and_si128(__text, __patt_mask);
                     int full_matched = _mm_cmpistrc(__patt, __text, kEqualEach);
                     int p_has_null = _mm_cmpistrs(__patt, __text, kEqualEach);
@@ -266,9 +264,7 @@ strstr_sse42_v1b(const char_type * text, const char_type * pattern) {
     static const int kEqualEach = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
-    static const int kEqualEachM = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
-                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT
-                                 | _SIDD_UNIT_MASK;
+    static const int kEqualEachMark = kEqualEach | _SIDD_UNIT_MASK;
 
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
@@ -311,7 +307,7 @@ STRSTR_MAIN_LOOP_16:
                 __text = _mm_loadu_si128((const __m128i *)text);
 
                 __m128i __patt_mask;
-                __patt_mask = _mm_cmpistrm(__zero, __pattern, kEqualEachM);
+                __patt_mask = _mm_cmpistrm(__zero, __pattern, kEqualEachMark);
                 __text = _mm_and_si128(__text, __patt_mask);
                 int full_matched = _mm_cmpistrc(__pattern, __text, kEqualEach);
                 if (likely(full_matched != 0)) {
@@ -368,7 +364,7 @@ STRSTR_MAIN_LOOP:
                     __m128i __patt, __patt_mask;
                     __text = _mm_loadu_si128((const __m128i *)t);
                     __patt = _mm_loadu_si128((const __m128i *)p);
-                    __patt_mask = _mm_cmpistrm(__zero, __patt, kEqualEachM);
+                    __patt_mask = _mm_cmpistrm(__zero, __patt, kEqualEachMark);
                     __text = _mm_and_si128(__text, __patt_mask);
                     t += kMaxSize;
                     p += kMaxSize;
@@ -414,9 +410,7 @@ strstr_sse42_v1c(const char_type * text, const char_type * pattern) {
     static const int kEqualEach = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
-    static const int kEqualEachM = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
-                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT
-                                 | _SIDD_UNIT_MASK;
+    static const int kEqualEachMark = kEqualEach | _SIDD_UNIT_MASK;
 
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
@@ -456,7 +450,7 @@ STRSTR_MAIN_LOOP_16:
                 __text = _mm_loadu_si128((const __m128i *)text);
 
                 __m128i __patt_mask;
-                __patt_mask = _mm_cmpistrm(__zero, __pattern, kEqualEachM);
+                __patt_mask = _mm_cmpistrm(__zero, __pattern, kEqualEachMark);
                 __text = _mm_and_si128(__text, __patt_mask);
                 int full_matched = _mm_cmpistrc(__pattern, __text, kEqualEach);
                 if (likely(full_matched != 0)) {
@@ -505,7 +499,7 @@ STRSTR_MAIN_LOOP:
                     __m128i __patt, __patt_mask;
                     __text = _mm_loadu_si128((const __m128i *)t);
                     __patt = _mm_loadu_si128((const __m128i *)p);
-                    __patt_mask = _mm_cmpistrm(__zero, __patt, kEqualEachM);
+                    __patt_mask = _mm_cmpistrm(__zero, __patt, kEqualEachMark);
                     __text = _mm_and_si128(__text, __patt_mask);
                     t += kMaxSize;
                     p += kMaxSize;
@@ -551,9 +545,7 @@ strstr_sse42_v1c2(const char_type * text, const char_type * pattern) {
     static const int kEqualEach = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
-    static const int kEqualEachMark = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
-                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT
-                                 | _SIDD_UNIT_MASK;
+    static const int kEqualEachMark = kEqualEach | _SIDD_UNIT_MASK;
 
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
@@ -687,9 +679,7 @@ strstr_sse42_v1d(const char_type * text, const char_type * pattern) {
     static const int kEqualEach = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
-    static const int kEqualEachMark = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
-                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT
-                                 | _SIDD_UNIT_MASK;
+    static const int kEqualEachMark = kEqualEach | _SIDD_UNIT_MASK;
 
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
@@ -824,9 +814,7 @@ strstr_sse42_v1e(const char_type * text, const char_type * pattern) {
     static const int kEqualEach = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 
-    static const int kEqualEachMark = _SIDD_CHAR_OPS | _SIDD_CMP_EQUAL_EACH
-                                 | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT
-                                 | _SIDD_UNIT_MASK;
+    static const int kEqualEachMark = kEqualEach | _SIDD_UNIT_MASK;
 
     //alignas(16) uint64_t mask_128i[2];
     __m128i __text, __pattern, __zero, __mask;
