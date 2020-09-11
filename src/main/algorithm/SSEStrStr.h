@@ -978,7 +978,7 @@ public:
 #if defined(_MSC_VER)
         const char_type * substr = strstr_sse42_v1c(text, pattern);
 #else
-        const char_type * substr = strstr_sse42_v1c(text, pattern);
+        const char_type * substr = strstr_sse42_v1c2(text, pattern);
 #endif
         if (likely(substr != nullptr))
             return (Long)(substr - text);
