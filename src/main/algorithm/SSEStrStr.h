@@ -571,7 +571,7 @@ strstr_sse42_v1c2(const char_type * text, const char_type * pattern) {
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
 
     uint64_t * mask_128i = (uint64_t *)&__mask;
-    if (likely(*mask_128i != 0)) {
+    if (likely(mask_128i[0] != 0 || mask_128i[1] != 0)) {
         // The length of pattern is less than kMaxSize (16 or 8).
         text -= kMaxSize;
         do {
@@ -706,7 +706,7 @@ strstr_sse42_v1d(const char_type * text, const char_type * pattern) {
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
     
     uint64_t * mask_128i = (uint64_t *)&__mask;
-    if (likely(*mask_128i != 0)) {
+    if (likely(mask_128i[0] != 0 || mask_128i[1] != 0)) {
         // The length of pattern is less than kMaxSize (16 or 8).
         text -= kMaxSize;
         do {
@@ -842,9 +842,8 @@ strstr_sse42_v1e(const char_type * text, const char_type * pattern) {
     __zero = _mm_setzero_si128();
     __mask = _mm_cmpeq_epi8(__pattern, __zero);
     
-    //_mm_store_si128((__m128i *)mask_128i, __mask);
     uint64_t * mask_128i = (uint64_t *)&__mask;
-    if (likely(*mask_128i != 0)) {
+    if (likely(mask_128i[0] != 0 || mask_128i[1] != 0)) {
         // The length of pattern is less than kMaxSize (16 or 8).
         text -= kMaxSize;
         do {
