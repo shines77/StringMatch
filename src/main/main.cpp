@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 #include <cstdio>
 #include <cstdlib>
@@ -272,12 +273,13 @@ void StringMatch_benchmark()
 #if SWITCH_BENCHMARK_TEST
     static const size_t iters = 1;
 #else
-    static const size_t iters = kIterations / (kSearchTexts * kPatterns);
+    static const size_t iters = kIterations / (kSearchTexts * kPatterns) + 1;
 #endif
 
     test::StopWatch sw;
     double preprocessing_time, searching_time, full_searching_time;
     Long searching_sum, full_searching_sum;
+    int rnd_num = 0;
 
 #if USE_ALIGNED_PATTAEN
     // Let search texts first address align for 16 bytes.
@@ -357,6 +359,7 @@ void StringMatch_benchmark()
             printf("\n");
 #endif
         }
+        rnd_num += rand();
     }
     sw.stop();
     searching_time = sw.getMillisec();
@@ -384,6 +387,7 @@ void StringMatch_benchmark()
                 //printf("pool_idx = %d\n", AlgorithmTy::get_counter());
                 AlgorithmTy::reset_counter();
             //}
+            rnd_num += rand();
         }
         sw.stop();
         full_searching_time = sw.getMillisec();
@@ -393,16 +397,18 @@ void StringMatch_benchmark()
         preprocessing_time = full_searching_time - searching_time;
         if (preprocessing_time < 0.0)
             preprocessing_time = 0.0;
-        printf("  %-22s   %-12u    %8.3f ms    %8.3f ms    %8.3f ms\n",
+        printf("  %-22s   %-12u (%d)    %8.3f ms    %8.3f ms    %8.3f ms\n",
                AlgorithmTy::name(), (unsigned int)((searching_sum + full_searching_sum) / 2),
+               (rnd_num % 10),
                preprocessing_time, searching_time, full_searching_time);
     }
     else {
         preprocessing_time = 0.0;
         SM_UNUSED_VAR(preprocessing_time);
         SM_UNUSED_VAR(full_searching_time);
-        printf("  %-22s   %-12u    %s    %8.3f ms    %s\n",
+        printf("  %-22s   %-12u (%d)    %s    %8.3f ms    %s\n",
                AlgorithmTy::name(), (unsigned int)(searching_sum + full_searching_sum),
+               (rnd_num % 10),
                "   -----   ", searching_time, "   -----   ");
     }
 
@@ -455,6 +461,8 @@ int main(int argc, char * argv[])
 
     cpu_warmup(1000);
 
+    ::srand((unsigned int)::time(NULL));
+
 #if 0
     StringMatch_unittest<AnsiString::StrStr>();
     StringMatch_unittest<AnsiString::MemMem>();
@@ -469,8 +477,8 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr>();
 #else
-    printf("  Algorithm Name           CheckSum       Preprocessing   Search Time    Full Search Time\n");
-    printf("---------------------------------------------------------------------------------------------\n");
+    printf("  Algorithm Name           CheckSum    Rand   Preprocessing   Search Time    Full Search Time\n");
+    printf("-------------------------------------------------------------------------------------------------\n");
 
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr>();
@@ -509,13 +517,13 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::AhoCorasick>();
 #endif
 
-    printf("---------------------------------------------------------------------------------------------\n");
+    printf("-------------------------------------------------------------------------------------------------\n");
     //printf("  ps: (*) indicates that not included the preprocessing time.\n");
     printf("\n");
 #endif
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(_WINDOWS_))
-    ::system("pause");
+    //::system("pause");
 #endif
     return 0;
 }
