@@ -363,7 +363,7 @@ void StringMatch_benchmark()
 
     // Full searching
     full_searching_sum = 0;
-    full_searching_time = 0.0
+    full_searching_time = 0.0;
     if (AlgorithmTy::need_preprocessing()) {
         sw.start();
         for (size_t loop = 0; loop < iters; ++loop) {
