@@ -397,18 +397,18 @@ void StringMatch_benchmark()
         preprocessing_time = full_searching_time - searching_time;
         if (preprocessing_time < 0.0)
             preprocessing_time = 0.0;
-        printf("  %-22s   %-12u (%d)    %8.3f ms    %8.3f ms    %8.3f ms\n",
+        printf("  %-22s   %-12u (%u)    %8.3f ms    %8.3f ms    %8.3f ms\n",
                AlgorithmTy::name(), (unsigned int)((searching_sum + full_searching_sum) / 2),
-               (rnd_num % 10),
+               ((unsigned int)rnd_num % 10),
                preprocessing_time, searching_time, full_searching_time);
     }
     else {
         preprocessing_time = 0.0;
         SM_UNUSED_VAR(preprocessing_time);
         SM_UNUSED_VAR(full_searching_time);
-        printf("  %-22s   %-12u (%d)    %s    %8.3f ms    %s\n",
+        printf("  %-22s   %-12u (%u)    %s    %8.3f ms    %s\n",
                AlgorithmTy::name(), (unsigned int)(searching_sum + full_searching_sum),
-               (rnd_num % 10),
+               ((unsigned int)rnd_num % 10),
                "   -----   ", searching_time, "   -----   ");
     }
 
@@ -461,7 +461,7 @@ int main(int argc, char * argv[])
 
     cpu_warmup(1000);
 
-    ::srand((unsigned int)::time(NULL));
+    ::srand((unsigned int)::time(nullptr));
 
 #if 0
     StringMatch_unittest<AnsiString::StrStr>();
