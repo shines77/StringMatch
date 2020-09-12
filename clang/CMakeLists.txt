@@ -43,8 +43,9 @@ if (NOT MSVC)
     ##
     ## See: https://www.cnblogs.com/stonehat/p/7000637.html
     ##
-    ## Usage:
-    ##   apt-get install llvm clang clang-5.0 clang-6.0
+    ## Usage: (Ubuntu 16.04 Server)
+    ##
+    ##   apt-get install llvm clang clang-5.0 clang-6.0 clang-8
     ##
     set(CMAKE_CXX_FLAGS_COMMON          "-Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast -Wno-uninitialized -Wno-unused-parameter -Wno-unused-template -Wno-reserved-id-macro -Wno-header-hygiene -Wno-deprecated-register -Wno-sign-conversion -Wno-cast-qual -Wno-cast-align")
 
