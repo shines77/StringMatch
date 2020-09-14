@@ -5,13 +5,24 @@ project(StringMatch)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+include("${PROJECT_SOURCE_DIR}/cmake/detect_cpu_architectures.cmake")
+
+enable_language(ASM_NASM)
+
+if (CMAKE_CL_64)
+    set(Platform x64)
+else()
+    set(Platform x86)
+endif()
+
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
 message("------------ Options -------------")
-message("  CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-
+message("  CMAKE_BUILD_TYPE         : ${CMAKE_BUILD_TYPE}")
+message("  Platform                 : ${platform}")
+message("  CMAKE_CPU_ARCHITECTURES  : ${CMAKE_CPU_ARCHITECTURES}")
 message("----------------------------------")
 
 message("-------------- Env ---------------")
@@ -68,5 +79,29 @@ add_custom_target(release
     COMMENT "Switch CMAKE_BUILD_TYPE to Release"
 )
 
+if (("amd64" IN_LIST CMAKE_CPU_ARCHITECTURES) OR ("x64" IN_LIST CMAKE_CPU_ARCHITECTURES))
+    set(ASM_X64_FILES
+        src/main/asm/asmlib.h
+        src/main/asm/instrset_x64.asm
+        src/main/asm/strstr_see42_x64.asm
+        src/main/asm/strstr_see42_v0_x64.asm
+        src/main/asm/strstr_see42_v2_x64.asm
+    )
+    ## STATIC, SHARED
+    add_library(asmlib STATIC ${ASM_X64_FILES})
+elif ("x86" IN_LIST CMAKE_CPU_ARCHITECTURES)
+    set(ASM_X86_FILES
+        src/main/asm/asmlib.h
+        src/main/asm/instrset_x86.asm
+        src/main/asm/strstr_see42_x86.asm
+        src/main/asm/strstr_see42_v0_x86.asm
+        src/main/asm/strstr_see42_v2_x86.asm
+    )
+    ## STATIC, SHARED
+    add_library(asmlib STATIC ${ASM_X86_FILES})
+else()
+    message("This platform is not support yasm.")
+endif()
+
 add_executable(StringMatch ${SOURCE_FILES})
-target_link_libraries(StringMatch ${EXTRA_LIBS})
+target_link_libraries(StringMatch ${EXTRA_LIBS} asmlib)
