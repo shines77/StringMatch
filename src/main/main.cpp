@@ -33,6 +33,9 @@
 #include "algorithm/GlibcStrStrOld.h"
 #include "algorithm/SSEStrStr.h"
 #include "algorithm/SSEStrStr2.h"
+#include "algorithm/SSEStrStrA.h"
+#include "algorithm/SSEStrStrA_v0.h"
+#include "algorithm/SSEStrStrA_v2.h"
 #include "algorithm/MyMemMem.h"
 #include "algorithm/MyMemMemBw.h"
 #include "algorithm/StdSearch.h"
@@ -483,6 +486,9 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::StrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr>();
     StringMatch_benchmark<AnsiString::SSEStrStr2>();
+    StringMatch_benchmark<AnsiString::SSEStrStrA>();
+    StringMatch_benchmark<AnsiString::SSEStrStrA_v0>();
+    StringMatch_benchmark<AnsiString::SSEStrStrA_v2>();
     StringMatch_benchmark<AnsiString::GlibcStrStr>();
     StringMatch_benchmark<AnsiString::GlibcStrStrOld>();
     StringMatch_benchmark<AnsiString::MyStrStr>();

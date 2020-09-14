@@ -169,6 +169,15 @@
     <ClInclude Include="..\..\..\src\main\asm\asmlib.h">
       <Filter>src\asm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStrA_v2.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStrA_v0.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStrA.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\src\main\asm\strstr_see42.asm">
