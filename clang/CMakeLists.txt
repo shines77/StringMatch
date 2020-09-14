@@ -2,6 +2,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 project(StringMatch)
 
+set(CMAKE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/..")
+set(PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/..")
+
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -132,19 +135,19 @@ set(SOURCE_FILES
 
 if ("amd64" STREQUAL "${CMAKE_CPU_ARCHITECTURES}" OR "x64" STREQUAL "${CMAKE_CPU_ARCHITECTURES}")
     set(ASM_SOURCE_FILES
-        src/main/asm/asmlib.h
-        src/main/asm/instrset_x64.asm
-        src/main/asm/strstr_see42_x64.asm
-        src/main/asm/strstr_see42_v0_x64.asm
-        src/main/asm/strstr_see42_v2_x64.asm
+        ../src/main/asm/asmlib.h
+        ../src/main/asm/instrset_x64.asm
+        ../src/main/asm/strstr_see42_x64.asm
+        ../src/main/asm/strstr_see42_v0_x64.asm
+        ../src/main/asm/strstr_see42_v2_x64.asm
     )
 elseif ("x86" STREQUAL "${CMAKE_CPU_ARCHITECTURES}")
     set(ASM_SOURCE_FILES
-        src/main/asm/asmlib.h
-        src/main/asm/instrset_x86.asm
-        src/main/asm/strstr_see42_x86.asm
-        src/main/asm/strstr_see42_v0_x86.asm
-        src/main/asm/strstr_see42_v2_x86.asm
+        ../src/main/asm/asmlib.h
+        ../src/main/asm/instrset_x86.asm
+        ../src/main/asm/strstr_see42_x86.asm
+        ../src/main/asm/strstr_see42_v0_x86.asm
+        ../src/main/asm/strstr_see42_v2_x86.asm
     )
 else()
     message("This platform is not support yasm.")
