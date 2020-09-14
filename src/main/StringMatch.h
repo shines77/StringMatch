@@ -84,8 +84,6 @@ using ::std::nullptr_t;
 #undef Long
 #endif
 
-extern "C" int _stdcall add(int a, int b);
-
 namespace StringMatch {
 
 // Define portable long type

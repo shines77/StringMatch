@@ -50,6 +50,7 @@ int    InstructionSet(void);
 #endif
 
 #ifdef __cplusplus
+
 static inline
 const char * A_strstr(const char * haystack, const char * needle) {
    return A_strstr((char *)haystack, needle);
@@ -64,7 +65,7 @@ static inline
 const char * A_strstr_v2(const char * haystack, const char * needle) {
    return A_strstr_v2((char *)haystack, needle);
 }  // Overload A_strstr with const char * version
-#endif
+
 #endif
 
 // Test if emmintrin.h is included and __m128i defined
