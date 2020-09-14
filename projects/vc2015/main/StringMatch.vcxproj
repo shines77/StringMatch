@@ -46,6 +46,7 @@
     <ClInclude Include="..\..\..\src\main\algorithm\StrStr.h" />
     <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\Sunday.h" />
+    <ClInclude Include="..\..\..\src\main\asm\asmlib.h" />
     <ClInclude Include="..\..\..\src\main\basic\inttypes.h" />
     <ClInclude Include="..\..\..\src\main\basic\msvc\inttypes.h" />
     <ClInclude Include="..\..\..\src\main\basic\msvc\stdbool.h" />
@@ -66,6 +67,47 @@
     <ClInclude Include="..\..\..\src\main\support\popcnt.h" />
     <ClInclude Include="..\..\..\src\main\support\StopWatch.h" />
     <ClInclude Include="..\..\..\src\main\support\StringRef.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <YASM Include="..\..\..\src\main\asm\instrset_x86.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </YASM>
+    <YASM Include="..\..\..\src\main\asm\instrset_x64.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </YASM>
+    <YASM Include="..\..\..\src\main\asm\strstr_see42_v0_x64.asm" />
+    <YASM Include="..\..\..\src\main\asm\strstr_see42_v2_x64.asm" />
+    <YASM Include="..\..\..\src\main\asm\strstr_see42_x64.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">vsyasm.exe -f $(Platform) -d WINDOWS -i %(RootDir)%(Directory)\ -o $(IntDir)%(Filename).obj %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">vsyasm.exe -f $(Platform) -d WINDOWS -i %(RootDir)%(Directory)\ -o $(IntDir)%(Filename).obj %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vsyasm.exe -f $(Platform) -d WINDOWS -i %(RootDir)%(Directory)\ -o $(IntDir)%(Filename).obj %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">vsyasm.exe -f $(Platform) -d WINDOWS -i %(RootDir)%(Directory)\ -o $(IntDir)%(Filename).obj %(FullPath)</Command>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatOutputAsContent>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename).obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename).obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename).obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename).obj</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </YASM>
+    <YASM Include="..\..\..\src\main\asm\strstr_sse42_x86.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </YASM>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{51B07AE8-6218-4611-BCD1-7117914F48D5}</ProjectGuid>
@@ -102,6 +144,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\vsyasm.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -151,6 +194,15 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuild>
+      <Command>vsyasm.exe -Xvc -f $(Platform) -d WINDOWS -i %(RootDir)%(Directory)\ -o $(IntDir)%(Filename).obj %(FullPath)</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>Yasm Assembler</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>$(IntDir)%(Filename).obj</Outputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -165,6 +217,15 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuild>
+      <Command>vsyasm.exe -Xvc -f $(Platform) -d WINDOWS -i %(RootDir)%(Directory)\ -o $(IntDir)%(Filename).obj %(FullPath)</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>Yasm Assembler</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>$(IntDir)%(Filename).obj</Outputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -183,6 +244,15 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuild>
+      <Command>vsyasm.exe -Xvc -f $(Platform) -d WINDOWS -i %(RootDir)%(Directory)\ -o $(IntDir)%(Filename).obj %(FullPath)</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>Yasm Assembler</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>$(IntDir)%(Filename).obj</Outputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -201,8 +271,18 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuild>
+      <Command>vsyasm.exe -Xvc -f $(Platform) -d WINDOWS -i %(RootDir)%(Directory)\ -o $(IntDir)%(Filename).obj %(FullPath)</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>Yasm Assembler</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>$(IntDir)%(Filename).obj</Outputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\vsyasm.targets" />
   </ImportGroup>
 </Project>

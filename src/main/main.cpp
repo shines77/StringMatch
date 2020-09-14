@@ -497,7 +497,7 @@ int main(int argc, char * argv[])
     printf("\n");
     StringMatch_benchmark<AnsiString::Kmp>();
 #if TEST_ALL_BENCHMARK
-    StringMatch_benchmark<AnsiString::KmpStd>();
+    //StringMatch_benchmark<AnsiString::KmpStd>();
     printf("\n");
     StringMatch_benchmark<AnsiString::BoyerMoore>();
 #endif

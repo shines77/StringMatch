@@ -35,6 +35,7 @@
 #include "StringMatch.h"
 #include "AlgorithmWrapper.h"
 #include "SSEHelper.h"
+#include "asm/asmlib.h"
 
 /* unit test:
  * src = "00000000001234561234123456789abcdefghi", dest = "1234567"; ret = 20
@@ -419,7 +420,11 @@ public:
                 const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
+#if 0
         const char_type * substr = strstr_sse42_v2(text, pattern);
+#else
+        const char_type * substr = A_strstr_v2(text, pattern);
+#endif
         if (likely(substr != nullptr))
             return (Long)(substr - text);
         else
