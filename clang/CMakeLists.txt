@@ -14,9 +14,9 @@ enable_language(ASM_NASM)
 
 if (CMAKE_CL_64)
     set(CMAKE_CL_ARCH x64)
-else(CMAKE_CL_64)
+else()
     set(CMAKE_CL_ARCH x86)
-endif(CMAKE_CL_64)
+endif()
 
 ##
 ## See: https://stackoverflow.com/questions/39258250/how-to-detect-if-64-bit-msvc-with-cmake
