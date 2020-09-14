@@ -79,7 +79,7 @@ add_custom_target(release
     COMMENT "Switch CMAKE_BUILD_TYPE to Release"
 )
 
-if ("amd64" IN_LIST ${CMAKE_CPU_ARCHITECTURES})
+if ("amd64" STREQUAL "${CMAKE_CPU_ARCHITECTURES}")
     set(ASM_SOURCE_FILES
         src/main/asm/asmlib.h
         src/main/asm/instrset_x64.asm
@@ -87,7 +87,7 @@ if ("amd64" IN_LIST ${CMAKE_CPU_ARCHITECTURES})
         src/main/asm/strstr_see42_v0_x64.asm
         src/main/asm/strstr_see42_v2_x64.asm
     )
-elif ("x64" IN_LIST ${CMAKE_CPU_ARCHITECTURES})
+elif ("x64" STREQUAL "${CMAKE_CPU_ARCHITECTURES}")
     set(ASM_SOURCE_FILES
         src/main/asm/asmlib.h
         src/main/asm/instrset_x64.asm
@@ -95,7 +95,7 @@ elif ("x64" IN_LIST ${CMAKE_CPU_ARCHITECTURES})
         src/main/asm/strstr_see42_v0_x64.asm
         src/main/asm/strstr_see42_v2_x64.asm
     )
-elif ("x86" IN_LIST ${CMAKE_CPU_ARCHITECTURES})
+elif ("x86" STREQUAL "${CMAKE_CPU_ARCHITECTURES}")
     set(ASM_SOURCE_FILES
         src/main/asm/asmlib.h
         src/main/asm/instrset_x86.asm
