@@ -5,13 +5,24 @@ project(StringMatch)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+include("${PROJECT_SOURCE_DIR}/cmake/detect_cpu_architectures.cmake")
+
+enable_language(ASM_NASM)
+
+if (CMAKE_CL_64)
+    set(Platform x64)
+else(CMAKE_CL_64)
+    set(Platform x86)
+endif(CMAKE_CL_64)
+
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
 message("------------ Options -------------")
-message("  CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-
+message("  CMAKE_BUILD_TYPE         : ${CMAKE_BUILD_TYPE}")
+message("  Platform                 : ${Platform}")
+message("  CMAKE_CPU_ARCHITECTURES  : ${CMAKE_CPU_ARCHITECTURES}")
 message("----------------------------------")
 
 message("-------------- Env ---------------")
@@ -118,6 +129,33 @@ include_directories(../src/unittest)
 set(SOURCE_FILES
     ../src/main/main.cpp
     )
+
+if ("amd64" STREQUAL "${CMAKE_CPU_ARCHITECTURES}" OR "x64" STREQUAL "${CMAKE_CPU_ARCHITECTURES}")
+    set(ASM_SOURCE_FILES
+        src/main/asm/asmlib.h
+        src/main/asm/instrset_x64.asm
+        src/main/asm/strstr_see42_x64.asm
+        src/main/asm/strstr_see42_v0_x64.asm
+        src/main/asm/strstr_see42_v2_x64.asm
+    )
+elseif ("x86" STREQUAL "${CMAKE_CPU_ARCHITECTURES}")
+    set(ASM_SOURCE_FILES
+        src/main/asm/asmlib.h
+        src/main/asm/instrset_x86.asm
+        src/main/asm/strstr_see42_x86.asm
+        src/main/asm/strstr_see42_v0_x86.asm
+        src/main/asm/strstr_see42_v2_x86.asm
+    )
+else()
+    message("This platform is not support yasm.")
+endif()
+
+list(LENGTH ASM_SOURCE_FILES asm_files_length)
+if (${asm_files_length} GREATER 0)
+    ## STATIC, SHARED
+    add_library(asmlib STATIC ${ASM_SOURCE_FILES})
+    set(EXTRA_LIBS ${EXTRA_LIBS} asmlib)
+endif()
 
 add_custom_target(debug
     COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}

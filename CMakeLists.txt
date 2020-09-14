@@ -67,18 +67,6 @@ set(SOURCE_FILES
     src/main/main.cpp
     )
 
-add_custom_target(debug
-    COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
-    COMMENT "Switch CMAKE_BUILD_TYPE to Debug"
-)
-
-add_custom_target(release
-    COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
-    COMMENT "Switch CMAKE_BUILD_TYPE to Release"
-)
-
 if ("amd64" STREQUAL "${CMAKE_CPU_ARCHITECTURES}" OR "x64" STREQUAL "${CMAKE_CPU_ARCHITECTURES}")
     set(ASM_SOURCE_FILES
         src/main/asm/asmlib.h
@@ -103,7 +91,20 @@ list(LENGTH ASM_SOURCE_FILES asm_files_length)
 if (${asm_files_length} GREATER 0)
     ## STATIC, SHARED
     add_library(asmlib STATIC ${ASM_SOURCE_FILES})
+    set(EXTRA_LIBS ${EXTRA_LIBS} asmlib)
 endif()
 
+add_custom_target(debug
+    COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+    COMMENT "Switch CMAKE_BUILD_TYPE to Debug"
+)
+
+add_custom_target(release
+    COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+    COMMENT "Switch CMAKE_BUILD_TYPE to Release"
+)
+
 add_executable(StringMatch ${SOURCE_FILES})
-target_link_libraries(StringMatch ${EXTRA_LIBS} asmlib)
+target_link_libraries(StringMatch ${EXTRA_LIBS})
