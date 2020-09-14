@@ -55,7 +55,7 @@ global ?OVR_strstr_v0
 
 align 16
 A_strstr_v0: ; function dispatching
-	; jmp     near [strstrDispatch]   ; Go to appropriate version, depending on instruction set
+	; jmp     near [strstrDispatch_v0]  ; Go to appropriate version, depending on instruction set
 
 ; define register use
 %ifdef  WINDOWS
@@ -202,7 +202,7 @@ _SingleCharNeedle: ; Needle is a single character
 
 ; align 16
 ; ; CPU dispatching for strstr. This is executed only once
-; strstrCPUDispatch:
+; strstrCPUDispatch_v0:
 ;     ; get supported instruction set
 ;     push    arg1
 ;     push    arg2
@@ -216,14 +216,14 @@ _SingleCharNeedle: ; Needle is a single character
 ;     ; SSE4.2 supported
 ;     ; Point to SSE4.2 version of strstr
 ;     lea     r9, [strstrSSE42_v0]
-; Q100:   mov     [strstrDispatch], r9
+; Q100:   mov     [strstrDispatch_v0], r9
 ;     ; Continue in appropriate version of strstr
 ;     jmp     r9
 
 SECTION .data
 
 ; Pointer to appropriate version. Initially points to dispatcher
-strstrDispatch DQ strstrCPUDispatch
+; strstrDispatch_v0 DQ strstrCPUDispatch_v0
 
 ; Append 16 bytes to end of last data section to allow reading past end of strings:
 ; (We might use names .bss$zzz etc. under Windows to make it is placed
