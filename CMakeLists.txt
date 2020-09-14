@@ -79,7 +79,7 @@ add_custom_target(release
     COMMENT "Switch CMAKE_BUILD_TYPE to Release"
 )
 
-if (("amd64" IN_LIST CMAKE_CPU_ARCHITECTURES) OR ("x64" IN_LIST CMAKE_CPU_ARCHITECTURES))
+if ("amd64" IN_LIST CMAKE_CPU_ARCHITECTURES OR "x64" IN_LIST CMAKE_CPU_ARCHITECTURES)
     set(ASM_X64_FILES
         src/main/asm/asmlib.h
         src/main/asm/instrset_x64.asm
