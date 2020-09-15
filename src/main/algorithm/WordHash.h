@@ -30,42 +30,113 @@ public:
     static const size_type kStorgeMaxShift = sizeof(storge_type) * 8;
     static const size_type kStorgeSize = (Capacity + sizeof(storge_type) - 1) / sizeof(storge_type);
     static const size_type kCapacity = kStorgeSize * sizeof(storge_type);
+
 private:
-    storge_type Bits_[kStorgeSize];
+    jstd::scoped_array<storge_type> bits_;
 
 public:
     explicit BitMask() {
     }
 
+    ~BitMask() {
+        this->bits_.reset();
+    }
+
+    storge_type * data() const    { return this->bits_.get(); }
     size_type size() const        { return kSize; }
     size_type capacity() const    { return kCapacity; }
     size_type storge_size() const { return kStorgeSize; }
 
+    void init() {
+        storge_type * new_bits = new storge_type[kStorgeSize];
+        ::memset((void *)new_bits, 0, kStorgeSize * sizeof(storge_type));
+
+        this->bits_.reset(new_bits);
+    }
+
     void clear() {
-        ::memset((void *)this->Bits_, 0, kStorgeSize * sizeof(storge_type));
+        ::memset((void *)this->bits_.get(), 0, kStorgeSize * sizeof(storge_type));
     }
 
     bool get(size_type pos) const {
         size_type storge_pos = pos / kStorgeBits;
         size_type index = pos & kStorgeMask;
         assert(storge_pos < kStorgeSize);
-        return ((this->Bits_[storge_pos] & (size_type(1) << index)) != 0);
+        return ((this->bits_[storge_pos] & (size_type(1) << index)) != 0);
     }
 
     storge_type getv(size_type pos) const  {
         size_type storge_pos = pos / kStorgeBits;
         size_type index = pos & kStorgeMask;
         assert(storge_pos < kStorgeSize);
-        return (this->Bits_[storge_pos] & (size_type(1) << index));
+        return (this->bits_[storge_pos] & (size_type(1) << index));
     }
 
     void set(size_type pos) {
         size_type storge_pos = pos / kStorgeBits;
         size_type index = pos & kStorgeMask;
         assert(storge_pos < kStorgeSize);
-        this->Bits_[storge_pos] |= (size_type(1) << index);
+        this->bits_[storge_pos] |= (size_type(1) << index);
     }
 };
+
+template <std::size_t Capacity, typename T = std::uint8_t>
+class BitMap {
+public:
+    typedef std::size_t     size_type;
+    typedef T               storge_type;
+
+    static const size_type kAlignment = sizeof(std::size_t);
+    static const size_type kSize = Capacity;
+    static const size_type kCapacity = (kSize + kAlignment - 1) / kAlignment * kAlignment;
+
+private:
+    jstd::scoped_array<storge_type> bytes_;
+
+public:
+    explicit BitMap() {
+    }
+
+    ~BitMap() {
+        this->bytes_.reset();
+    }
+
+    storge_type * data() const    { return this->bytes_.get(); }
+    size_type size() const        { return kSize; }
+    size_type capacity() const    { return kCapacity; }
+    size_type storge_size() const { return kCapacity * sizeof(storge_type); }
+
+    void init() {
+        storge_type * new_bytes = new storge_type[kCapacity];
+        ::memset((void *)new_bytes, 0, kCapacity * sizeof(storge_type));
+
+        this->bytes_.reset(new_bytes);
+    }
+
+    void clear() {
+        ::memset((void *)this->bytes_.get(), 0, kCapacity * sizeof(storge_type));
+    }
+
+    bool get(size_type pos) const {
+        return (this->bytes_[pos] != 0);
+    }
+
+    storge_type getv(size_type pos) const  {
+        return this->bytes_[pos];
+    }
+
+    void set(size_type pos) {
+        this->bytes_[pos] = 1;
+    }
+
+    void set(size_type pos, storge_type value) {
+        this->bytes_[pos] = value;
+    }
+};
+
+//
+// See: https://blog.csdn.net/liangzhao_jay/article/details/8792486
+//
 
 template <typename CharTy>
 class WordHashImpl {
@@ -82,7 +153,7 @@ public:
     static const size_type kWordSize = sizeof(word_t);
 
 private:
-    BitMask<kHashMax, size_type> bitmask_;
+    BitMap<kHashMax> bitmap_;
 
 public:
     WordHashImpl() {}
@@ -93,7 +164,7 @@ public:
     static const char * name() { return "WordHash"; }
     static bool need_preprocessing() { return true; }
 
-    bool is_alive() const { return true; }
+    bool is_alive() const { return (this->bitmap_.data() != nullptr); }
 
     void destroy() {
     }
@@ -102,16 +173,12 @@ public:
     bool preprocessing(const char_type * pattern, size_type length) {
         assert(pattern != nullptr);
 
-        //uint8_t * new_mask = new uint8_t[kHashMax];
-        //::memset((void *)new_mask, 0, kHashMax * sizeof(uint8_t));
-
-        //this->bitmask_.reset(new_mask);
-        this->bitmask_.clear();
+        this->bitmap_.init();
 
         ssize_type max_limit = ssize_type(length - kWordSize + 1);
         for (ssize_type i = 0; i < max_limit; i++) {
             word_t word = *(word_t *)&pattern[i];
-            this->bitmask_.set(word);
+            this->bitmap_.set(word, i + 1);
         }
         return true;
     }
@@ -122,7 +189,7 @@ public:
            const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
-#if 0
+#if 1
         // check arg sizes 
         if ((pattern_len < 2 * kWordSize - 1)
             || (pattern_len >= (std::numeric_limits<uint8_t>::max)())
@@ -131,7 +198,7 @@ public:
             StringRef sText(text, text_len);
             StringRef sPattern(pattern, pattern_len);
             StringRef::iterator iter = std::search(sText.begin(), sText.end(),
-                                               sPattern.begin(), sPattern.end());
+                                                   sPattern.begin(), sPattern.end());
             if (likely(iter != sText.end()))
                 return (Long)(iter - sText.begin());
             else
@@ -141,34 +208,41 @@ public:
 
         ssize_type half_p_len = ssize_type(pattern_len / 2);
         ssize_type max_limit = ssize_type(text_len - pattern_len + 1);
-        for (ssize_type i = 0; i <= max_limit; i++) {
-            int matched = 0;
+        for (ssize_type i = 0; i < max_limit; i++) {
+            ssize_type matched = 0;
             ssize_type tpos = i + pattern_len - kWordSize;
             ssize_type ppos = pattern_len - kWordSize;
             for (; ppos >= 0; --tpos, --ppos) {
+                assert(tpos >= 0);
+                assert(tpos < ssize_type(text_len - kWordSize + 1));
+                assert(ppos < ssize_type(pattern_len - kWordSize + 1));
                 word_t word = *(word_t *)&text[tpos];
-                if (this->bitmask_.getv(word) == 0) {
-                    i = tpos + 1;
+                if (this->bitmap_.getv(word) == 0) {
+                    if (matched == 0) {
+                        i += pattern_len - 1;
+                    }
                     matched = -1;
                     break;
                 }
                 matched++;
-                if (matched < (pattern_len - kWordSize + 1)) {
+                //ppos--;
+                if (matched < ssize_type(pattern_len - kWordSize + 1)) {
+                    /*
                     if (text[tpos] != pattern[ppos]) {
                         matched = -1;
                         //if (ppos > half_p_len)
                         //    break;
                     }
+                    //*/
                 }
                 else {
-                    if (tpos <= max_limit) {
-                        if (::memcmp((const void *)&text[tpos], (const void *)&pattern[0], pattern_len) == 0) {
-                            return Long(tpos);
-                        }
+                    assert(tpos < max_limit);
+                    if (::memcmp((const void *)&text[tpos],
+                                 (const void *)&pattern[0], pattern_len) == 0) {
+                        return Long(tpos);
                     }
-                    else {
-                        return Status::NotFound;
-                    }
+                    matched = -1;
+                    break;
                 }
             }
             if (matched >= 0) {

@@ -106,7 +106,7 @@ static const char * Patterns[] = {
     "love you",
     "I love you",
 
-    /*
+    ///*
     "largely mangrove",
     "largely Mangrove",
     "some dispute",
