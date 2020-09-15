@@ -1,6 +1,6 @@
 
-#ifndef STRING_MATCH_WORDHASH_H
-#define STRING_MATCH_WORDHASH_H
+#ifndef STRING_MATCH_VOLNITSKY_H
+#define STRING_MATCH_VOLNITSKY_H
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -22,13 +22,14 @@
 namespace StringMatch {
 
 //
-// See: https://blog.csdn.net/liangzhao_jay/article/details/8792486
+// See: http://volnitsky.com/project/str_search/index.html
+// See: https://github.com/ox/Volnitsky-ruby/blob/master/volnitsky.cc
 //
 
 template <typename CharTy>
-class WordHashImpl {
+class VolnitskyImpl {
 public:
-    typedef WordHashImpl<CharTy>            this_type;
+    typedef VolnitskyImpl<CharTy>           this_type;
     typedef CharTy                          char_type;
     typedef uint16_t                        word_t;
     typedef std::size_t                     size_type;
@@ -43,12 +44,12 @@ private:
     BitMap<kHashMax> hashmap_;
 
 public:
-    WordHashImpl() {}
-    ~WordHashImpl() {
+    VolnitskyImpl() {}
+    ~VolnitskyImpl() {
         this->destroy();
     }
 
-    static const char * name() { return "WordHash"; }
+    static const char * name() { return "Volnitsky"; }
     static bool need_preprocessing() { return true; }
 
     bool is_alive() const { return (this->hashmap_.data() != nullptr); }
@@ -67,8 +68,9 @@ public:
             for (ssize_type i = 0; i < max_limit; i++) {
                 word_t word = *(word_t *)&pattern[i];
                 this->hashmap_.set(word, static_cast<uint8_t>(i + 1));
-            }
+            }    
         }
+
         return true;
     }
 
@@ -84,44 +86,47 @@ public:
              (pattern_len < 2 * kWordSize - 1) ||
              (pattern_len >= (std::numeric_limits<uint8_t>::max)()))) {
             ssize_type max_limit = ssize_type(text_len - pattern_len + 1);
-            for (ssize_type i = 0; i < max_limit; i++) {
-                ssize_type matched = 0;
-                ssize_type tpos = i + pattern_len - kWordSize;
-                ssize_type ppos = pattern_len - kWordSize;
-                for (; ppos >= 0; --tpos, --ppos) {
-                    assert(tpos >= 0);
-                    assert(tpos < ssize_type(text_len - kWordSize + 1));
-                    assert(ppos < ssize_type(pattern_len - kWordSize + 1));
-                    word_t word = *(word_t *)&text[tpos];
-                    if (this->hashmap_.getv(word) == 0) {
-                        if (matched == 0) {
-                            i += pattern_len - kWordSize;
-                        }
-                        matched = -1;
-                        break;
-                    }
-                    matched++;
-                    if (matched < ssize_type(pattern_len - kWordSize + 1)) {
-                        //
-                    }
-                    else {
-                        assert(tpos < max_limit);
-                        if (::memcmp((const void *)&text[tpos],
-                                     (const void *)&pattern[0], pattern_len) == 0) {
-                            return Long(tpos);
-                        }
-                        matched = -1;
-                        break;
-                    }
+            const char_type * src = text + pattern_len - kWordSize;
+            const char_type * src_limit = text + max_limit;
+            const char_type * text_end = text + text_len; 
+            const char_type * pattern_limit = pattern + pattern_len - kWordSize;
+            while (src < src_limit) {
+                assert(src >= text);
+                assert(src < (text + (text_len - kWordSize + 1)));
+                word_t word = *(word_t *)src;
+                uint8_t offset = this->hashmap_.getv(word);
+                if (offset == 0) {
+                    src += pattern_len - kWordSize + 1;
                 }
-                if (matched >= 0) {
-                    return Long(i);
+                else {
+                    const char_type * src_start = src - (offset - 1);
+                    const char_type * target = pattern;
+                    while (target < pattern_limit) {
+                        assert(src_start >= text);
+                        assert(src_start < text_end);
+                        if (*src_start++ != *target++) {
+                            src += pattern_len - kWordSize + 1;
+                            goto SKIP_AND_NEXT;
+                        }
+                    }
+
+                    ssize_type index = src - (offset - 1) - text;
+                    assert(index >= 0);
+                    assert(index < ssize_type(text_len));
+                    return Long(index);
                 }
+SKIP_AND_NEXT:
+                ;
             }
+
+            //if (::memcmp((const void *)&src,
+            //             (const void *)&pattern[0], pattern_len) == 0) {
+            //    return Long(src - text);
+            //}
 
             return Status::NotFound;
         }
-        else { 
+        else {
             // fallback to std::search
             StringRef sText(text, text_len);
             StringRef sPattern(pattern, pattern_len);
@@ -136,13 +141,13 @@ public:
 };
 
 namespace AnsiString {
-    typedef AlgorithmWrapper< WordHashImpl<char> >    WordHash;
+    typedef AlgorithmWrapper< VolnitskyImpl<char> >    Volnitsky;
 }
 
 namespace UnicodeString {
-    typedef AlgorithmWrapper< WordHashImpl<wchar_t> > WordHash;
+    typedef AlgorithmWrapper< VolnitskyImpl<wchar_t> > Volnitsky;
 }
 
 } // namespace StringMatch
 
-#endif // STRING_MATCH_WORDHASH_H
+#endif // STRING_MATCH_VOLNITSKY_H

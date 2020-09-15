@@ -8,12 +8,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "basic/stddef.h"
 #include "basic/stdint.h"
 #include "basic/inttypes.h"
 #include <assert.h>
+
+#include <cstdint>
+#include <cstddef>
 #include <string>
 #include <memory>
-
 #include <tuple>
 #include <type_traits>
 #include <utility>

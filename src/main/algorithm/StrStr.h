@@ -10,7 +10,7 @@
 #include <assert.h>
 
 #include "StringMatch.h"
-#include "AlgorithmWrapper.h"
+#include "algorithm/AlgorithmWrapper.h"
 
 namespace StringMatch {
 

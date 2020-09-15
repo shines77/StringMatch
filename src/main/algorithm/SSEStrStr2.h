@@ -33,8 +33,8 @@
 #endif
 
 #include "StringMatch.h"
-#include "AlgorithmWrapper.h"
-#include "SSEHelper.h"
+#include "algorithm/AlgorithmWrapper.h"
+#include "algorithm/SSEHelper.h"
 #include "asm/asmlib.h"
 
 /* unit test:

@@ -37,9 +37,6 @@
     <ClInclude Include="..\..\..\src\main\StringMatch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\main\basic\msvc\inttypes.h">
       <Filter>src\basic\msvc</Filter>
     </ClInclude>
@@ -184,11 +181,15 @@
     <ClInclude Include="..\..\..\src\main\algorithm\WordHash.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\..\..\src\main\asm\strstr_see42.asm">
-      <Filter>src\asm</Filter>
-    </CustomBuild>
+    <ClInclude Include="..\..\..\src\main\algorithm\Volnitsky.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\AlgorithmUtils.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\AlgorithmWrapper.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <YASM Include="..\..\..\src\main\asm\strstr_sse42_x86.asm">
@@ -204,6 +205,9 @@
       <Filter>src\asm</Filter>
     </YASM>
     <YASM Include="..\..\..\src\main\asm\strstr_see42_v2_x64.asm">
+      <Filter>src\asm</Filter>
+    </YASM>
+    <YASM Include="..\..\..\src\main\asm\strstr_see42_x64.asm">
       <Filter>src\asm</Filter>
     </YASM>
   </ItemGroup>

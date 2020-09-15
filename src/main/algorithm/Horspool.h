@@ -6,12 +6,18 @@
 #pragma once
 #endif
 
+#include "basic/stddef.h"
 #include "basic/stdint.h"
-#include <memory>
+
+#include <memory.h>
 #include <assert.h>
 
+#include <cstdint>
+#include <cstddef>
+#include <memory>
+
 #include "StringMatch.h"
-#include "AlgorithmWrapper.h"
+#include "algorithm/AlgorithmWrapper.h"
 
 //
 // See: http://www-igm.univ-mlv.fr/~lecroq/string/node18.html#SECTION00180

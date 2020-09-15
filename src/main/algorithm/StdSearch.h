@@ -6,8 +6,14 @@
 #pragma once
 #endif
 
+#include "basic/stddef.h"
 #include "basic/stdint.h"
+
+#include <memory.h>
 #include <assert.h>
+
+#include <cstdint>
+#include <cstddef>
 
 #include <memory>
 #include <algorithm>
@@ -16,7 +22,7 @@
 #define STD_SEARCH_USE_STRING_REF   1
 
 #include "StringMatch.h"
-#include "AlgorithmWrapper.h"
+#include "algorithm/AlgorithmWrapper.h"
 #include "support/StringRef.h"
 
 namespace StringMatch {

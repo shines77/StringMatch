@@ -6,11 +6,17 @@
 #pragma once
 #endif
 
+#include "basic/stddef.h"
 #include "basic/stdint.h"
+
+#include <memory.h>
 #include <assert.h>
 
+#include <cstdint>
+#include <cstddef>
+
 #include "StringMatch.h"
-#include "AlgorithmWrapper.h"
+#include "algorithm/AlgorithmWrapper.h"
 
 namespace StringMatch {
 

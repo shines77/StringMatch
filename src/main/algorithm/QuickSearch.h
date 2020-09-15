@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #include "StringMatch.h"
-#include "AlgorithmWrapper.h"
+#include "algorithm/AlgorithmWrapper.h"
 
 //
 // See: http://www-igm.univ-mlv.fr/~lecroq/string/node19.html#SECTION00190

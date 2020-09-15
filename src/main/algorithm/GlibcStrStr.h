@@ -12,7 +12,7 @@
 #include <assert.h>
 
 #include "StringMatch.h"
-#include "AlgorithmWrapper.h"
+#include "algorithm/AlgorithmWrapper.h"
 
 #ifndef CHAR_BIT
 # define CHAR_BIT    8

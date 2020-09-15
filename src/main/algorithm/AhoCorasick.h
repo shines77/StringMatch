@@ -6,16 +6,20 @@
 #pragma once
 #endif
 
+#include "basic/stddef.h"
 #include "basic/stdint.h"
+#include <assert.h>
+
+#include <cstdint>
+#include <cstddef>
 #include <vector>
 #include <list>
 #include <memory>
-#include <assert.h>
 
 #include "StringMatch.h"
+#include "algorithm/AlgorithmWrapper.h"
 #include "jstd/scoped_ptr.h"
 #include "jstd/vector.h"
-#include "AlgorithmWrapper.h"
 
 #define USE_PLACEMENT_NEW   1
 

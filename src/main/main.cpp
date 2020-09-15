@@ -50,6 +50,7 @@
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
 #include "algorithm/WordHash.h"
+#include "algorithm/Volnitsky.h"
 #include "algorithm/Rabin-Karp.h"
 #include "algorithm/AhoCorasick.h"
 
@@ -525,6 +526,7 @@ int main(int argc, char * argv[])
 #endif
     StringMatch_benchmark<AnsiString::ShiftOr>();
     StringMatch_benchmark<AnsiString::WordHash>();
+    StringMatch_benchmark<AnsiString::Volnitsky>();
     StringMatch_benchmark<AnsiString::RabinKarp2>();
     StringMatch_benchmark<AnsiString::RabinKarp31>();
     printf("\n");
