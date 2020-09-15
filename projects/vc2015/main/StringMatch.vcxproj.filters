@@ -178,6 +178,12 @@
     <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStrA.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\StdBoyerMoore.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\WordHash.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\src\main\asm\strstr_see42.asm">

@@ -24,7 +24,7 @@ public:
     typedef typename jstd::uchar_traits<CharTy>::type
                                             uchar_type;
 
-    static const size_t kMaxAscii = 256;
+    static const size_type kMaxAscii = 256;
 
 private:
     mask_type limit_;
@@ -51,14 +51,14 @@ public:
 #if 1
         ::memset((void *)&this->bitmap_[0], 0xFF, kMaxAscii * sizeof(mask_type));
 #else
-        for (size_t i = 0; i < kMaxAscii; ++i) {
+        for (size_type i = 0; i < kMaxAscii; ++i) {
             this->bitmap_[i] = ~0;
         }
 #endif
 
         mask_type mask = 1;
         mask_type limit = 0;
-        for (size_t i = 0; i < length; mask <<= 1, ++i) {
+        for (size_type i = 0; i < length; mask <<= 1, ++i) {
             this->bitmap_[(uchar_type)pattern[i]] &= ~mask;
             limit |= mask;
         }
@@ -85,14 +85,14 @@ public:
  || defined(_M_IA64) || defined(_M_ARM64) || defined(__amd64__) || defined(__x86_64__)
   #if 1
             register mask_type state = ~0;
-            for (size_t i = 0; i < text_len; ++i) {
+            for (size_type i = 0; i < text_len; ++i) {
                 state = (state << 1) | bitmap[(uchar_type)text[i]];
                 if (unlikely(state < limit))
                     return (Long)(i + 1 - pattern_len);
             }
   #elif 1
             register mask_type state = ~0;
-            size_t i;
+            size_type i;
             for (i = 0; i < pattern_len; ++i) {
                 state = (state << 1) | bitmap[(uchar_type)text[i]];
             }
@@ -113,8 +113,8 @@ public:
   #else
             register mask_type state1 = ~0;
             register mask_type state2 = ~0;
-            size_t half_len = (text_len / 2);
-            size_t i;
+            size_type half_len = (text_len / 2);
+            size_type i;
             for (i = 0; i < half_len; ++i) {
                 state1 = (state1 << 1) | bitmap[(uchar_type)text[i]];
                 state2 = (state2 << 1) | bitmap[(uchar_type)text[half_len + i]];
@@ -123,7 +123,7 @@ public:
                 if (unlikely(state2 < limit))
                     return (Long)(i + half_len + 1 - pattern_len);
             }
-            size_t j;
+            size_type j;
             for (j = 0; j < pattern_len - 1; ++j) {
                 state1 = (state1 << 1) | bitmap[(uchar_type)text[i + j]];
                 if (unlikely(state1 < limit))
@@ -137,7 +137,7 @@ public:
   #endif
 #else
             register mask_type state = ~0;
-            for (size_t i = 0; i < text_len; ++i) {
+            for (size_type i = 0; i < text_len; ++i) {
                 state = (state << 1) | bitmap[(uchar_type)text[i]];
                 if (unlikely(state < limit))
                     return (Long)(i + 1 - pattern_len);

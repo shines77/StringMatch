@@ -39,6 +39,7 @@
 #include "algorithm/MyMemMem.h"
 #include "algorithm/MyMemMemBw.h"
 #include "algorithm/StdSearch.h"
+#include "algorithm/StdBoyerMoore.h"
 #include "algorithm/Kmp.h"
 #include "algorithm/KmpStd.h"
 #include "algorithm/BoyerMoore.h"
@@ -48,6 +49,7 @@
 #include "algorithm/BMTuned.h"
 #include "algorithm/ShiftAnd.h"
 #include "algorithm/ShiftOr.h"
+#include "algorithm/WordHash.h"
 #include "algorithm/Rabin-Karp.h"
 #include "algorithm/AhoCorasick.h"
 
@@ -67,6 +69,7 @@ static const size_t kIterations = 1000;
 
 //
 // See: http://volnitsky.com/project/str_search/index.html
+// See: https://github.com/ox/Volnitsky-ruby/blob/master/volnitsky.cc
 //
 static const char * SearchTexts[] = {
     "Here is a sample example.",
@@ -103,6 +106,7 @@ static const char * Patterns[] = {
     "love you",
     "I love you",
 
+    /*
     "largely mangrove",
     "largely Mangrove",
     "some dispute",
@@ -120,6 +124,7 @@ static const char * Patterns[] = {
     "California",
     "Henry Mitchell",
     "the Sierra Nevada"
+    //*/
 };
 
 static const size_t kSearchTexts = sm_countof_i(SearchTexts);
@@ -500,6 +505,9 @@ int main(int argc, char * argv[])
 #endif
     printf("\n");
     StringMatch_benchmark<AnsiString::StdSearch>();
+#if ((defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L)) || (defined(__cplusplus) && (__cplusplus >= 201703L)))
+    StringMatch_benchmark<AnsiString::StdBoyerMoore>();
+#endif
     printf("\n");
     StringMatch_benchmark<AnsiString::Kmp>();
 #if TEST_ALL_BENCHMARK
@@ -516,6 +524,7 @@ int main(int argc, char * argv[])
     StringMatch_benchmark<AnsiString::ShiftAnd>();
 #endif
     StringMatch_benchmark<AnsiString::ShiftOr>();
+    StringMatch_benchmark<AnsiString::WordHash>();
     StringMatch_benchmark<AnsiString::RabinKarp2>();
     StringMatch_benchmark<AnsiString::RabinKarp31>();
     printf("\n");
@@ -529,7 +538,7 @@ int main(int argc, char * argv[])
 #endif
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(_WINDOWS_))
-    //::system("pause");
+    ::system("pause");
 #endif
     return 0;
 }

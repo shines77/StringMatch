@@ -1,6 +1,6 @@
 
-#ifndef STRING_MATCH_STDSEARCH_H
-#define STRING_MATCH_STDSEARCH_H
+#ifndef STRING_MATCH_STD_BOYERMOORE_H
+#define STRING_MATCH_STD_BOYERMOORE_H
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <functional>
 
 // If use StringRef in std::search() algorithm ?
 #define STD_SEARCH_USE_STRING_REF   1
@@ -21,15 +22,18 @@
 
 namespace StringMatch {
 
-template <typename CharTy>
-class StdSearchImpl {
-public:
-    typedef StdSearchImpl<CharTy>   this_type;
-    typedef CharTy                  char_type;
-    typedef std::size_t             size_type;
+// C++14 >= 201402L, C++17 >= 201703L
+#if ((defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L)) || (defined(__cplusplus) && (__cplusplus >= 201703L)))
 
-    StdSearchImpl() {}
-    ~StdSearchImpl() {
+template <typename CharTy>
+class StdBoyerMooreImpl {
+public:
+    typedef StdBoyerMooreImpl<CharTy>   this_type;
+    typedef CharTy                      char_type;
+    typedef std::size_t                 size_type;
+
+    StdBoyerMooreImpl() {}
+    ~StdBoyerMooreImpl() {
         this->destroy();
     }
 
@@ -59,7 +63,9 @@ public:
         StringRef sText(text, text_len);
         StringRef sPattern(pattern, pattern_len);
         StringRef::iterator iter = std::search(sText.begin(), sText.end(),
-                                               sPattern.begin(), sPattern.end());
+                                               std::boyer_moore_searcher(
+                                                   sPattern.begin(), sPattern.end()
+                                               ));
         if (likely(iter != sText.end()))
             return (Long)(iter - sText.begin());
         else
@@ -67,8 +73,10 @@ public:
 #else
         std::string sText(text, text_len);
         std::string sPattern(pattern, pattern_len);
-        std::string::iterator iter = std::search(sText.begin(), sText.end(),
-                                                 sPattern.begin(), sPattern.end());
+        StringRef::iterator iter = std::search(sText.begin(), sText.end(),
+                                               std::boyer_moore_searcher(
+                                                   sPattern.begin(), sPattern.end()
+                                               ));
         if (likely(iter != sText.end()))
             return (Long)(iter - sText.begin());
         else
@@ -78,13 +86,15 @@ public:
 };
 
 namespace AnsiString {
-    typedef AlgorithmWrapper< StdSearchImpl<char> >    StdSearch;
+    typedef AlgorithmWrapper< StdBoyerMooreImpl<char> >    StdBoyerMoore;
 }
 
 namespace UnicodeString {
-    typedef AlgorithmWrapper< StdSearchImpl<wchar_t> > StdSearch;
+    typedef AlgorithmWrapper< StdBoyerMooreImpl<wchar_t> > StdBoyerMoore;
 }
+
+#endif // C++17: (__cplusplus >= 201703L)
 
 } // namespace StringMatch
 
-#endif // STRING_MATCH_STDSEARCH_H
+#endif // STRING_MATCH_STD_BOYERMOORE_H

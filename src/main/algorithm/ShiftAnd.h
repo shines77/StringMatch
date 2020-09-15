@@ -24,7 +24,7 @@ public:
     typedef typename jstd::uchar_traits<CharTy>::type
                                                 uchar_type;
 
-    static const size_t kMaxAscii = 256;
+    static const size_type kMaxAscii = 256;
 
 private:
     mask_type mask_;
@@ -51,12 +51,12 @@ public:
 #if 1
         ::memset((void *)&this->bitmap_[0], 0, kMaxAscii * sizeof(mask_type));
 #else
-        for (size_t i = 0; i < kMaxAscii; ++i)
+        for (size_type i = 0; i < kMaxAscii; ++i)
             this->bitmap_[i] = 0;
 #endif
 
         mask_type mask = 1;
-        for (size_t i = 0; i < length; ++i) {
+        for (size_type i = 0; i < length; ++i) {
             this->bitmap_[(uchar_type)pattern[i]] |= mask;
             mask <<= 1;
         }
@@ -78,7 +78,7 @@ public:
 
         if (likely(pattern_len <= text_len)) {
             register mask_type state = 0;
-            for (size_t i = 0; i < text_len; ++i) {
+            for (size_type i = 0; i < text_len; ++i) {
                 state = ((state << 1) | 1) & bitmap[(uchar_type)text[i]];
                 if (unlikely((state & mask) != 0))
                     return (Long)(i + 1 - pattern_len);

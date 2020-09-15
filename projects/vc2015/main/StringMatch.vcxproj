@@ -45,10 +45,12 @@
     <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStrA_v0.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStrA_v2.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\SSEStrStr_inl.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\StdBoyerMoore.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\StdSearch.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\StrStr.h" />
     <ClInclude Include="..\..\..\src\main\AlgorithmWrapper.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\Sunday.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\WordHash.h" />
     <ClInclude Include="..\..\..\src\main\asm\asmlib.h" />
     <ClInclude Include="..\..\..\src\main\basic\inttypes.h" />
     <ClInclude Include="..\..\..\src\main\basic\msvc\inttypes.h" />
