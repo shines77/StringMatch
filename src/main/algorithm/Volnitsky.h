@@ -18,6 +18,7 @@
 #include "StringMatch.h"
 #include "algorithm/AlgorithmWrapper.h"
 #include "algorithm/AlgorithmUtils.h"
+#include "algorithm/MemMem.h"
 
 namespace StringMatch {
 
@@ -112,20 +113,20 @@ public:
                                 assert(src_start < text_end);
                                 if (*src_start++ != *target++) {
                                     word = this->hashmap_.nextKey(word);
-                                    goto SKIP_AND_NEXT;
+                                    goto SKIP_TO_NEXT_HASH;
                                 }
                             }
                         }
                         else {
                             word = this->hashmap_.nextKey(word);
-                            goto SKIP_AND_NEXT;
+                            goto SKIP_TO_NEXT_HASH;
                         }
 
                         index = src - (offset - 1) - text;
                         assert(index >= 0);
                         assert(index < ssize_type(text_len));
                         return Long(index);
-SKIP_AND_NEXT:
+SKIP_TO_NEXT_HASH:
                         ;
                     } while ((offset = this->hashmap_.getv(word)) != 0);
 
@@ -141,6 +142,15 @@ SKIP_AND_NEXT:
             return Status::NotFound;
         }
         else {
+#if defined(_MSC_VER) || 1
+            const char_type * haystack = (const char_type *)memmem_msvc(
+                                         (const void *)text, text_len * sizeof(char_type),
+                                         (const void *)pattern, pattern_len * sizeof(char_type));
+            if (likely(haystack != nullptr))
+                return (Long)(haystack - text);
+            else
+                return Status::NotFound;
+#else
             // fallback to std::search
             StringRef sText(text, text_len);
             StringRef sPattern(pattern, pattern_len);
@@ -150,6 +160,7 @@ SKIP_AND_NEXT:
                 return (Long)(iter - sText.begin());
             else
                 return Status::NotFound;
+#endif
         }
     }
 };

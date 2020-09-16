@@ -59,7 +59,7 @@ memmem_msvc(const void * haystack_start, size_t haystack_len,
                     n++;
                     if (unlikely(n >= needle_end))
                         return (void *)haystack;
-                } while (unlikely(*h == *n));
+                } while (*h == *n);
 
                 haystack++;
                 if (unlikely(haystack > haystack_end))
