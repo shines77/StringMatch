@@ -102,6 +102,7 @@ public:
                     src += pattern_len - kWordSize + 1;
                 }
                 else {
+                    ssize_type index;
                     do {
                         const char_type * src_start = src - (offset - 1);
                         const char_type * target = pattern;
@@ -114,7 +115,7 @@ public:
                             }
                         }
 
-                        ssize_type index = src - (offset - 1) - text;
+                        index = src - (offset - 1) - text;
                         assert(index >= 0);
                         assert(index < ssize_type(text_len));
                         return Long(index);
