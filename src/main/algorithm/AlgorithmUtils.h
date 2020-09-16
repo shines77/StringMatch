@@ -40,7 +40,7 @@ private:
     jstd::scoped_array<storge_type> bits_;
 
 public:
-    explicit BitMask() {
+    BitMask() {
     }
 
     ~BitMask() {
@@ -100,7 +100,7 @@ private:
     jstd::scoped_array<value_type> data_;
 
 public:
-    explicit BitMap() {
+    BitMap() {
     }
 
     ~BitMap() {
