@@ -92,7 +92,7 @@ public:
             const char_type * src = text + pattern_len - kWordSize;
             const char_type * src_limit = text + max_limit;
             const char_type * text_end = text + text_len; 
-            const char_type * pattern_limit = pattern + pattern_len;
+            const char_type * pattern_end = pattern + pattern_len;
             while (src < src_limit) {
                 assert(src >= text);
                 assert(src < (text + (text_len - kWordSize + 1)));
@@ -105,14 +105,20 @@ public:
                     ssize_type index;
                     do {
                         const char_type * src_start = src - (offset - 1);
-                        const char_type * target = pattern;
-                        while (target < pattern_limit) {
-                            assert(src_start >= text);
-                            assert(src_start < text_end);
-                            if (*src_start++ != *target++) {
-                                word = this->hashmap_.nextKey(word);
-                                goto SKIP_AND_NEXT;
+                        if (likely((src_start + pattern_len) < text_end)) {
+                            const char_type * target = pattern;
+                            while (target < pattern_end) {
+                                assert(src_start >= text);
+                                assert(src_start < text_end);
+                                if (*src_start++ != *target++) {
+                                    word = this->hashmap_.nextKey(word);
+                                    goto SKIP_AND_NEXT;
+                                }
                             }
+                        }
+                        else {
+                            word = this->hashmap_.nextKey(word);
+                            goto SKIP_AND_NEXT;
                         }
 
                         index = src - (offset - 1) - text;
