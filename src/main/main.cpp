@@ -274,6 +274,70 @@ void StringMatch_unittest()
                           (int)index_of, (int)sum, sw.getMillisec());
 }
 
+template <typename AlgorithmTy, typename StandardAlgorithmTy>
+void StringMatch_verify()
+{
+    typedef typename AlgorithmTy::Pattern pattern_type;
+
+    // Let search texts first address align for 16 bytes.
+    StringRef texts[kSearchTexts];
+    char * text_data[kPatterns];
+    for (size_t i = 0; i < kSearchTexts; ++i) {
+        size_t length = ::strlen(SearchTexts[i]);
+
+        // Don't use C++11 alloc aligned memory version:
+        // void * aligned_alloc(size_t alignment, size_t size);
+        // is for more versatility.
+#if defined(_MSC_VER)
+        text_data[i] = (char *)::_aligned_malloc(length + 1, 16);
+#else
+        text_data[i] = nullptr;
+        int err = ::posix_memalign((void **)&text_data[i], 16, length + 1);
+        if (text_data[i] == nullptr)
+            return;
+#endif
+        ::memcpy((void *)text_data[i], (const void *)SearchTexts[i], length + 1);
+        texts[i].set_data(text_data[i], length);
+    }
+
+    // Let pattern first address align for 16 bytes.
+    StringRef pattern[kPatterns];
+    char * pattern_data[kPatterns];
+    for (size_t i = 0; i < kPatterns; ++i) {
+        size_t length = ::strlen(Patterns[i]);
+
+        // Don't use C++11 alloc aligned memory version:
+        // void * aligned_alloc(size_t alignment, size_t size);
+        // is for more versatility.
+#if defined(_MSC_VER)
+        pattern_data[i] = (char *)::_aligned_malloc(length + 1, 16);
+#else
+        pattern_data[i] = nullptr;
+        int err = ::posix_memalign((void **)&pattern_data[i], 16, length + 1);
+        if (pattern_data[i] == nullptr)
+            return;
+#endif
+        ::memcpy((void *)pattern_data[i], (const void *)Patterns[i], length + 1);
+        pattern[i].set_data(pattern_data[i], length);
+    }
+
+    for (size_t i = 0; i < kSearchTexts; ++i) {
+        for (size_t j = 0; j < kPatterns; ++j) {
+            Long index_of_1 = AlgorithmTy::match(texts[i].c_str(), texts[i].size(),
+                                                 pattern[j].c_str(), pattern[j].size());
+            Long index_of_2 = StandardAlgorithmTy::match(texts[i].c_str(), texts[i].size(),
+                                                         pattern[j].c_str(), pattern[j].size());
+            if (index_of_1 != index_of_2) {
+                printf("text[%" PRIuPTR "] = \"%s\",\n", i, texts[i].c_str());
+                printf("pattern[%" PRIuPTR "] = \"%s\"\n", j, pattern[j].c_str());
+                printf("index_of_1: %" PRIiPTR ", index_of_2: %" PRIiPTR "\n\n",
+                       index_of_1, index_of_2);
+            }
+        }
+    }
+    //printf("\n");
+}
+
 template <typename AlgorithmTy>
 void StringMatch_benchmark()
 {
@@ -392,10 +456,8 @@ void StringMatch_benchmark()
                 printf("\n");
 #endif
             }
-            //if (typeid(AlgorithmTy).hash_code() == typeid(StringMatch::AhoCorasick).hash_code()) {
-                //printf("pool_idx = %d\n", AlgorithmTy::get_counter());
-                AlgorithmTy::reset_counter();
-            //}
+
+            AlgorithmTy::reset_counter();
             rnd_num += rand();
         }
         sw.stop();
@@ -482,65 +544,70 @@ int main(int argc, char * argv[])
     StringMatch_unittest<AnsiString::ShiftOr>();
 #endif
 
+    StringMatch_verify<AnsiString::WordHash, AnsiString::StrStr>();
+    StringMatch_verify<AnsiString::Volnitsky, AnsiString::StrStr>();
+
+    if (1) {
 #if SWITCH_BENCHMARK_TEST
-    StringMatch_benchmark<AnsiString::StrStr>();
-    StringMatch_benchmark<AnsiString::SSEStrStr>();
+        StringMatch_benchmark<AnsiString::StrStr>();
+        StringMatch_benchmark<AnsiString::SSEStrStr>();
 #else
-    printf("  Algorithm Name           CheckSum    Rand   Preprocessing   Search Time    Full Search Time\n");
-    printf("-------------------------------------------------------------------------------------------------\n");
+        printf("  Algorithm Name           CheckSum    Rand   Preprocessing   Search Time    Full Search Time\n");
+        printf("-------------------------------------------------------------------------------------------------\n");
 
-    StringMatch_benchmark<AnsiString::StrStr>();
-    StringMatch_benchmark<AnsiString::SSEStrStr>();
-    StringMatch_benchmark<AnsiString::SSEStrStr2>();
-    StringMatch_benchmark<AnsiString::SSEStrStrA>();
-    StringMatch_benchmark<AnsiString::SSEStrStrA_v0>();
-    StringMatch_benchmark<AnsiString::SSEStrStrA_v2>();
-    StringMatch_benchmark<AnsiString::GlibcStrStr>();
-    StringMatch_benchmark<AnsiString::GlibcStrStrOld>();
-    StringMatch_benchmark<AnsiString::MyStrStr>();
-    printf("\n");
-    StringMatch_benchmark<AnsiString::MemMem>();
+        StringMatch_benchmark<AnsiString::StrStr>();
+        StringMatch_benchmark<AnsiString::SSEStrStr>();
+        StringMatch_benchmark<AnsiString::SSEStrStr2>();
+        StringMatch_benchmark<AnsiString::SSEStrStrA>();
+        StringMatch_benchmark<AnsiString::SSEStrStrA_v0>();
+        StringMatch_benchmark<AnsiString::SSEStrStrA_v2>();
+        StringMatch_benchmark<AnsiString::GlibcStrStr>();
+        StringMatch_benchmark<AnsiString::GlibcStrStrOld>();
+        StringMatch_benchmark<AnsiString::MyStrStr>();
+        printf("\n");
+        StringMatch_benchmark<AnsiString::MemMem>();
 #if 0
-    StringMatch_benchmark<AnsiString::MyMemMem>();
-    StringMatch_benchmark<AnsiString::MyMemMemBw>();
+        StringMatch_benchmark<AnsiString::MyMemMem>();
+        StringMatch_benchmark<AnsiString::MyMemMemBw>();
 #endif
-    printf("\n");
-    StringMatch_benchmark<AnsiString::StdSearch>();
+        printf("\n");
+        StringMatch_benchmark<AnsiString::StdSearch>();
 #if ((defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L)) || (defined(__cplusplus) && (__cplusplus >= 201703L)))
-    StringMatch_benchmark<AnsiString::StdBoyerMoore>();
+        StringMatch_benchmark<AnsiString::StdBoyerMoore>();
 #endif
-    printf("\n");
-    StringMatch_benchmark<AnsiString::Kmp>();
+        printf("\n");
+        StringMatch_benchmark<AnsiString::Kmp>();
 #if TEST_ALL_BENCHMARK
-    //StringMatch_benchmark<AnsiString::KmpStd>();
-    printf("\n");
-    StringMatch_benchmark<AnsiString::BoyerMoore>();
+        //StringMatch_benchmark<AnsiString::KmpStd>();
+        printf("\n");
+        StringMatch_benchmark<AnsiString::BoyerMoore>();
 #endif
-    StringMatch_benchmark<AnsiString::BMTuned>();
-    StringMatch_benchmark<AnsiString::Sunday>();
-    StringMatch_benchmark<AnsiString::Horspool>();
-    StringMatch_benchmark<AnsiString::QuickSearch>();
-    printf("\n");
+        StringMatch_benchmark<AnsiString::BMTuned>();
+        StringMatch_benchmark<AnsiString::Sunday>();
+        StringMatch_benchmark<AnsiString::Horspool>();
+        StringMatch_benchmark<AnsiString::QuickSearch>();
+        printf("\n");
 #if TEST_ALL_BENCHMARK
-    StringMatch_benchmark<AnsiString::ShiftAnd>();
+        StringMatch_benchmark<AnsiString::ShiftAnd>();
 #endif
-    StringMatch_benchmark<AnsiString::ShiftOr>();
-    StringMatch_benchmark<AnsiString::WordHash>();
-    StringMatch_benchmark<AnsiString::Volnitsky>();
-    StringMatch_benchmark<AnsiString::RabinKarp2>();
-    StringMatch_benchmark<AnsiString::RabinKarp31>();
-    printf("\n");
+        StringMatch_benchmark<AnsiString::ShiftOr>();
+        StringMatch_benchmark<AnsiString::WordHash>();
+        StringMatch_benchmark<AnsiString::Volnitsky>();
+        StringMatch_benchmark<AnsiString::RabinKarp2>();
+        StringMatch_benchmark<AnsiString::RabinKarp31>();
+        printf("\n");
 #if ENABLE_AHOCORASICK_TEST
-    StringMatch_benchmark<AnsiString::AhoCorasick>();
+        StringMatch_benchmark<AnsiString::AhoCorasick>();
 #endif
 
-    printf("-------------------------------------------------------------------------------------------------\n");
-    //printf("  ps: (*) indicates that not included the preprocessing time.\n");
-    printf("\n");
+        printf("-------------------------------------------------------------------------------------------------\n");
+        //printf("  ps: (*) indicates that not included the preprocessing time.\n");
+        printf("\n");
 #endif
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(_WINDOWS_))
-    ::system("pause");
+        ::system("pause");
 #endif
+    }
     return 0;
 }

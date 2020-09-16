@@ -89,11 +89,10 @@ public:
         if (!((text_len < pattern_len * 2) ||
              (pattern_len < 2 * kWordSize - 1) ||
              (pattern_len >= (std::numeric_limits<uint8_t>::max)()))) {
-            ssize_type max_limit = ssize_type(text_len - pattern_len + 1);
             const char_type * src = text + pattern_len - kWordSize;
-            const char_type * src_limit = text + max_limit;
-            const char_type * text_end = text + text_len; 
+            const char_type * text_end = text + text_len;
             const char_type * pattern_end = pattern + pattern_len;
+            const char_type * src_limit = text_end - kWordSize + 1;
             while (src < src_limit) {
                 assert(src >= text);
                 assert(src < (text + (text_len - kWordSize + 1)));
@@ -142,7 +141,7 @@ SKIP_TO_NEXT_HASH:
             return Status::NotFound;
         }
         else {
-#if defined(_MSC_VER) || 1
+#if defined(_MSC_VER)
             const char_type * haystack = (const char_type *)memmem_msvc(
                                          (const void *)text, text_len * sizeof(char_type),
                                          (const void *)pattern, pattern_len * sizeof(char_type));

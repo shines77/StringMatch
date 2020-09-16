@@ -75,8 +75,8 @@ public:
 
     /* Searching */
     SM_NOINLINE_DECLARE(Long)
-    search(const char_type * text, size_type text_len,
-           const char_type * pattern, size_type pattern_len) const {
+    search1(const char_type * text, size_type text_len,
+            const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 
@@ -98,29 +98,207 @@ public:
                         if (matched == 0) {
                             i += pattern_len - kWordSize;
                         }
-                        matched = -1;
                         break;
                     }
                     matched++;
                     if (matched >= ssize_type(pattern_len - kWordSize + 1)) {
                         assert(tpos < max_limit);
-                        if (::memcmp((const void *)&text[tpos],
-                                     (const void *)&pattern[0], pattern_len) == 0) {
+                        if (::memcmp((const void *)&text[tpos], (const void *)&pattern[0],
+                                     pattern_len * sizeof(char_type)) == 0) {
                             return Long(tpos);
                         }
-                        matched = -1;
                         break;
                     }
-                }
-                if (matched >= 0) {
-                    return Long(i);
                 }
             }
 
             return Status::NotFound;
         }
         else {
-#if defined(_MSC_VER) || 1
+#if defined(_MSC_VER)
+            const char_type * haystack = (const char_type *)memmem_msvc(
+                                         (const void *)text, text_len * sizeof(char_type),
+                                         (const void *)pattern, pattern_len * sizeof(char_type));
+            if (likely(haystack != nullptr))
+                return (Long)(haystack - text);
+            else
+                return Status::NotFound;
+#else
+            // fallback to std::search
+            StringRef sText(text, text_len);
+            StringRef sPattern(pattern, pattern_len);
+            StringRef::iterator iter = std::search(sText.begin(), sText.end(),
+                                                   sPattern.begin(), sPattern.end());
+            if (likely(iter != sText.end()))
+                return (Long)(iter - sText.begin());
+            else
+                return Status::NotFound;
+#endif
+        }
+    }
+
+    /* Searching */
+    SM_NOINLINE_DECLARE(Long)
+    search2(const char_type * text, size_type text_len,
+            const char_type * pattern, size_type pattern_len) const {
+        assert(text != nullptr);
+        assert(pattern != nullptr);
+
+        // check arg sizes 
+        if (!((text_len < pattern_len * 2) ||
+             (pattern_len < 2 * kWordSize - 1) ||
+             (pattern_len >= (std::numeric_limits<uint8_t>::max)()))) {
+            const char_type * src_start = text + pattern_len - kWordSize;
+            const char_type * text_end = text + text_len;
+            const char_type * pattern_end = pattern + pattern_len;
+            const char_type * src_limit = text_end - kWordSize + 1;
+            while (src_start < src_limit) {
+                assert(src_start >= text);
+                assert(src_start < (text + (text_len - kWordSize + 1)));
+                size_type word = static_cast<size_type>(*(word_t *)src_start);
+                size_type exists = this->hashmap_.getv(word);
+                if (likely(exists == 0)) {
+                    src_start += pattern_len - kWordSize + 1;
+                }
+                else {
+                    const char_type * source = src_start - (pattern_len - kWordSize);
+                    const char_type * target = pattern;
+                    if (likely(*source != *target)) {
+                        src_start += 1;
+                    }
+                    else {
+                        const char_type * src = source;
+                        ssize_type index;
+                        ssize_type matched = 1;
+                        source++;
+                        target++;
+                        do {
+                            if (likely(*source != *target)) {
+                                src_start += 1;
+                                goto SKIP_TO_NEXT_POS;
+                            }
+#if 0
+                            src--;
+                            assert(src >= text);
+                            assert((src + kWordSize) <= text_end);
+                            word = static_cast<size_type>(*(word_t *)src);
+                            exists = this->hashmap_.getv(word);
+                            if (likely(exists == 0)) {
+                                src_start += 1;
+                                goto SKIP_TO_NEXT_POS;
+                            }
+                            else {
+#endif
+                                source++;
+                                assert(source < text_end);
+                                target++;
+                                assert(target < pattern_end);
+                                matched++;
+                                if (matched >= ssize_type(pattern_len - kWordSize + 1)) {
+                                    assert(source < text_end);
+                                    while (target < pattern_end) {
+                                        assert(source >= text);
+                                        assert(source < text_end);
+                                        if (*source++ != *target++) {
+                                            src_start += 1;
+                                            goto SKIP_TO_NEXT_POS;
+                                        }
+                                    }
+
+                                    index = src - text;
+                                    assert(index >= 0);
+                                    assert(index < ssize_type(text_len));
+                                    return Long(index);
+                                }
+#if 0
+                            }
+#endif
+                        } while (1);
+SKIP_TO_NEXT_POS:
+                        ;
+                    }
+                }
+            }
+
+            return Status::NotFound;
+        }
+        else {
+#if defined(_MSC_VER)
+            const char_type * haystack = (const char_type *)memmem_msvc(
+                                         (const void *)text, text_len * sizeof(char_type),
+                                         (const void *)pattern, pattern_len * sizeof(char_type));
+            if (likely(haystack != nullptr))
+                return (Long)(haystack - text);
+            else
+                return Status::NotFound;
+#else
+            // fallback to std::search
+            StringRef sText(text, text_len);
+            StringRef sPattern(pattern, pattern_len);
+            StringRef::iterator iter = std::search(sText.begin(), sText.end(),
+                                                   sPattern.begin(), sPattern.end());
+            if (likely(iter != sText.end()))
+                return (Long)(iter - sText.begin());
+            else
+                return Status::NotFound;
+#endif
+        }
+    }
+
+    /* Searching */
+    SM_NOINLINE_DECLARE(Long)
+    search(const char_type * text, size_type text_len,
+           const char_type * pattern, size_type pattern_len) const {
+        assert(text != nullptr);
+        assert(pattern != nullptr);
+
+        // check arg sizes 
+        if (!((text_len < pattern_len * 2) ||
+             (pattern_len < 2 * kWordSize - 1) ||
+             (pattern_len >= (std::numeric_limits<uint8_t>::max)()))) {
+            const char_type * src = text + pattern_len - kWordSize;
+            const char_type * text_end = text + text_len;
+            const char_type * pattern_end = pattern + pattern_len;
+            const char_type * src_limit = text_end - kWordSize + 1;
+            while (src < src_limit) {
+                assert(src >= text);
+                assert(src < (text + (text_len - kWordSize + 1)));
+                size_type word = static_cast<size_type>(*(word_t *)src);
+                size_type exists = this->hashmap_.getv(word);
+                if (likely(exists == 0)) {
+                    src += pattern_len - kWordSize + 1;
+                }
+                else {
+                    ssize_type index;
+                    const char_type * src_start = src - (pattern_len - kWordSize);
+                    const char_type * source = src_start;
+                    const char_type * target = pattern;
+                    do {
+                        if (likely(*source != *target)) {
+                            src += 1;
+                            goto SKIP_TO_NEXT_POS;
+                        }
+                        else {
+                            source++;
+                            assert(source < text_end);
+                            target++;
+                            assert(target < pattern_end);
+                        }
+                    } while (target < pattern_end);
+
+                    index = src_start - text;
+                    assert(index >= 0);
+                    assert(index < ssize_type(text_len));
+                    return Long(index);
+SKIP_TO_NEXT_POS:
+                    ;
+                }
+            }
+
+            return Status::NotFound;
+        }
+        else {
+#if defined(_MSC_VER)
             const char_type * haystack = (const char_type *)memmem_msvc(
                                          (const void *)text, text_len * sizeof(char_type),
                                          (const void *)pattern, pattern_len * sizeof(char_type));
