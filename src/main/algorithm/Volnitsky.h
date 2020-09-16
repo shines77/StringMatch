@@ -105,7 +105,7 @@ public:
                     ssize_type index;
                     do {
                         const char_type * src_start = src - (offset - 1);
-                        if (likely((src_start + pattern_len) < text_end)) {
+                        if (likely((src_start + pattern_len) <= text_end)) {
                             const char_type * target = pattern;
                             while (target < pattern_end) {
                                 assert(src_start >= text);
