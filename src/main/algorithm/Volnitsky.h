@@ -98,7 +98,7 @@ public:
                 assert(src < (text + (text_len - kWordSize + 1)));
                 size_type word = static_cast<size_type>(*(word_t *)src);
                 size_type offset = this->hashmap_.getv(word);
-                if (offset == 0) {
+                if (likely(offset == 0)) {
                     src += pattern_len - kWordSize + 1;
                 }
                 else {

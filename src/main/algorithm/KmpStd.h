@@ -31,7 +31,7 @@ private:
     jstd::scoped_array<int> kmp_next_;
 
 public:
-    KmpStdImpl() : kmp_next_() {}
+    KmpStdImpl() {}
     ~KmpStdImpl() {
         this->destroy();
     }

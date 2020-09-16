@@ -66,7 +66,7 @@ public:
             ssize_type max_limit = ssize_type(length - kWordSize + 1);
             for (ssize_type i = 0; i < max_limit; i++) {
                 size_type word = static_cast<size_type>(*(word_t *)&pattern[i]);
-                this->hashmap_.set(word, static_cast<uint8_t>(i + 1));
+                this->hashmap_.set(word, 1);
             }
         }
         return true;
@@ -101,10 +101,7 @@ public:
                         break;
                     }
                     matched++;
-                    if (matched < ssize_type(pattern_len - kWordSize + 1)) {
-                        //
-                    }
-                    else {
+                    if (matched >= ssize_type(pattern_len - kWordSize + 1)) {
                         assert(tpos < max_limit);
                         if (::memcmp((const void *)&text[tpos],
                                      (const void *)&pattern[0], pattern_len) == 0) {
