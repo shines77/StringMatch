@@ -139,8 +139,8 @@ public:
 
     /* Searching */
     SM_NOINLINE_DECLARE(Long)
-    search2(const char_type * text, size_type text_len,
-            const char_type * pattern, size_type pattern_len) const {
+    search(const char_type * text, size_type text_len,
+           const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 
@@ -169,7 +169,6 @@ public:
                     else {
                         const char_type * src = source;
                         ssize_type index;
-                        ssize_type matched = 1;
                         source++;
                         target++;
                         do {
@@ -177,42 +176,18 @@ public:
                                 src_start += 1;
                                 goto SKIP_TO_NEXT_POS;
                             }
-#if 0
-                            src--;
-                            assert(src >= text);
-                            assert((src + kWordSize) <= text_end);
-                            word = static_cast<size_type>(*(word_t *)src);
-                            exists = this->hashmap_.getv(word);
-                            if (likely(exists == 0)) {
-                                src_start += 1;
-                                goto SKIP_TO_NEXT_POS;
-                            }
-                            else {
-#endif
+
+                            target++;
+                            if (likely(target < pattern_end)) {
                                 source++;
                                 assert(source < text_end);
-                                target++;
-                                assert(target < pattern_end);
-                                matched++;
-                                if (matched >= ssize_type(pattern_len - kWordSize + 1)) {
-                                    assert(source < text_end);
-                                    while (target < pattern_end) {
-                                        assert(source >= text);
-                                        assert(source < text_end);
-                                        if (*source++ != *target++) {
-                                            src_start += 1;
-                                            goto SKIP_TO_NEXT_POS;
-                                        }
-                                    }
-
-                                    index = src - text;
-                                    assert(index >= 0);
-                                    assert(index < ssize_type(text_len));
-                                    return Long(index);
-                                }
-#if 0
                             }
-#endif
+                            else {
+                                index = src - text;
+                                assert(index >= 0);
+                                assert(index < ssize_type(text_len));
+                                return Long(index);
+                            }
                         } while (1);
 SKIP_TO_NEXT_POS:
                         ;
@@ -247,8 +222,8 @@ SKIP_TO_NEXT_POS:
 
     /* Searching */
     SM_NOINLINE_DECLARE(Long)
-    search(const char_type * text, size_type text_len,
-           const char_type * pattern, size_type pattern_len) const {
+    search3(const char_type * text, size_type text_len,
+            const char_type * pattern, size_type pattern_len) const {
         assert(text != nullptr);
         assert(pattern != nullptr);
 
@@ -279,17 +254,19 @@ SKIP_TO_NEXT_POS:
                             goto SKIP_TO_NEXT_POS;
                         }
                         else {
-                            source++;
-                            assert(source < text_end);
                             target++;
-                            assert(target < pattern_end);
+                            if (likely(target < pattern_end)) {
+                                source++;
+                                assert(source < text_end);
+                            }
+                            else {
+                                index = src_start - text;
+                                assert(index >= 0);
+                                assert(index < ssize_type(text_len));
+                                return Long(index);
+                            }
                         }
-                    } while (target < pattern_end);
-
-                    index = src_start - text;
-                    assert(index >= 0);
-                    assert(index < ssize_type(text_len));
-                    return Long(index);
+                    } while (1);
 SKIP_TO_NEXT_POS:
                     ;
                 }

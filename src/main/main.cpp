@@ -277,8 +277,6 @@ void StringMatch_unittest()
 template <typename AlgorithmTy, typename StandardAlgorithmTy>
 void StringMatch_verify()
 {
-    typedef typename AlgorithmTy::Pattern pattern_type;
-
     // Let search texts first address align for 16 bytes.
     StringRef texts[kSearchTexts];
     char * text_data[kPatterns];
