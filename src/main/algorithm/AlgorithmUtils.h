@@ -85,57 +85,62 @@ public:
     }
 };
 
-template <std::size_t Capacity, typename T = std::uint8_t>
+template <std::size_t Capacity, typename Key = std::uint16_t, typename Value = std::uint8_t>
 class BitMap {
 public:
     typedef std::size_t     size_type;
-    typedef T               storge_type;
+    typedef Key             key_type;
+    typedef Value           value_type;
 
     static const size_type kAlignment = sizeof(std::size_t);
     static const size_type kSize = Capacity;
     static const size_type kCapacity = (kSize + kAlignment - 1) / kAlignment * kAlignment;
 
 private:
-    jstd::scoped_array<storge_type> bytes_;
+    jstd::scoped_array<value_type> data_;
 
 public:
     explicit BitMap() {
     }
 
     ~BitMap() {
-        this->bytes_.reset();
+        this->data_.reset();
     }
 
-    storge_type * data() const    { return this->bytes_.get(); }
+    value_type * data() const     { return this->data_.get(); }
     size_type size() const        { return kSize; }
     size_type capacity() const    { return kCapacity; }
-    size_type storge_size() const { return kCapacity * sizeof(storge_type); }
+    size_type storge_size() const { return kCapacity * sizeof(value_type); }
 
     void init() {
-        storge_type * new_bytes = new storge_type[kCapacity];
-        ::memset((void *)new_bytes, 0, kCapacity * sizeof(storge_type));
+        value_type * new_data = new value_type[kCapacity];
+        ::memset((void *)new_data, 0, kCapacity * sizeof(value_type));
 
-        this->bytes_.reset(new_bytes);
+        this->data_.reset(new_data);
     }
 
     void clear() {
-        ::memset((void *)this->bytes_.get(), 0, kCapacity * sizeof(storge_type));
+        ::memset((void *)this->data_.get(), 0, kCapacity * sizeof(value_type));
+    }
+
+    size_type nextKey(size_type key) const {
+        return ((key + 1) % kCapacity);
     }
 
     bool get(size_type pos) const {
-        return (this->bytes_[pos] != 0);
+        return (this->data_[pos] != 0);
     }
 
-    storge_type getv(size_type pos) const  {
-        return this->bytes_[pos];
+    size_type getv(size_type pos) const  {
+        return static_cast<size_type>(this->data_[pos]);
     }
 
     void set(size_type pos) {
-        this->bytes_[pos] = 1;
+        this->data_[pos] = 1;
     }
 
-    void set(size_type pos, storge_type value) {
-        this->bytes_[pos] = value;
+    void set(size_type pos, value_type value) {
+        this->data_[pos] = value;
     }
 };
 

@@ -41,7 +41,7 @@ public:
     static const size_type kWordSize = sizeof(word_t);
 
 private:
-    BitMap<kHashMax> hashmap_;
+    BitMap<kHashMax, word_t> hashmap_;
 
 public:
     VolnitskyImpl() {}
@@ -66,7 +66,10 @@ public:
 
             ssize_type max_limit = ssize_type(length - kWordSize + 1);
             for (ssize_type i = 0; i < max_limit; i++) {
-                word_t word = *(word_t *)&pattern[i];
+                size_type word = static_cast<size_type>(*(word_t *)&pattern[i]);
+                while (this->hashmap_.getv(word) != 0) {
+                    word = this->hashmap_.nextKey(word);
+                }
                 this->hashmap_.set(word, static_cast<uint8_t>(i + 1));
             }    
         }
@@ -93,30 +96,34 @@ public:
             while (src < src_limit) {
                 assert(src >= text);
                 assert(src < (text + (text_len - kWordSize + 1)));
-                word_t word = *(word_t *)src;
-                uint8_t offset = this->hashmap_.getv(word);
+                size_type word = static_cast<size_type>(*(word_t *)src);
+                size_type offset = this->hashmap_.getv(word);
                 if (offset == 0) {
                     src += pattern_len - kWordSize + 1;
                 }
                 else {
-                    const char_type * src_start = src - (offset - 1);
-                    const char_type * target = pattern;
-                    while (target < pattern_limit) {
-                        assert(src_start >= text);
-                        assert(src_start < text_end);
-                        if (*src_start++ != *target++) {
-                            src += pattern_len - kWordSize + 1;
-                            goto SKIP_AND_NEXT;
+                    do {
+                        const char_type * src_start = src - (offset - 1);
+                        const char_type * target = pattern;
+                        while (target < pattern_limit) {
+                            assert(src_start >= text);
+                            assert(src_start < text_end);
+                            if (*src_start++ != *target++) {
+                                word = this->hashmap_.nextKey(word);
+                                goto SKIP_AND_NEXT;
+                            }
                         }
-                    }
 
-                    ssize_type index = src - (offset - 1) - text;
-                    assert(index >= 0);
-                    assert(index < ssize_type(text_len));
-                    return Long(index);
-                }
+                        ssize_type index = src - (offset - 1) - text;
+                        assert(index >= 0);
+                        assert(index < ssize_type(text_len));
+                        return Long(index);
 SKIP_AND_NEXT:
-                ;
+                        ;
+                    } while ((offset = this->hashmap_.getv(word)) != 0);
+
+                    src += pattern_len - kWordSize + 1;
+                }
             }
 
             //if (::memcmp((const void *)&src,

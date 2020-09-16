@@ -65,7 +65,7 @@ public:
 
             ssize_type max_limit = ssize_type(length - kWordSize + 1);
             for (ssize_type i = 0; i < max_limit; i++) {
-                word_t word = *(word_t *)&pattern[i];
+                size_type word = static_cast<size_type>(*(word_t *)&pattern[i]);
                 this->hashmap_.set(word, static_cast<uint8_t>(i + 1));
             }
         }
@@ -92,7 +92,7 @@ public:
                     assert(tpos >= 0);
                     assert(tpos < ssize_type(text_len - kWordSize + 1));
                     assert(ppos < ssize_type(pattern_len - kWordSize + 1));
-                    word_t word = *(word_t *)&text[tpos];
+                    size_type word = static_cast<size_type>(*(word_t *)&text[tpos]);
                     if (this->hashmap_.getv(word) == 0) {
                         if (matched == 0) {
                             i += pattern_len - kWordSize;
