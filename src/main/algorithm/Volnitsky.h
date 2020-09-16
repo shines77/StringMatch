@@ -92,7 +92,7 @@ public:
             const char_type * src = text + pattern_len - kWordSize;
             const char_type * src_limit = text + max_limit;
             const char_type * text_end = text + text_len; 
-            const char_type * pattern_limit = pattern + pattern_len - kWordSize;
+            const char_type * pattern_limit = pattern + pattern_len;
             while (src < src_limit) {
                 assert(src >= text);
                 assert(src < (text + (text_len - kWordSize + 1)));
