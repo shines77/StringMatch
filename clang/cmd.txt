@@ -1,2 +1,0 @@
-
-cmake -G "Unix Makefiles" -D CMAKE_C_COMPILER=/usr/bin/clang-5.0 -D CMAKE_CXX_COMPILER=/usr/bin/clang++-5.0 /home/git/shines77/StringMatch/clang

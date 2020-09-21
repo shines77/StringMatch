@@ -84,7 +84,7 @@ haystack_next:
         ; [arg1] = haystack
         pcmpistrm xmm1, [arg1], 00001100B   ; unsigned byte search, equal ordered, return mask in xmm0
         jc      match_begin                 ; found beginning of a match
-        jz      dismatch                    ; end of haystack found, dismatch
+        jz      not_found                   ; end of haystack found, dismatch
         add     arg1, 16
         jmp     haystack_next
 
@@ -129,7 +129,7 @@ found_short: ; match found within single paragraph
         add     rax, arg1                   ; pointer to first match
         ret
 
-dismatch: ; needle not found, return 0
+not_found: ; needle not found, return 0
         xor     rax, rax
         ret
 

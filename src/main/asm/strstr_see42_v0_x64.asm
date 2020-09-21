@@ -98,7 +98,7 @@ haystack_next:
     jmp     haystack_next
 
 match_begin:
-    jz      found_short                 ; haystack ends here, a short match is found
+    jz      strstr_found                ; haystack ends here, a short match is found
     ; bit_index = ecx                   ; index of first bit in mask of possible matches
 
     ; compare strings for full match
@@ -112,27 +112,20 @@ compare_loop: ; compare loop for long match
     pcmpistri xmm2, [text_n], 00001100B ; unsigned bytes, equal ordered, modifies xmm0
     ; (can't use "equal each, masked" because it inverts when past end of needle, but not when past end of both)
 
-    jno     longmatch_fail              ; difference found after extending partial match
-    js      longmatch_success           ; end of needle found, and no difference
+    jno     match_fail                  ; difference found after extending partial match
+    js      strstr_found                ; end of needle found, and no difference
     add     pattern, 16
     add     text_n, 16
     jmp     compare_loop                ; loop to next 16 bytes
 
-longmatch_fail:
+match_fail:
     ; mask exhausted for possible matches, continue to next haystack paragraph
-    add     text, 1
+    inc     text
     jmp     haystack_next               ; loop to next paragraph of haystack
 
-longmatch_success: ; match found over more than one paragraph
+strstr_found: ; match found over more than one paragraph
+    ; bit_indexr must be is rcx
     lea     rax, [text + bit_indexr]    ; haystack + index to begin of long match
-%ifdef _WINDOWS_
-    pop     text_n
-%endif
-    ret
-
-found_short: ; match found within single paragraph
-    ; rcx                               ; index of first match
-    lea     rax, [text + rcx]           ; pointer to first match
 %ifdef _WINDOWS_
     pop     text_n
 %endif
