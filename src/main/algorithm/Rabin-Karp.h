@@ -39,10 +39,10 @@ public:
 
 private:
     size_type power_;
-    size_type pattern_code_;
+    size_type pattern_hash_;
 
 public:
-    RabinKarpImpl() : power_(1), pattern_code_(0) {}
+    RabinKarpImpl() : power_(1), pattern_hash_(0) {}
     ~RabinKarpImpl() {
         this->destroy();
     }
@@ -74,21 +74,24 @@ public:
         else
             power_len = length;
 
-        this->power_ = 1;
+        size_type power = 1;
+        power = 1;
         for (size_type i = 1; i < power_len; ++i) {
-            this->power_ *= kPower;
+            power *= kPower;
         }
+        this->power_ = power;
 
-        this->pattern_code_ = 0;
+        size_type pattern_hash = 0;
         for (size_type i = 0; i < length; ++i) {
-            this->pattern_code_ = this->pattern_code_ * kPower + pattern[i];
+            pattern_hash = pattern_hash * kPower + pattern[i];
         }
+        this->pattern_hash_ = pattern_hash;
 
         return true;
     }
 
     SM_INLINE_DECLARE(size_type)
-    rehash(size_type hash_code, char_type prefix, char_type suffix) const {
+    next_hash(size_type hash_code, char_type prefix, char_type suffix) const {
         return ((hash_code - prefix * this->power_) * kPower + suffix);
     }
 
@@ -100,22 +103,52 @@ public:
         assert(pattern != nullptr);
 
         if (likely(pattern_len <= text_len)) {
+            const char_type * text_first = text;
+#if 1
+            // Runs strchr() on the first section of the text as it has a lower
+            // algorithmic complexity for discarding the first non-matching characters.
+
+            // First character of text is in the pattern.
+            text = ::strchr(text_first, (unsigned char)*pattern);
+            if (text == nullptr) {
+                return Status::NotFound;
+            }
+#else
+            const char_type * text_end = text + text_len;
+
+            // First character of text is in the pattern.
+            while (text < text_end) {
+                if (*text == *pattern) {
+                    goto search_start;
+                }
+                text++;
+            }
+            return Status::NotFound;
+
+search_start:
+#endif
+            size_type offset = text - text_first;
+            ssize_t scan_len = ssize_t(text_len - offset - pattern_len);
+            if (scan_len < 0) {
+                return Status::NotFound;
+            }
+
             size_type hash_code = 0;
             for (size_type i = 0; i < pattern_len; ++i) {
                 hash_code = hash_code * kPower + text[i];
             }
 
-            for (size_type i = 0; i < (text_len - pattern_len); ++i) {
+            for (ssize_t i = 0; i < scan_len; ++i) {
                 // Double check: a + bcd + e, abcd
-                if (unlikely(hash_code == this->pattern_code_)) {
+                if (unlikely(hash_code == this->pattern_hash_)) {
                     if (::memcmp((const void *)&text[i], (const void *)&pattern[0],
                                  pattern_len * sizeof(char_type)) == 0) {
-                        return Long(i);
+                        return Long(i + offset);
                     }
                 }
 
                 // Move the hash value to next char.
-                hash_code = rehash(hash_code, text[i], text[i + pattern_len]);
+                hash_code = next_hash(hash_code, text[i], text[i + pattern_len]);
             }
         }
 

@@ -190,6 +190,9 @@
     <ClInclude Include="..\..\..\src\main\algorithm\AlgorithmWrapper.h">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\main\algorithm\FastStrStr.h">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <YASM Include="..\..\..\src\main\asm\strstr_sse42_x86.asm">

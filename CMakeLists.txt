@@ -81,6 +81,8 @@ set(SOURCE_FILES
     src/main/main.cpp
     )
 
+# add_subdirectory(main EXCLUDE_FROM_ALL src/main/asm)
+
 ##
 ## See: https://stackoverflow.com/questions/39258250/how-to-detect-if-64-bit-msvc-with-cmake
 ##

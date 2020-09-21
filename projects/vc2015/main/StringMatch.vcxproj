@@ -27,6 +27,7 @@
     <ClInclude Include="..\..\..\src\main\algorithm\AlgorithmWrapper.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\BMTuned.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\BoyerMoore.h" />
+    <ClInclude Include="..\..\..\src\main\algorithm\FastStrStr.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\GlibcStrStr.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\GlibcStrStrOld.h" />
     <ClInclude Include="..\..\..\src\main\algorithm\Horspool.h" />

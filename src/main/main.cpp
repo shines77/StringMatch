@@ -38,6 +38,7 @@
 #include "algorithm/SSEStrStrA_v2.h"
 #include "algorithm/MyMemMem.h"
 #include "algorithm/MyMemMemBw.h"
+#include "algorithm/FastStrStr.h"
 #include "algorithm/StdSearch.h"
 #include "algorithm/StdBoyerMoore.h"
 #include "algorithm/Kmp.h"
@@ -544,6 +545,7 @@ int main(int argc, char * argv[])
 
     StringMatch_verify<AnsiString::WordHash, AnsiString::StrStr>();
     StringMatch_verify<AnsiString::Volnitsky, AnsiString::StrStr>();
+    StringMatch_verify<AnsiString::FastStrStr, AnsiString::StrStr>();
 
     if (1) {
 #if SWITCH_BENCHMARK_TEST
@@ -568,6 +570,7 @@ int main(int argc, char * argv[])
         StringMatch_benchmark<AnsiString::MyMemMem>();
         StringMatch_benchmark<AnsiString::MyMemMemBw>();
 #endif
+        StringMatch_benchmark<AnsiString::FastStrStr>();
         printf("\n");
         StringMatch_benchmark<AnsiString::StdSearch>();
 #if ((defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L)) || (defined(__cplusplus) && (__cplusplus >= 201703L)))
@@ -604,7 +607,7 @@ int main(int argc, char * argv[])
 #endif
 
 #if (defined(_WIN32) || defined(WIN32) || defined(OS_WINDOWS) || defined(_WINDOWS_))
-        ::system("pause");
+        //::system("pause");
 #endif
     }
     return 0;
