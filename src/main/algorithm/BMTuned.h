@@ -84,9 +84,6 @@ public:
         assert(text_start != nullptr);
         assert(pattern != nullptr);
 
-        if (unlikely(pattern_len == 0))
-            return 0;
-
         if (likely(pattern_len <= text_len)) {
             int * bmBc = (int *)&this->bmBc_[0];
             assert(bmBc != nullptr);
@@ -100,53 +97,53 @@ public:
             jstd::scoped_array<char_type> text_new(new char_type[text_len + pattern_len + 1]);
             char_type * text = text_new.get();
             if (text != nullptr) {
-                memcpy((void *)text, (const void *)text_start, text_len);
-                memset((void *)(text + text_len), (int)(uchar_type)pattern[last],
-                                pattern_len * sizeof(char_type));
+                ::memcpy((void *)text, (const void *)text_start, text_len);
+                ::memset((void *)(text + text_len), (int)(uchar_type)pattern[last],
+                                  pattern_len * sizeof(char_type));
                 *(text + text_len + pattern_len) = char_type('\0');
             }
 
-            const Long source_last = (Long)(text_len - pattern_len);
+            const Long scan_len = (Long)(text_len - pattern_len);
             const Long pattern_last = (Long)pattern_len - 1;
-            Long source_offset = 0;
+            Long index = 0;
             do {
-                register const char_type * source = text + source_offset + pattern_last;
-                register const char_type * cursor = pattern + pattern_last;
+                register const char_type * source = text + index + pattern_last;
+                register const char_type * target = pattern + pattern_last;
                 assert(source >= text && source < (text + text_len));
 
                 Long k = bmBc[(uchar_type)*source];
                 while (k != 0) {
                     source += k;
-                    source_offset += k;
+                    index += k;
                     k = bmBc[(uchar_type)*source];
                     source += k;
-                    source_offset += k;
+                    index += k;
                     k = bmBc[(uchar_type)*source];
                     source += k;
-                    source_offset += k;
+                    index += k;
                     k = bmBc[(uchar_type)*source];
                 }
 
                 source--;
-                cursor--;
+                target--;
 
-                while (likely(cursor >= pattern)) {
-                    if (likely(*source != *cursor)) {
+                while (likely(target >= pattern)) {
+                    if (likely(*source != *target)) {
                         break;
                     }
                     source--;
-                    cursor--;
+                    target--;
                 }
 
-                if (likely(cursor >= pattern)) {
-                    source_offset += shift;
+                if (likely(target >= pattern)) {
+                    index += shift;
                 }
                 else {
                     // Has found
-                    assert(source_offset >= 0 && source_offset < (Long)text_len);
-                    return source_offset;
+                    assert(index >= 0 && index < (Long)text_len);
+                    return index;
                 }
-            } while (likely(source_offset <= source_last));
+            } while (likely(index <= scan_len));
         }
 
         return Status::NotFound;

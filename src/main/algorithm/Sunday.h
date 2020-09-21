@@ -80,29 +80,29 @@ public:
             int * shift = (int *)&this->shift_[0];
             assert(shift != nullptr);
 
-            const char_type * pattern_end = pattern + pattern_len;
-            const Long source_last = (Long)(text_len - pattern_len);
-            Long source_idx = 0;
+            const char_type * target_end = pattern + pattern_len;
+            const Long scan_len = (Long)(text_len - pattern_len);
+            Long index = 0;
             do {
-                register const char_type * source = text + source_idx;
-                register const char_type * cursor = pattern;
+                register const char_type * source = text + index;
+                register const char_type * target = pattern;
                 assert(source >= text && source < (text + text_len));
 
-                while (likely(cursor < pattern_end)) {
-                    if (likely(*source != *cursor)) {
-                        source_idx = source - text;
-                        source_idx += shift[(uchar_type)text[source_idx + pattern_len]];
+                while (likely(target < target_end)) {
+                    if (likely(*source != *target)) {
+                        index = source - text;
+                        index += shift[(uchar_type)text[index + pattern_len]];
                         break;
                     }
                     source++;
-                    cursor++;
-                    if (likely(cursor >= pattern_end)) {
+                    target++;
+                    if (likely(target >= target_end)) {
                         // Has found
-                        assert(source_idx >= 0 && source_idx < (Long)text_len);
-                        return source_idx;
+                        assert(index >= 0 && index < (Long)text_len);
+                        return index;
                     }
                 }
-            } while (likely(source_idx <= source_last));
+            } while (likely(index <= scan_len));
         }
 
         return Status::NotFound;

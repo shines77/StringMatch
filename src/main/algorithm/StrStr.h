@@ -48,9 +48,9 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
 #if !defined(_UNICODE)
-        const char_type * substr = strstr(text, pattern);
+        const char_type * substr = ::strstr(text, pattern);
 #else
-        const char_type * substr = wcsstr(text, pattern);
+        const char_type * substr = ::wcsstr(text, pattern);
 #endif
         if (likely(substr != nullptr))
             return (Long)(substr - text);

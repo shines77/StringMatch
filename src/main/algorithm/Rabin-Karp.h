@@ -138,17 +138,19 @@ search_start:
                 hash_code = hash_code * kPower + text[i];
             }
 
-            for (ssize_t i = 0; i < scan_len; ++i) {
+            const char_type * text_limit = text + scan_len;
+            while (text <= text_limit) {
                 // Double check: a + bcd + e, abcd
                 if (unlikely(hash_code == this->pattern_hash_)) {
-                    if (::memcmp((const void *)&text[i], (const void *)&pattern[0],
+                    if (::memcmp((const void *)text, (const void *)&pattern[0],
                                  pattern_len * sizeof(char_type)) == 0) {
-                        return Long(i + offset);
+                        return Long(text - text_first);
                     }
                 }
 
                 // Move the hash value to next char.
-                hash_code = next_hash(hash_code, text[i], text[i + pattern_len]);
+                hash_code = next_hash(hash_code, *text, *(text + pattern_len));
+                text++;
             }
         }
 

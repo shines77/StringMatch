@@ -75,39 +75,36 @@ public:
         assert(text != nullptr);
         assert(pattern != nullptr);
 
-        if (unlikely(pattern_len == 0))
-            return 0;
-
         if (likely(pattern_len <= text_len)) {
             int * shift = (int *)&this->hpBc_[0];
             assert(shift != nullptr);
 
             const char_type * pattern_end = pattern + pattern_len;
-            const Long source_last = (Long)(text_len - pattern_len);
+            const Long scan_len = (Long)(text_len - pattern_len);
             const Long pattern_last = (Long)pattern_len - 1;
-            Long source_idx = 0;
+            Long index = 0;
             do {
-                register const char_type * source = text + pattern_last + source_idx;
-                register const char_type * cursor = pattern + pattern_last;
+                register const char_type * source = text + pattern_last + index;
+                register const char_type * target = pattern + pattern_last;
                 assert(source >= text && source < (text + text_len));
 
                 // Save the last compare char.
                 uchar_type last_char = (uchar_type)*source;
 
-                while (likely(cursor >= pattern)) {
-                    if (likely(*source != *cursor)) {
-                        source_idx += shift[last_char];
+                while (likely(target >= pattern)) {
+                    if (likely(*source != *target)) {
+                        index += shift[last_char];
                         break;
                     }
                     source--;
-                    cursor--;
-                    if (likely(cursor < pattern)) {
+                    target--;
+                    if (likely(target < pattern)) {
                         // Has found
-                        assert(source_idx >= 0 && source_idx < (Long)text_len);
-                        return source_idx;
+                        assert(index >= 0 && index < (Long)text_len);
+                        return index;
                     }
                 }
-            } while (likely(source_idx <= source_last));
+            } while (likely(index <= scan_len));
         }
 
         return Status::NotFound;
