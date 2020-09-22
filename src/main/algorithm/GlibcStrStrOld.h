@@ -119,6 +119,121 @@ ret_0:
     return nullptr;
 }
 
+template <typename char_type>
+static
+SM_NOINLINE_DECLARE(const char_type *)
+strstr_glibc_old2(const char_type * phaystack, const char_type * pneedle)
+{
+    typedef unsigned unsigned_type;
+    typedef typename jstd::uchar_traits<char_type>::type uchar_type;
+
+    const uchar_type * haystack = (const uchar_type * )phaystack;
+    const uchar_type * needle = (const uchar_type *)pneedle;
+    unsigned_type needle_01 = *needle;
+    
+    if (needle_01 != char_type('\0')) {
+        /* possible ANSI violation */
+        --haystack;
+
+        // Find first char in haystack is equal to the first char of needle.
+        unsigned_type scan;
+        do {
+            ++haystack;
+            scan = *haystack;
+            if (scan == char_type('\0')) {
+                goto ret_nullptr;
+            }
+        } while (scan != needle_01);
+
+        ++needle;
+        unsigned_type needle_02 = *needle;
+        if (needle_02 == char_type('\0')) {
+            goto found_needle;
+        }
+
+        ++needle;
+        goto jin;
+
+        for (;;) {
+            {
+                unsigned_type cur;
+                if (0) {
+jin:
+                    {
+                        ++haystack;
+                        cur = *haystack;
+                        if (cur == needle_02) {
+                            goto crest;
+                        }
+                    } // jin: end
+                }
+                else {
+                    ++haystack;
+                    cur = *haystack;
+                }
+
+                do {
+                    for (; cur != needle_01; cur = *++haystack) {
+                        if (cur == char_type('\0')) {
+                            goto ret_nullptr;
+                        }
+
+                        if ((cur = *++haystack) == needle_01) {
+                            break;
+                        }
+
+                        if (cur == char_type('\0')) {
+                            goto ret_nullptr;
+                        }
+                    }
+                    cur = *++haystack;
+                } while (cur != needle_02);
+            }
+crest:
+            {
+                const uchar_type * rneedle;
+                unsigned_type rcursor;
+                {
+                    const uchar_type * rhaystack = (haystack--) + 1;
+                    rneedle = needle;
+                    rcursor = *rneedle;
+                    if (rcursor == *rhaystack) {
+                        do {
+                            if (rcursor == char_type('\0')) {
+                                goto found_needle;
+                            }
+
+                            rcursor = *++needle;
+                            if (rcursor != *++rhaystack) {
+                                break;
+                            }
+
+                            if (rcursor == char_type('\0')) {
+                                goto found_needle;
+                            }
+
+                            rcursor = *++needle;
+                        } while (rcursor == *++rhaystack);
+                    }
+
+                    /* took the register-poor approach */
+                    needle = rneedle;
+                }
+
+                if (rcursor == char_type('\0')) {
+                    break;
+                }
+            }
+        } // for (;;) 
+    } // if
+
+found_needle:
+    return (const char_type *)haystack;
+
+ret_nullptr:
+    return nullptr;
+}
+
 template <typename CharTy>
 class GlibcStrStrOldImpl {
 public:
