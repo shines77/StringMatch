@@ -25,6 +25,10 @@
 - strstr_glibc, strstr_glibc_old, my_strstr: 仿 glibc 库 strstr() 非 SIMD 版写的代码；
 - AhoCorasick: AC 自动机算法 (未使用，因为太慢了)；
 
+关于字符串匹配，有一个法国著名的网站：
+
+[http://www-igm.univ-mlv.fr/~lecroq/string/index.html](http://www-igm.univ-mlv.fr/~lecroq/string/index.html)
+
 ## 在 Linux 上编译
 
 需要先安装 yasm 汇编，执行命令：
