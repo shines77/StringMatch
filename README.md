@@ -47,6 +47,8 @@ apt install yasm
 
 测试环境：Intel i5-4210M @ 2.60GHz，Win10 64bit，VC++ 2015 。
 
+注：这是 Windows 上的测试，在 Linux 上的测试更准确一点。
+
 ```text
   Algorithm Name           CheckSum    Rand   Preprocessing   Search Time    Full Search Time
 -------------------------------------------------------------------------------------------------
