@@ -12,6 +12,10 @@
 #include "StringMatch.h"
 #include "algorithm/AlgorithmWrapper.h"
 
+//
+// See: http://www-igm.univ-mlv.fr/~lecroq/string/node6.html#SECTION0060
+//
+
 namespace StringMatch {
 
 template <typename CharTy, typename MaskTy = uint64_t>
