@@ -27,7 +27,9 @@
 
 关于字符串匹配，有一个法国著名的网站：
 
-[EXACT STRING MATCHING ALGORITHMS](http://www-igm.univ-mlv.fr/~lecroq/string/index.html) - [(http://www-igm.univ-mlv.fr/~lecroq/string/index.html)](http://www-igm.univ-mlv.fr/~lecroq/string/index.html)
+[EXACT STRING MATCHING ALGORITHMS](http://www-igm.univ-mlv.fr/~lecroq/string/index.html)
+
+[(http://www-igm.univ-mlv.fr/~lecroq/string/index.html)](http://www-igm.univ-mlv.fr/~lecroq/string/index.html)
 
 ## 在 Linux 上编译
 
